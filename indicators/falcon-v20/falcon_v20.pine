@@ -24,8 +24,8 @@ indicator("Falcon V20 Trend-Sweep Scanner", shorttitle = "Falcon V20", overlay =
 
 // ─── ① Plan ──────────────────────────────────────────────────────────────────
 const string G_PLAN = "① Plan"
-planStart = input.time(timestamp("Asia/Kuwait", 2026, 10, 2, 0, 0), "Plan start", group = G_PLAN)
-planEnd   = input.time(timestamp("Asia/Kuwait", 2026, 11, 1, 0, 0), "Deadline", group = G_PLAN)
+planStart = input.time(timestamp("2026-10-02T00:00:00+03:00"), "Plan start", group = G_PLAN, tooltip = "Kuwait time (UTC+3): 2 Oct 2026 00:00 = 1 Oct 17:00 New York, the start of Friday's trading day.")
+planEnd   = input.time(timestamp("2026-11-01T00:00:00+03:00"), "Deadline", group = G_PLAN)
 startBal  = input.float(30, "Start balance ($)", minval = 1, group = G_PLAN)
 balance   = input.float(30, "Current balance ($)", minval = 0.01, group = G_PLAN, tooltip = "Update after every closed trade (MT5 → History). Lot sizes and probabilities are computed from it.")
 goal      = input.float(5000, "Goal ($)", minval = 1, group = G_PLAN)
@@ -392,7 +392,7 @@ f_lots(float riskPips, float pipVal, float marginLot) =>
     float capL = perLot > 0 ? math.floor(balance / perLot / lotStep + 1e-9) * lotStep : 0.0
     float want = riskPips * pipVal > 0 ? math.floor(riskUsd / (riskPips * pipVal) / lotStep + 1e-9) * lotStep : 0.0
     float lots = math.min(want, capL)
-    if lots < lotStep and fUse > 0 and capL >= lotStep
+    if lots < lotStep and fUse > 0 and capL >= lotStep and lotStep * riskPips * pipVal <= 2 * riskUsd
         lots := lotStep
     lots < lotStep - 1e-9 ? 0.0 : lots
 
@@ -402,13 +402,13 @@ f_px(float p, float pip) =>
 // Compose the MT5 ticket for one symbol's new signal ("" when none).
 f_ticket(bool on, string tk, int d, float c, float sl, float tp, float rk, int t, float pip, simple float contract, float fx) =>
     string out = ""
-    if on and d != 0 and t != t[1] and not na(fx) and fx > 0
+    if on and nz(d) != 0 and t != t[1] and not na(fx) and fx > 0
         float pipVal = contract * pip * fx
         float marginLot = contract * c * fx / leverage * safety
         float lots = f_lots(rk, pipVal, marginLot)
         float riskUsd = lots * rk * pipVal
         float winUsd = lots * (math.abs(tp - c) / pip) * pipVal
-        out := (d == 1 ? "BUY " : "SELL ") + tk + " @≈" + f_px(c, pip) + " | SL " + f_px(sl, pip) + " (" + str.tostring(math.abs(c - sl) / pip, "0.0") + "p) | TP " + f_px(tp, pip) + " (" + str.tostring(math.abs(tp - c) / pip, "0.0") + "p) | " + (lots > 0 ? str.tostring(lots, "0.00") + " lots, risk $" + str.tostring(riskUsd, "0.00") + ", win ≈ $" + str.tostring(winUsd, "0.00") : "lots: below minimum")
+        out := (d == 1 ? "BUY " : "SELL ") + tk + " @≈" + f_px(c, pip) + " | SL " + f_px(sl, pip) + " (" + str.tostring(math.abs(c - sl) / pip, "0.0") + "p) | TP " + f_px(tp, pip) + " (" + str.tostring(math.abs(tp - c) / pip, "0.0") + "p) | " + (lots > 0 ? str.tostring(lots, "0.00") + " lots, risk $" + str.tostring(riskUsd, "0.00") + ", win ≈ $" + str.tostring(winUsd, "0.00") : "skip: 0.01 lot is too big for this balance and stop")
     out
 
 tx01 = f_ticket(o01, tk01, d01, c01, sl01, tp01, rk01, t01, pp01, f_contract(tk01), fx01)
@@ -440,20 +440,21 @@ tickets := f_add(tickets, tx10)
 tickets := f_add(tickets, tx11)
 
 // ─── Alert: one message for every new signal on this H4 close ───────────────
-if tickets != ""
+isH4 = timeframe.in_seconds() == 14400
+if tickets != "" and isH4
     alert("Falcon V20 · risk " + str.tostring(fUse * 100, "0") + "% toward " + aimTxt + " · P(goal) " + str.tostring(pGoal * 100, "0.00") + "%\n" + tickets + "\nOne position at a time. Type SL and TP in MT5 as prices or by the pip distances shown.", alert.freq_once_per_bar)
 
 // Remember the most recent signals for the panel.
 var array<string> recent = array.new<string>()
 if tickets != ""
-    array.unshift(recent, str.format("{0,date,dd MMM HH:mm}", timenow) + " · " + tickets)
+    array.unshift(recent, str.format_time(time, "dd MMM HH:mm", "Asia/Kuwait") + " · " + tickets)
     while array.size(recent) > 3
         array.pop(recent)
 
 // ─── Chart markers for the chart's own symbol (keep the chart on H4) ─────────
 pipC = f_pip(syminfo.ticker)
 [dC, cC, slC, tpC, rkC, tC, nC, wC, rC] = request.security(syminfo.tickerid, "240", f_engine(pipC, 1.5, swapNight), lookahead = barmerge.lookahead_on)
-newC = dC != 0 and tC != tC[1] and timeframe.period == "240"
+newC = nz(dC) != 0 and tC != tC[1] and isH4
 plotshape(newC and dC == 1, "Buy", shape.labelup, location.belowbar, color.new(#00C853, 0), offset = -1, text = "BUY", textcolor = color.white, size = size.small)
 plotshape(newC and dC == -1, "Sell", shape.labeldown, location.abovebar, color.new(#FF1744, 0), offset = -1, text = "SELL", textcolor = color.white, size = size.small)
 if newC
@@ -485,7 +486,7 @@ f_row(int r, string k, string v, color c, string sz) =>
 if barstate.islast
     string sz = dashSize == "Tiny" ? size.tiny : dashSize == "Normal" ? size.normal : size.small
     int dayNo = timenow < planStart ? 0 : daysTotal - daysLeft + 1
-    string phase = timenow < planStart ? "starts " + str.format("{0,date,dd MMM}", planStart) : timenow >= planEnd ? "deadline passed" : "day " + str.tostring(dayNo) + " of " + str.tostring(daysTotal)
+    string phase = timenow < planStart ? "starts " + str.format_time(planStart, "dd MMM", "Asia/Kuwait") : timenow >= planEnd ? "deadline passed" : "day " + str.tostring(dayNo) + " of " + str.tostring(daysTotal)
     table.cell(dash, 0, 0, "FALCON V20 · TREND-SWEEP", text_color = color.white, bgcolor = #1F6FEB, text_size = sz)
     f_row(1, "Plan", phase + " · " + str.tostring(daysLeft) + " days left", #C9D1D9, sz)
     f_row(2, "Balance → goal", "$" + str.tostring(balance, "0.00") + " → $" + str.tostring(goal, "#"), #C9D1D9, sz)
@@ -494,7 +495,7 @@ if barstate.islast
     f_row(5, "Next trade risk", str.tostring(fUse * 100, "0") + "% = $" + str.tostring(fUse * balance, "0.00") + " (" + aimTxt + ")", #58A6FF, sz)
     f_row(6, "Trades left (est.)", str.tostring(tradesLeft), #C9D1D9, sz)
     f_row(7, "Scanner history", str.tostring(totN) + " trades · win " + (totN > 0 ? str.tostring(100.0 * totW / totN, "0.0") : "—") + "% · " + (totN > 0 ? str.tostring(totR / totN, "+0.000;-0.000") : "—") + "R/trade", totR >= 0 ? #00C853 : #FF1744, sz)
-    f_row(8, "Chart", timeframe.period == "240" ? "H4 ✓" : "switch to H4 for markers", timeframe.period == "240" ? #00C853 : #FFB300, sz)
-    table.cell(dash, 0, 9, array.size(recent) > 0 ? "Last: " + array.get(recent, 0) : "No new signal since the chart loaded", text_color = #C9D1D9, text_halign = text.align_left, text_size = size.tiny)
+    f_row(8, "Chart", isH4 ? "H4 ✓ alerts active" : "⚠ set chart to 4h: alerts are off", isH4 ? #00C853 : #FF1744, sz)
+    table.cell(dash, 0, 9, array.size(recent) > 0 ? "Last: " + array.get(recent, 0) : "No signal in the loaded history", text_color = #C9D1D9, text_halign = text.align_left, text_size = size.tiny)
     table.cell(dash, 0, 10, "Rules: one position at a time · SL and TP set when you open · update balance after every close", text_color = #9E9E9E, text_size = size.tiny)
     table.cell(dash, 0, 11, "Scorecard net of spread + swap · probabilities from 2.7 years of research", text_color = #9E9E9E, text_size = size.tiny)

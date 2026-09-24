@@ -76,10 +76,10 @@ The TradingView **app** has no Pine Editor, so use the website in Chrome:
 - **① Plan:** start and deadline are preset (2 Oct and 1 Nov 2026). Start balance **30**, goal **5000**. **Current balance:** update it after every closed trade.
 - **② Account:** leverage **3000**, margin safety **×3**, stop-out 50%, lot step 0.01.
 - **③ Watchlist:** 11 symbols (OANDA feed). Set each **spread** to what MT5 shows for that symbol.
-- Keep the chart on **4 hours (H4)**.
+- Keep the chart on **4 hours (H4)**. Alerts only fire on an H4 chart; on any other timeframe the panel's **Chart** row turns red and says so.
 
 ### C. One alert for everything
-In the app: **Alerts → +** → Condition **Falcon V20** → **Any alert() function call** → notification **Push** → **Create**. That single alert covers all 11 symbols.
+Open any chart set to **4h**, with Falcon V20 on it. In the app: **Alerts → +** → Condition **Falcon V20** → **Any alert() function call** → notification **Push** → **Create**. That single alert covers all 11 symbols.
 
 ### D. When the alert arrives
 It reads like this:
@@ -95,6 +95,8 @@ BUY EURUSD @≈1.13950 | SL 1.13420 (53.0p) | TP 1.15010 (106.0p) | 0.05 lots, r
 
 **Rules:** one position at a time (if two alerts come together, take the first line). Don't move the stop or target after entry.
 
+If a line says **skip: 0.01 lot is too big for this balance and stop**, the minimum lot would risk more than twice the planned amount or need more margin than is safe. Don't take that trade; wait for the next alert.
+
 ---
 
 ## 4. Dashboard
@@ -107,6 +109,7 @@ BUY EURUSD @≈1.13950 | SL 1.13420 (53.0p) | TP 1.15010 (106.0p) | 0.05 lots, r
 | **P(next $…)** | The same for the next milestone |
 | Next trade risk | Optimal % of balance and $ for the next signal (and what it aims at) |
 | Trades left (est.) | Trading days left × 0.33 (research average) |
+| Chart | Green **H4 ✓ alerts active**, or red when the chart isn't on 4h |
 | Scanner history | All symbols' past signals net of costs: trades, win %, R per trade |
 | Last | The most recent alert text |
 
@@ -121,7 +124,7 @@ BUY EURUSD @≈1.13950 | SL 1.13420 (53.0p) | TP 1.15010 (106.0p) | 0.05 lots, r
 | Policy tables in the indicator | Reproduce the dynamic programme: 0.771% vs 0.770% |
 | Trading-day counter | 21 days for 2 Oct – 1 Nov 2026 |
 | Syntax | Offline Pine parser: OK |
-| Independent code review | A separate agent reviewed the Pine v6 code; findings are addressed in the file |
+| Independent code review | A separate agent reviewed the Pine v6 code: 1 compile error (the date-input default) and 5 behaviour issues (panel dates in UTC, signal time, lower-timeframe history, the minimum-lot override, empty values). All 6 fixed and re-parsed. |
 
 TradingView's own compiler isn't available in this environment. If it reports anything when you save, send me the message.
 
