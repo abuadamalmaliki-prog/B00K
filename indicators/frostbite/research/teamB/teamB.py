@@ -4,10 +4,13 @@ Run from the research folder:
     python teamB/teamB.py            # full search on DISC + frozen evaluation of every family
     python teamB/teamB.py BB RSI     # only some families
 
+Families: BB, RSI, VWAP, KC, STOCH, EXT, ROUND, ASIA, plus scout-report techniques ZSCORE (#10),
+BBRSI (#12), VWAPZ (#13); round numbers (#20) are the ROUND family.
+
 Protocol (BRIEF.md):
   * Every family is tuned on DISC (Jan-Apr 2026) only, with a fixed staged search:
       stage A  signal params          (stop 1.5 ATR, TP1 1.0R, TP2 2.0R, split, max_hold 120)
-      stage B1 stop k in {1.0, 2.0} x ATR14 of the signal timeframe
+      stage B1 stop k in {1.0, 2.0} x ATR14 of the signal timeframe (+ the source stop for ZSCORE)
       stage B2 (TP1,TP2) in {(0.5,1.5),(0.75,1.5),(1.0,2.0),(1.5,3.0)} x be in {False, True}
       stage B3 max_hold in {60, 240}
     Each stage keeps the incumbent, so the frozen variant is the highest DISC avgR among

@@ -768,7 +768,10 @@ def table(results):
 
 # ─── best technique for the lead ─────────────────────────────────────────────
 # Filled in after the single final run (the highest VAL avgR among passing families, else the highest VAL avgR).
-BEST = None
+# No family passed; the highest VAL avgR is PDHL (prior-day high/low close-beyond on M15 with the H1 EMA50 side filter,
+# first break per side per trading day, stop 1.5 x ATR14(M15), TP1 1.5R, TP2 3.0R, split, max_hold 120).
+BEST = dict(code="PDHL", p=dict(tf=15, sess="all", htf=True, first=True),
+            o=dict(t1=1.5, t2=3.0, hold=120, be=False, sm=1.0))
 
 
 def best_signals():
