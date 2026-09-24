@@ -202,7 +202,7 @@ def track(sig, spread=frost.SPREAD, max_hold=120, be=False, flat=True):
                 tdir = 0
             else:
                 fill = o[i] + spread if tdir == 1 else o[i]
-                entry_t = t[i]; leg1 = leg2 = True; stop2 = tsl; r1 = r2 = 0.0; g1 = g2 = gs = False
+                entry_t = t[i]; entry_day = b.tday.values[i]; leg1 = leg2 = True; stop2 = tsl; r1 = r2 = 0.0; g1 = g2 = gs = False
         if tdir != 0 and not pend and (leg1 or leg2):
             risk = abs(tref - tsl)
             if tdir == 1:
@@ -227,7 +227,8 @@ def track(sig, spread=frost.SPREAD, max_hold=120, be=False, flat=True):
                 if leg2 and aL <= tt2: r2 = (fill - tt2) / risk; leg2 = False; g2 = True
             time_up = (t[i] + 300 - entry_t) >= max_hold * 60
             flat_now = flat and nym_close[i] >= 16 * 60 + 50 and nym[i] < 17 * 60
-            if (leg1 or leg2) and (time_up or flat_now):
+            new_day = b.tday.values[i] != entry_day
+            if (leg1 or leg2) and (time_up or flat_now or new_day):
                 px = c[i] if tdir == 1 else c[i] + spread
                 if leg1: r1 = (px - fill if tdir == 1 else fill - px) / risk; leg1 = False
                 if leg2: r2 = (px - fill if tdir == 1 else fill - px) / risk; leg2 = False

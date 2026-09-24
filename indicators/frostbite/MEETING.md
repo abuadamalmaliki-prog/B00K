@@ -86,6 +86,6 @@ The daily results of the three are uncorrelated (|r| ≤ 0.06), so combining the
 | Pine logic mirrored bar by bar in Python vs research signals | **1,026 / 1,026 signals identical** (direction, setup; SL within $0.007) |
 | Chart scorecard logic (M5 bars) vs research engine (M1) | same trades; VAL +0.098 vs +0.096R, 2025 +0.118 vs +0.103R |
 | Pine syntax | offline parser OK |
-| Independent code review | see README |
+| Independent code review | no compile errors; 6 issues fixed (see README) |
 
 Reproduce: `research/meeting.py` (this page) and `research/mirror.py` (parity). The team code and results are in `research/team{A,B,C,D}/`, and the scout's sources are in `research/SCOUT_REPORT.md`.

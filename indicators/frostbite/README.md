@@ -109,6 +109,6 @@ The rules run on **any symbol**: lot size, contract size and spread switch autom
 | Chart scorecard vs the 1-minute research engine | Same trades; averages within 0.015 × risk |
 | Research data vs GitHub copies of Jan–Aug 2026 gold | identical, minute for minute |
 | Pine syntax | offline parser OK |
-| Independent code review | in progress |
+| Independent code review | A separate agent checked the Pine v6 code line by line against the mirror. It found no compile errors and confirmed exact parity. Six issues were fixed: Avalanche could stay off if the first bar started with an empty value; bars cut short at session end broke the M15/H1 timing; exit at a new trading day; panel state after a new signal; the cancel alert is now sent at once; lot size for SELL orders and non-USD pairs. Re-parsed and re-verified (1,026 / 1,026). |
 
 TradingView's own compiler isn't available here. If it reports anything when you save, send me the message.
