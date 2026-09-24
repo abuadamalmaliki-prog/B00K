@@ -606,10 +606,11 @@ def best_signals():
     return frost.levels(B(tf), idx, d, sd, BEST_ORDER["t1"], BEST_ORDER["t2"])
 
 
-# Filled in from the final run (the variant with the highest VAL avgR among passes, else highest VAL avgR).
-BEST_FAM = "F1"
-BEST_PARAMS = dict(tf=5, line=20, htf=0)
-BEST_ORDER = dict(t1=1.0, t2=2.0, be=False, hold=120)
+# Filled in from the final run: no family passed, so this is the highest VAL avgR (F9, frozen from DISC).
+# F9 = EMA 9/21/200 pullback + ADX (after andamagodwin/forex), M5, entries 07-17 UTC, stop max(1.5 ATR, $1.50).
+BEST_FAM = "F9"
+BEST_PARAMS = dict(tf=5, adx_min=25, sess=1)
+BEST_ORDER = dict(t1=1.0, t2=2.0, be=False, hold=240)
 
 
 def main(fams):
@@ -655,6 +656,10 @@ def main(fams):
     pool = passed if passed else table
     top = max(pool, key=lambda r: r["val_avgR"])
     print(f"\nBEST (highest VAL avgR among {'passes' if passed else 'all, none passed'}): {top['fam']} {top['params']}")
+    if BEST_FAM in FAMILIES and BEST_FAM in fams:
+        t = frost.simulate(best_signals(), be=BEST_ORDER["be"], max_hold=BEST_ORDER["hold"])
+        print(f"best_signals() check ({BEST_FAM}):")
+        print(frost.fmt(frost.by_period(t)))
     return table
 
 

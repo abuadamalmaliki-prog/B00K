@@ -710,8 +710,22 @@ HEADER = ("| family | best params | combos | DISC avgR/n | VAL n | per_day | win
 
 # Frozen DISC winners, copied from the search that main() prints (main() re-derives them and checks they match).
 # BEST_FAMILY = highest VAL avgR among the families that PASS, or the highest VAL avgR if none pass.
-BEST_FAMILY = None
-FROZEN = {}
+BEST_FAMILY = 'SILVER_BULLET'   # no family passed; this one has the highest VAL avgR
+FROZEN = {
+    'SESS_SWEEP': ({'tf': 3, 'conf': 0, 'htf': 1}, (1.0, 2.0, False, 240)),
+    'SWING_SWEEP': ({'tf': 5, 'k': 10, 'conf': 1, 'htf': 0}, (1.5, 3.0, True, 120)),
+    'CHOCH': ({'tf': 1, 'k': 5, 'need_trend': 0, 'htf': 1}, (1.0, 2.0, True, 60)),
+    'FVG': ({'tf': 5, 'gmin': 0.25, 'stop': 0, 'htf': 1}, (1.0, 2.0, True, 120)),
+    'OB': ({'tf': 5, 'k': 5, 'body': 0, 'htf': 1}, (1.0, 2.0, False, 240)),
+    'BOS_PB': ({'tf': 5, 'k': 5, 'fib': 0.5, 'stop': 1}, (1.0, 2.0, False, 240)),
+    'PA_LEVEL': ({'tf': 15, 'lv': 'r10', 'pat': 1}, (1.0, 2.0, False, 120)),
+    'EQ_SWEEP': ({'tf': 1, 'k': 3, 'tol': 0.1, 'conf': 1}, (1.5, 3.0, True, 60)),
+    'SILVER_BULLET': ({'tf': 5, 'gmin': 0.25, 'htf': 1}, (1.5, 3.0, True, 60)),
+    'S15_ICT_SWEEP': ({'tf': 5, 'htf': 0}, (1.5, 3.0, False, 120)),
+    'S16_PD_BREAK': ({'tf': 1, 'htf': 0}, (1.0, 2.0, True, 60)),
+    'S17_SB_SWEEP_FVG': ({'tf': 1, 'htf': 0}, (1.5, 2.0, False, 120)),
+    'S18_SWEEP_FVG': ({'tf': 5, 'k': 10, 'htf': 0}, (1.5, 3.0, False, 240)),
+}
 
 
 def best_signals():

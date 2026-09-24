@@ -1,0 +1,603 @@
+coverage: ('2025-01-01 23:00:00+00:00', '2026-09-23 23:59:00+00:00', 539) | 2025 complete: True | DISC trading days: 85
+drift table (DISC):
+      mean     std  count      t
+h                              
+19  0.692  20.657     85  0.309
+20  2.528  28.601     84  0.810
+21  0.929  28.873     84  0.295
+22 -0.276  17.683     84 -0.143
+23 -0.006   9.693     84 -0.005
+0   1.023  22.051     84  0.425
+1  -2.587  21.683     84 -1.093
+2   1.029  20.559     84  0.459
+3   0.273  16.244     84  0.154
+4  -1.814  19.976     84 -0.832
+5  -1.568  16.131     84 -0.891
+6  -0.079  17.311     84 -0.042
+7   2.630  22.793     84  1.058
+8  -2.869  26.437     84 -0.995
+9  -0.688  26.511     84 -0.238
+10 -3.494  42.249     84 -0.758
+11  0.129  25.418     84  0.046
+12 -1.695  21.445     84 -0.725
+13  0.939  16.099     84  0.535
+14 -0.750  19.596     84 -0.351
+15  2.099  23.569     82  0.806
+16  0.082  16.711     82  0.044
+
+=== ASIA: Asian-range breakout (London) — DISC tuning (35 combos) ===
+S1   tf=5,end=300,stop=atr,wmax=None                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  35 pd= 0.41 avgR=-0.0438 se=0.1884 win=40.0
+S1   tf=5,end=300,stop=atr,wmax=1.0                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  30 pd= 0.35 avgR=-0.0820 se=0.2025 win=36.7
+S1   tf=5,end=300,stop=rng,wmax=None                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  35 pd= 0.41 avgR=+0.0938 se=0.1369 win=57.1
+S1   tf=5,end=300,stop=rng,wmax=1.0                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  30 pd= 0.35 avgR=+0.0309 se=0.1438 win=53.3
+S1   tf=5,end=690,stop=atr,wmax=None                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  68 pd= 0.80 avgR=+0.0535 se=0.1378 win=45.6
+S1   tf=5,end=690,stop=atr,wmax=1.0                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  60 pd= 0.71 avgR=+0.0140 se=0.1456 win=43.3
+S1   tf=5,end=690,stop=rng,wmax=None                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  68 pd= 0.80 avgR=+0.0829 se=0.1058 win=52.9
+S1   tf=5,end=690,stop=rng,wmax=1.0                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  60 pd= 0.71 avgR=+0.0173 se=0.1114 win=50.0
+S1   tf=15,end=300,stop=atr,wmax=None                 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  31 pd= 0.36 avgR=+0.0184 se=0.1674 win=45.2
+S1   tf=15,end=300,stop=atr,wmax=1.0                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  26 pd= 0.31 avgR=-0.0923 se=0.1746 win=38.5
+S1   tf=15,end=300,stop=rng,wmax=None                 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  31 pd= 0.36 avgR=+0.1274 se=0.1311 win=51.6
+S1   tf=15,end=300,stop=rng,wmax=1.0                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  26 pd= 0.31 avgR=+0.1120 se=0.1390 win=50.0
+S1   tf=15,end=690,stop=atr,wmax=None                 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  63 pd= 0.74 avgR=+0.0585 se=0.1240 win=46.0
+S1   tf=15,end=690,stop=atr,wmax=1.0                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  55 pd= 0.65 avgR=-0.0338 se=0.1306 win=41.8
+S1   tf=15,end=690,stop=rng,wmax=None                 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  63 pd= 0.74 avgR=+0.0926 se=0.1027 win=54.0
+S1   tf=15,end=690,stop=rng,wmax=1.0                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  55 pd= 0.65 avgR=+0.0420 se=0.1090 win=50.9
+S1   tf=5,start=1140,ws=180,end=690,stop=opp,wmax=None,wmax_atr=2.0,buf=0.05 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=   0 pd= 0.00 avgR=+nan se=nan win=0
+S1   tf=15,start=1140,ws=180,end=690,stop=opp,wmax=None,wmax_atr=2.0,buf=0.05 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=   2 pd= 0.02 avgR=+0.2427 se=1.2580 win=50.0
+S1+  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  66 pd= 0.78 avgR=+0.1038 se=0.0983 win=56.1
+S2a  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  66 pd= 0.78 avgR=+0.1255 se=0.0819 win=62.1
+S2a  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  66 pd= 0.78 avgR=+0.1189 se=0.0780 win=68.2
+S2a  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=0.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  66 pd= 0.78 avgR=+0.1478 se=0.0885 win=62.1
+S2a  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  66 pd= 0.78 avgR=+0.1412 se=0.0849 win=68.2
+S2a  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  66 pd= 0.78 avgR=+0.1038 se=0.0983 win=56.1
+S2a  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=1.0 TP2=2.0 hold=120 be=True stopx=1.0 n=  66 pd= 0.78 avgR=+0.0877 se=0.0966 win=56.1
+S2a  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=1.0 TP2=3.0 hold=120 be=False stopx=1.0 n=  66 pd= 0.78 avgR=+0.1261 se=0.1048 win=56.1
+S2a  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 n=  66 pd= 0.78 avgR=+0.1100 se=0.1032 win=56.1
+S2a  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=1.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  66 pd= 0.78 avgR=+0.1333 se=0.1069 win=56.1
+S2a  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=1.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  66 pd= 0.78 avgR=+0.1225 se=0.1054 win=56.1
+S2a  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  66 pd= 0.78 avgR=+0.1556 se=0.1136 win=56.1
+S2a  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  66 pd= 0.78 avgR=+0.1448 se=0.1122 win=56.1
+S2b  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=1.5 TP2=3.0 hold=60 be=False stopx=1.0 n=  66 pd= 0.78 avgR=+0.1226 se=0.0885 win=48.5
+S2b  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=1.5 TP2=3.0 hold=240 be=False stopx=1.0 n=  66 pd= 0.78 avgR=+0.1581 se=0.1259 win=54.5
+S2c  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=1.5 TP2=3.0 hold=240 be=False stopx=0.67 n=  66 pd= 0.78 avgR=+0.0871 se=0.1581 win=45.5
+S2c  tf=15,end=690,stop=rng,wmax=None,per_dir=True    TP1=1.5 TP2=3.0 hold=240 be=False stopx=1.33 n=  66 pd= 0.78 avgR=+0.1369 se=0.1087 win=56.1
+FROZEN ASIA: tf=15,end=690,stop=rng,wmax=None,per_dir=True | TP1=1.5 TP2=3.0 hold=240 be=False stopx=1.0 | DISC n=66 avgR=+0.1581
+
+=== ASIA: Asian-range breakout (London) — frozen: tf=15,end=690,stop=rng,wmax=None,per_dir=True | TP1=1.5 TP2=3.0 hold=240 be=False stopx=1.0 ===
+label | n | per_day | win | tp1 | tp2 | sl | avgR | se | pf | maxDD | sumR
+DISC | 66 | 0.78 | 54.5 | 22.7 | 7.6 | 28.8 | 0.1581 | 0.1259 | 1.46 | 4.1 | 10.4
+VAL | 85 | 0.97 | 43.5 | 16.5 | 3.5 | 29.4 | 0.0307 | 0.1045 | 1.08 | 6.8 | 2.6
+Y2025 | 252 | 0.98 | 44.8 | 20.6 | 4.0 | 40.9 | -0.017 | 0.0642 | 0.96 | 14.2 | -4.3
+HOLD | 17 | 0.94 | 47.1 | 29.4 | 0.0 | 11.8 | 0.2476 | 0.2224 | 2.01 | 2.5 | 4.2
+STRESS | 85 | 0.99 | 43.5 | 16.5 | 3.5 | 29.4 | 0.0216 | 0.1043 | 1.05 | 7.1 | 1.8
+VAL random control (20 runs): median -0.0030  5-95% [-0.2141, +0.1312]
+checks: {'val>0 & t>=1': False, 'y2025>0': False, 'val-rand>=0.05': False, 'stress>=0': True, 'per_day>=0.5': True} -> FAIL
+monthly: 2025-01:23.0/-0.237 2025-02:21.0/-0.136 2025-03:24.0/-0.035 2025-04:15.0/-0.142 2025-05:20.0/+0.486 2025-06:20.0/-0.222 2025-07:25.0/+0.226 2025-08:20.0/+0.075 2025-09:21.0/+0.201 2025-10:24.0/+0.041 2025-11:17.0/-0.214 2025-12:22.0/-0.318 2026-01:18.0/-0.074 2026-02:12.0/+0.136 2026-03:19.0/+0.423 2026-04:17.0/+0.123 2026-05:20.0/+0.158 2026-06:17.0/+0.097 2026-07:26.0/-0.056 2026-08:22.0/-0.035 2026-09:17.0/+0.248
+
+=== ORB: Opening-range breakout 03:00/08:20/09:30 — DISC tuning (37 combos) ===
+S1   tf=5,sess=LDN,L=15,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  83 pd= 0.98 avgR=-0.1251 se=0.1215 win=37.3
+S1   tf=5,sess=LDN,L=15,stop=rng                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  83 pd= 0.98 avgR=-0.0657 se=0.1230 win=37.3
+S1   tf=5,sess=LDN,L=30,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  81 pd= 0.95 avgR=-0.0515 se=0.1200 win=42.0
+S1   tf=5,sess=LDN,L=30,stop=rng                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  81 pd= 0.95 avgR=-0.1397 se=0.1147 win=37.0
+S1   tf=5,sess=CMX,L=15,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  83 pd= 0.98 avgR=-0.0810 se=0.1246 win=38.6
+S1   tf=5,sess=CMX,L=15,stop=rng                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  83 pd= 0.98 avgR=-0.1911 se=0.1224 win=32.5
+S1   tf=5,sess=CMX,L=30,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  82 pd= 0.96 avgR=-0.0253 se=0.1229 win=40.2
+S1   tf=5,sess=CMX,L=30,stop=rng                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  82 pd= 0.96 avgR=+0.0178 se=0.1247 win=41.5
+S1   tf=5,sess=US,L=15,stop=atr                       TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=-0.0389 se=0.1168 win=42.9
+S1   tf=5,sess=US,L=15,stop=rng                       TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=-0.0374 se=0.1177 win=40.5
+S1   tf=5,sess=US,L=30,stop=atr                       TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  77 pd= 0.91 avgR=-0.1000 se=0.1216 win=40.3
+S1   tf=5,sess=US,L=30,stop=rng                       TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  77 pd= 0.91 avgR=-0.0051 se=0.1200 win=41.6
+S1   tf=5,sess=ALL,L=15,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 241 pd= 2.84 avgR=-0.0576 se=0.0713 win=40.7
+S1   tf=5,sess=ALL,L=15,stop=rng                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 243 pd= 2.86 avgR=-0.1028 se=0.0708 win=36.2
+S1   tf=5,sess=ALL,L=30,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 222 pd= 2.61 avgR=-0.0352 se=0.0727 win=41.4
+S1   tf=5,sess=ALL,L=30,stop=rng                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 224 pd= 2.64 avgR=-0.0177 se=0.0720 win=41.5
+S1   tf=5,sess=US,L=15,stop=opp,ocd=True,wend=720     TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  60 pd= 0.71 avgR=-0.1273 se=0.1309 win=40.0
+S1   tf=5,sess=CMX,L=15,stop=opp,ocd=True,wend=720    TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  67 pd= 0.79 avgR=-0.2921 se=0.1283 win=28.4
+S1+  tf=1,sess=CMX,L=30,stop=rng                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  82 pd= 0.96 avgR=-0.0692 se=0.1263 win=35.4
+S1+  tf=5,sess=CMX,L=30,stop=rng,ocd=True             TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  58 pd= 0.68 avgR=+0.0611 se=0.1474 win=41.4
+S1+  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  58 pd= 0.68 avgR=+0.0909 se=0.1475 win=43.1
+S2a  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  58 pd= 0.68 avgR=+0.0176 se=0.1274 win=39.7
+S2a  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  58 pd= 0.68 avgR=-0.0635 se=0.1052 win=63.8
+S2a  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=0.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  58 pd= 0.68 avgR=+0.0116 se=0.1413 win=32.8
+S2a  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  58 pd= 0.68 avgR=-0.0426 se=0.1142 win=63.8
+S2a  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  58 pd= 0.68 avgR=+0.0909 se=0.1475 win=43.1
+S2a  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=1.0 TP2=2.0 hold=120 be=True stopx=1.0 n=  58 pd= 0.68 avgR=+0.0872 se=0.1407 win=55.2
+S2a  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=1.0 TP2=3.0 hold=120 be=False stopx=1.0 n=  58 pd= 0.68 avgR=+0.0849 se=0.1595 win=36.2
+S2a  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 n=  58 pd= 0.68 avgR=+0.1168 se=0.1524 win=55.2
+S2a  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=1.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  58 pd= 0.68 avgR=+0.0862 se=0.1682 win=44.8
+S2a  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=1.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  58 pd= 0.68 avgR=+0.0599 se=0.1629 win=44.8
+S2a  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  58 pd= 0.68 avgR=+0.0802 se=0.1787 win=44.8
+S2a  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  58 pd= 0.68 avgR=+0.0981 se=0.1756 win=44.8
+S2b  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=1.0 TP2=3.0 hold=60 be=True stopx=1.0 n=  58 pd= 0.68 avgR=+0.1157 se=0.1465 win=55.2
+S2b  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=1.0 TP2=3.0 hold=240 be=True stopx=1.0 n=  58 pd= 0.68 avgR=+0.1110 se=0.1515 win=55.2
+S2c  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=1.0 TP2=3.0 hold=120 be=True stopx=0.67 n=  58 pd= 0.68 avgR=-0.2228 se=0.1341 win=43.1
+S2c  tf=5,sess=CMX,L=30,stop=opp,ocd=True             TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.33 n=  58 pd= 0.68 avgR=+0.0887 se=0.1423 win=55.2
+FROZEN ORB: tf=5,sess=CMX,L=30,stop=opp,ocd=True | TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 | DISC n=58 avgR=+0.1168
+
+=== ORB: Opening-range breakout 03:00/08:20/09:30 — frozen: tf=5,sess=CMX,L=30,stop=opp,ocd=True | TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 ===
+label | n | per_day | win | tp1 | tp2 | sl | avgR | se | pf | maxDD | sumR
+DISC | 58 | 0.68 | 55.2 | 55.2 | 19.0 | 44.8 | 0.1168 | 0.1524 | 1.26 | 6.3 | 6.8
+VAL | 68 | 0.77 | 52.9 | 52.9 | 10.3 | 45.6 | -0.0205 | 0.1256 | 0.96 | 6.7 | -1.4
+Y2025 | 190 | 0.74 | 47.4 | 47.4 | 13.2 | 52.6 | -0.0775 | 0.0807 | 0.86 | 16.7 | -14.7
+HOLD | 13 | 0.72 | 69.2 | 69.2 | 23.1 | 30.8 | 0.369 | 0.3144 | 2.18 | 1.0 | 4.8
+STRESS | 68 | 0.78 | 51.5 | 51.5 | 8.8 | 48.5 | -0.0882 | 0.1238 | 0.83 | 11.1 | -6.0
+VAL random control (20 runs): median -0.0251  5-95% [-0.0751, +0.1785]
+checks: {'val>0 & t>=1': False, 'y2025>0': False, 'val-rand>=0.05': False, 'stress>=0': False, 'per_day>=0.5': True} -> FAIL
+monthly: 2025-01:15.0/-0.551 2025-02:15.0/-0.021 2025-03:12.0/+0.083 2025-04:19.0/-0.154 2025-05:16.0/-0.186 2025-06:14.0/+0.027 2025-07:15.0/+0.442 2025-08:15.0/-0.162 2025-09:17.0/-0.068 2025-10:16.0/+0.048 2025-11:16.0/-0.268 2025-12:20.0/-0.058 2026-01:16.0/+0.085 2026-02:12.0/-0.135 2026-03:15.0/+0.185 2026-04:15.0/+0.284 2026-05:16.0/+0.297 2026-06:19.0/-0.162 2026-07:18.0/+0.011 2026-08:15.0/-0.219 2026-09:13.0/+0.369
+
+=== SESS2: Two-session boxes + H1 EMA50/200 (scout #6) — DISC tuning (29 combos) ===
+S1   tf=5,sess=AB,atrf=True                           TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  11 pd= 0.13 avgR=-0.5311 se=0.2638 win=27.3
+S1   tf=5,sess=AB,atrf=False                          TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  49 pd= 0.58 avgR=-0.1754 se=0.1588 win=32.7
+S1   tf=5,sess=A,atrf=True                            TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=   0 pd= 0.00 avgR=+nan se=nan win=0
+S1   tf=5,sess=A,atrf=False                           TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  16 pd= 0.19 avgR=-0.0035 se=0.2903 win=37.5
+S1   tf=5,sess=B,atrf=True                            TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  11 pd= 0.13 avgR=-0.5311 se=0.2638 win=27.3
+S1   tf=5,sess=B,atrf=False                           TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  33 pd= 0.39 avgR=-0.2588 se=0.1907 win=30.3
+S1   tf=15,sess=AB,atrf=True                          TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  26 pd= 0.31 avgR=+0.0314 se=0.2026 win=42.3
+S1   tf=15,sess=AB,atrf=False                         TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=+0.0191 se=0.1422 win=43.5
+S1   tf=15,sess=A,atrf=True                           TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=   0 pd= 0.00 avgR=+nan se=nan win=0
+S1   tf=15,sess=A,atrf=False                          TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  14 pd= 0.16 avgR=+0.0770 se=0.2283 win=50.0
+S1   tf=15,sess=B,atrf=True                           TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  26 pd= 0.31 avgR=+0.0314 se=0.2026 win=42.3
+S1   tf=15,sess=B,atrf=False                          TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  32 pd= 0.38 avgR=-0.0062 se=0.1805 win=40.6
+S1+  tf=15,sess=AB,atrf=False,trend=False             TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  82 pd= 0.96 avgR=+0.0149 se=0.1101 win=43.9
+S2a  tf=15,sess=AB,atrf=False                         TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=-0.0029 se=0.1224 win=47.8
+S2a  tf=15,sess=AB,atrf=False                         TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  46 pd= 0.54 avgR=-0.1035 se=0.0985 win=60.9
+S2a  tf=15,sess=AB,atrf=False                         TP1=0.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=+0.0391 se=0.1336 win=47.8
+S2a  tf=15,sess=AB,atrf=False                         TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  46 pd= 0.54 avgR=-0.0850 se=0.1051 win=60.9
+S2a  tf=15,sess=AB,atrf=False                         TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=+0.0191 se=0.1422 win=43.5
+S2a  tf=15,sess=AB,atrf=False                         TP1=1.0 TP2=2.0 hold=120 be=True stopx=1.0 n=  46 pd= 0.54 avgR=+0.0296 se=0.1411 win=47.8
+S2a  tf=15,sess=AB,atrf=False                         TP1=1.0 TP2=3.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=+0.0612 se=0.1534 win=43.5
+S2a  tf=15,sess=AB,atrf=False                         TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 n=  46 pd= 0.54 avgR=+0.0716 se=0.1522 win=47.8
+S2a  tf=15,sess=AB,atrf=False                         TP1=1.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=+0.0372 se=0.1567 win=43.5
+S2a  tf=15,sess=AB,atrf=False                         TP1=1.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  46 pd= 0.54 avgR=+0.0537 se=0.1578 win=43.5
+S2a  tf=15,sess=AB,atrf=False                         TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=+0.0793 se=0.1681 win=43.5
+S2a  tf=15,sess=AB,atrf=False                         TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  46 pd= 0.54 avgR=+0.0957 se=0.1691 win=43.5
+S2b  tf=15,sess=AB,atrf=False                         TP1=1.5 TP2=3.0 hold=60 be=True stopx=1.0 n=  46 pd= 0.54 avgR=+0.0797 se=0.1413 win=50.0
+S2b  tf=15,sess=AB,atrf=False                         TP1=1.5 TP2=3.0 hold=240 be=True stopx=1.0 n=  45 pd= 0.53 avgR=+0.0090 se=0.1782 win=40.0
+S2c  tf=15,sess=AB,atrf=False                         TP1=1.5 TP2=3.0 hold=120 be=True stopx=0.67 n=  46 pd= 0.54 avgR=+0.0623 se=0.1942 win=43.5
+S2c  tf=15,sess=AB,atrf=False                         TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.33 n=  46 pd= 0.54 avgR=-0.0510 se=0.1460 win=39.1
+FROZEN SESS2: tf=15,sess=AB,atrf=False | TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 | DISC n=46 avgR=+0.0957
+
+=== SESS2: Two-session boxes + H1 EMA50/200 (scout #6) — frozen: tf=15,sess=AB,atrf=False | TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 ===
+label | n | per_day | win | tp1 | tp2 | sl | avgR | se | pf | maxDD | sumR
+DISC | 46 | 0.54 | 43.5 | 28.3 | 8.7 | 37.0 | 0.0957 | 0.1691 | 1.22 | 4.6 | 4.4
+VAL | 46 | 0.52 | 39.1 | 19.6 | 6.5 | 45.7 | -0.0854 | 0.1562 | 0.83 | 9.1 | -3.9
+Y2025 | 137 | 0.53 | 49.6 | 28.5 | 6.6 | 38.0 | 0.106 | 0.0933 | 1.25 | 8.7 | 14.5
+HOLD | 12 | 0.67 | 58.3 | 41.7 | 16.7 | 25.0 | 0.4668 | 0.3552 | 2.58 | 2.1 | 5.6
+STRESS | 46 | 0.53 | 39.1 | 19.6 | 6.5 | 45.7 | -0.097 | 0.156 | 0.81 | 9.1 | -4.5
+VAL random control (20 runs): median -0.0278  5-95% [-0.2849, +0.2867]
+checks: {'val>0 & t>=1': False, 'y2025>0': True, 'val-rand>=0.05': False, 'stress>=0': False, 'per_day>=0.5': True} -> FAIL
+monthly: 2025-01:4.0/+0.539 2025-02:13.0/-0.190 2025-03:14.0/+0.322 2025-04:7.0/-0.041 2025-05:14.0/-0.476 2025-06:6.0/-0.064 2025-07:13.0/+0.627 2025-08:15.0/+0.201 2025-09:12.0/+0.319 2025-10:14.0/-0.208 2025-11:10.0/+0.360 2025-12:15.0/+0.132 2026-01:11.0/+0.096 2026-02:10.0/+0.028 2026-03:11.0/+0.449 2026-04:14.0/-0.134 2026-05:13.0/-0.281 2026-06:13.0/+0.206 2026-07:8.0/-0.380 2026-08:12.0/+0.008 2026-09:12.0/+0.467
+
+=== DT: Dual Thrust (scout #8) — DISC tuning (28 combos) ===
+S1   tf=5,anchor=D,k=0.2                              TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  70 pd= 0.82 avgR=-0.0415 se=0.1346 win=38.6
+S1   tf=5,anchor=D,k=0.35                             TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  38 pd= 0.45 avgR=-0.0716 se=0.1474 win=39.5
+S1   tf=5,anchor=D,k=0.5                              TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  19 pd= 0.22 avgR=-0.1301 se=0.2587 win=36.8
+S1   tf=5,anchor=L,k=0.2                              TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  42 pd= 0.49 avgR=-0.1694 se=0.1441 win=38.1
+S1   tf=5,anchor=L,k=0.35                             TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  13 pd= 0.15 avgR=+0.0145 se=0.3111 win=53.8
+S1   tf=5,anchor=L,k=0.5                              TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=   6 pd= 0.07 avgR=+0.4103 se=0.5061 win=50.0
+S1   tf=15,anchor=D,k=0.2                             TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  70 pd= 0.82 avgR=+0.0237 se=0.1137 win=50.0
+S1   tf=15,anchor=D,k=0.35                            TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  36 pd= 0.42 avgR=+0.0057 se=0.1665 win=47.2
+S1   tf=15,anchor=D,k=0.5                             TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  17 pd= 0.20 avgR=+0.1102 se=0.2014 win=47.1
+S1   tf=15,anchor=L,k=0.2                             TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  39 pd= 0.46 avgR=-0.0740 se=0.1535 win=43.6
+S1   tf=15,anchor=L,k=0.35                            TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  12 pd= 0.14 avgR=+0.2899 se=0.3202 win=50.0
+S1   tf=15,anchor=L,k=0.5                             TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=   5 pd= 0.06 avgR=+0.2689 se=0.1673 win=40.0
+S2a  tf=15,anchor=D,k=0.2                             TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  70 pd= 0.82 avgR=-0.0033 se=0.0971 win=50.0
+S2a  tf=15,anchor=D,k=0.2                             TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  70 pd= 0.82 avgR=+0.0374 se=0.0952 win=64.3
+S2a  tf=15,anchor=D,k=0.2                             TP1=0.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  70 pd= 0.82 avgR=-0.0030 se=0.1013 win=48.6
+S2a  tf=15,anchor=D,k=0.2                             TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  70 pd= 0.82 avgR=+0.0448 se=0.0994 win=64.3
+S2a  tf=15,anchor=D,k=0.2                             TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  70 pd= 0.82 avgR=+0.0237 se=0.1137 win=50.0
+S2a  tf=15,anchor=D,k=0.2                             TP1=1.0 TP2=2.0 hold=120 be=True stopx=1.0 n=  70 pd= 0.82 avgR=+0.0368 se=0.1132 win=52.9
+S2a  tf=15,anchor=D,k=0.2                             TP1=1.0 TP2=3.0 hold=120 be=False stopx=1.0 n=  70 pd= 0.82 avgR=+0.0240 se=0.1173 win=50.0
+S2a  tf=15,anchor=D,k=0.2                             TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 n=  70 pd= 0.82 avgR=+0.0442 se=0.1170 win=52.9
+S2a  tf=15,anchor=D,k=0.2                             TP1=1.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  70 pd= 0.82 avgR=+0.0118 se=0.1238 win=45.7
+S2a  tf=15,anchor=D,k=0.2                             TP1=1.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  70 pd= 0.82 avgR=+0.0086 se=0.1229 win=45.7
+S2a  tf=15,anchor=D,k=0.2                             TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  70 pd= 0.82 avgR=+0.0121 se=0.1271 win=45.7
+S2a  tf=15,anchor=D,k=0.2                             TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  70 pd= 0.82 avgR=+0.0160 se=0.1266 win=45.7
+S2b  tf=15,anchor=D,k=0.2                             TP1=0.5 TP2=3.0 hold=60 be=True stopx=1.0 n=  70 pd= 0.82 avgR=+0.0142 se=0.0931 win=61.4
+S2b  tf=15,anchor=D,k=0.2                             TP1=0.5 TP2=3.0 hold=240 be=True stopx=1.0 n=  70 pd= 0.82 avgR=+0.0447 se=0.1083 win=65.7
+S2c  tf=15,anchor=D,k=0.2                             TP1=0.5 TP2=3.0 hold=120 be=True stopx=0.67 n=  70 pd= 0.82 avgR=-0.0109 se=0.1004 win=65.7
+S2c  tf=15,anchor=D,k=0.2                             TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.33 n=  70 pd= 0.82 avgR=-0.0138 se=0.0821 win=61.4
+FROZEN DT: tf=15,anchor=D,k=0.2 | TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 | DISC n=70 avgR=+0.0448
+
+=== DT: Dual Thrust (scout #8) — frozen: tf=15,anchor=D,k=0.2 | TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 ===
+label | n | per_day | win | tp1 | tp2 | sl | avgR | se | pf | maxDD | sumR
+DISC | 70 | 0.82 | 64.3 | 61.4 | 7.1 | 30.0 | 0.0448 | 0.0994 | 1.14 | 7.3 | 3.1
+VAL | 80 | 0.91 | 52.5 | 52.5 | 2.5 | 38.8 | -0.1911 | 0.0857 | 0.56 | 16.2 | -15.3
+Y2025 | 241 | 0.93 | 63.1 | 61.4 | 4.1 | 29.9 | -0.0346 | 0.0494 | 0.9 | 17.4 | -8.3
+HOLD | 17 | 0.94 | 76.5 | 76.5 | 0.0 | 17.6 | 0.099 | 0.1464 | 1.5 | 1.0 | 1.7
+STRESS | 80 | 0.93 | 52.5 | 52.5 | 2.5 | 38.8 | -0.2 | 0.0857 | 0.54 | 16.9 | -16.0
+VAL random control (20 runs): median -0.0162  5-95% [-0.1905, +0.1159]
+checks: {'val>0 & t>=1': False, 'y2025>0': False, 'val-rand>=0.05': False, 'stress>=0': False, 'per_day>=0.5': True} -> FAIL
+monthly: 2025-01:16.0/-0.004 2025-02:23.0/-0.064 2025-03:16.0/+0.311 2025-04:19.0/+0.034 2025-05:20.0/-0.064 2025-06:21.0/-0.245 2025-07:23.0/-0.080 2025-08:20.0/-0.060 2025-09:21.0/-0.128 2025-10:20.0/-0.110 2025-11:17.0/+0.293 2025-12:25.0/-0.121 2026-01:19.0/+0.294 2026-02:15.0/-0.154 2026-03:20.0/-0.117 2026-04:16.0/+0.138 2026-05:21.0/-0.143 2026-06:19.0/-0.085 2026-07:23.0/-0.165 2026-08:17.0/-0.404 2026-09:17.0/+0.099
+
+=== PDHL: Prior-day high/low close-beyond — DISC tuning (32 combos) ===
+S1   tf=5,sess=all,htf=False,first=False              TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 202 pd= 2.38 avgR=-0.0092 se=0.0770 win=42.6
+S1   tf=5,sess=all,htf=False,first=True               TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  73 pd= 0.86 avgR=-0.1700 se=0.1266 win=32.9
+S1   tf=5,sess=all,htf=True,first=False               TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 193 pd= 2.27 avgR=-0.0011 se=0.0791 win=43.0
+S1   tf=5,sess=all,htf=True,first=True                TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  69 pd= 0.81 avgR=-0.1677 se=0.1312 win=33.3
+S1   tf=5,sess=act,htf=False,first=False              TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  90 pd= 1.06 avgR=+0.0214 se=0.1179 win=43.3
+S1   tf=5,sess=act,htf=False,first=True               TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  44 pd= 0.52 avgR=-0.0383 se=0.1643 win=40.9
+S1   tf=5,sess=act,htf=True,first=False               TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  86 pd= 1.01 avgR=+0.0124 se=0.1215 win=43.0
+S1   tf=5,sess=act,htf=True,first=True                TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  40 pd= 0.47 avgR=-0.0636 se=0.1747 win=40.0
+S1   tf=15,sess=all,htf=False,first=False             TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 136 pd= 1.60 avgR=+0.2117 se=0.0848 win=53.7
+S1   tf=15,sess=all,htf=False,first=True              TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  72 pd= 0.85 avgR=+0.2541 se=0.1239 win=52.8
+S1   tf=15,sess=all,htf=True,first=False              TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 130 pd= 1.53 avgR=+0.2086 se=0.0874 win=53.8
+S1   tf=15,sess=all,htf=True,first=True               TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  68 pd= 0.80 avgR=+0.2562 se=0.1270 win=52.9
+S1   tf=15,sess=act,htf=False,first=False             TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  59 pd= 0.69 avgR=+0.2349 se=0.1335 win=55.9
+S1   tf=15,sess=act,htf=False,first=True              TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  38 pd= 0.45 avgR=+0.3313 se=0.1661 win=57.9
+S1   tf=15,sess=act,htf=True,first=False              TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  55 pd= 0.65 avgR=+0.2375 se=0.1395 win=56.4
+S1   tf=15,sess=act,htf=True,first=True               TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  34 pd= 0.40 avgR=+0.3470 se=0.1779 win=58.8
+S2a  tf=15,sess=all,htf=True,first=True               TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  68 pd= 0.80 avgR=+0.1887 se=0.1083 win=52.9
+S2a  tf=15,sess=all,htf=True,first=True               TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  68 pd= 0.80 avgR=+0.1146 se=0.0958 win=66.2
+S2a  tf=15,sess=all,htf=True,first=True               TP1=0.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  68 pd= 0.80 avgR=+0.2301 se=0.1184 win=52.9
+S2a  tf=15,sess=all,htf=True,first=True               TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  68 pd= 0.80 avgR=+0.1186 se=0.1013 win=66.2
+S2a  tf=15,sess=all,htf=True,first=True               TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  68 pd= 0.80 avgR=+0.2562 se=0.1270 win=52.9
+S2a  tf=15,sess=all,htf=True,first=True               TP1=1.0 TP2=2.0 hold=120 be=True stopx=1.0 n=  68 pd= 0.80 avgR=+0.2397 se=0.1234 win=57.4
+S2a  tf=15,sess=all,htf=True,first=True               TP1=1.0 TP2=3.0 hold=120 be=False stopx=1.0 n=  68 pd= 0.80 avgR=+0.2976 se=0.1366 win=52.9
+S2a  tf=15,sess=all,htf=True,first=True               TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 n=  68 pd= 0.80 avgR=+0.2461 se=0.1294 win=57.4
+S2a  tf=15,sess=all,htf=True,first=True               TP1=1.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  68 pd= 0.80 avgR=+0.3211 se=0.1408 win=54.4
+S2a  tf=15,sess=all,htf=True,first=True               TP1=1.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  68 pd= 0.80 avgR=+0.3290 se=0.1400 win=54.4
+S2a  tf=15,sess=all,htf=True,first=True               TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  68 pd= 0.80 avgR=+0.3625 se=0.1502 win=54.4
+S2a  tf=15,sess=all,htf=True,first=True               TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  68 pd= 0.80 avgR=+0.3502 se=0.1479 win=54.4
+S2b  tf=15,sess=all,htf=True,first=True               TP1=1.5 TP2=3.0 hold=60 be=False stopx=1.0 n=  68 pd= 0.80 avgR=+0.2876 se=0.1359 win=54.4
+S2b  tf=15,sess=all,htf=True,first=True               TP1=1.5 TP2=3.0 hold=240 be=False stopx=1.0 n=  68 pd= 0.80 avgR=+0.3451 se=0.1612 win=52.9
+S2c  tf=15,sess=all,htf=True,first=True               TP1=1.5 TP2=3.0 hold=120 be=False stopx=0.67 n=  68 pd= 0.80 avgR=+0.1901 se=0.1690 win=45.6
+S2c  tf=15,sess=all,htf=True,first=True               TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.33 n=  68 pd= 0.80 avgR=+0.2481 se=0.1316 win=51.5
+FROZEN PDHL: tf=15,sess=all,htf=True,first=True | TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 | DISC n=68 avgR=+0.3625
+
+=== PDHL: Prior-day high/low close-beyond — frozen: tf=15,sess=all,htf=True,first=True | TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 ===
+label | n | per_day | win | tp1 | tp2 | sl | avgR | se | pf | maxDD | sumR
+DISC | 68 | 0.8 | 54.4 | 42.6 | 14.7 | 36.8 | 0.3625 | 0.1502 | 2.0 | 5.9 | 24.6
+VAL | 75 | 0.85 | 48.0 | 30.7 | 10.7 | 42.7 | 0.1046 | 0.1341 | 1.23 | 5.1 | 7.8
+Y2025 | 216 | 0.84 | 45.8 | 37.0 | 11.1 | 44.9 | 0.1204 | 0.0817 | 1.26 | 17.5 | 26.0
+HOLD | 15 | 0.83 | 40.0 | 20.0 | 0.0 | 40.0 | -0.0865 | 0.2686 | 0.81 | 4.9 | -1.3
+STRESS | 75 | 0.86 | 46.7 | 30.7 | 10.7 | 42.7 | 0.0918 | 0.1341 | 1.2 | 5.1 | 6.9
+VAL random control (20 runs): median +0.0053  5-95% [-0.1000, +0.1724]
+checks: {'val>0 & t>=1': False, 'y2025>0': True, 'val-rand>=0.05': True, 'stress>=0': True, 'per_day>=0.5': True} -> FAIL
+monthly: 2025-01:16.0/+0.231 2025-02:17.0/+0.323 2025-03:17.0/-0.218 2025-04:16.0/+0.835 2025-05:16.0/+0.493 2025-06:19.0/-0.086 2025-07:19.0/-0.201 2025-08:21.0/-0.210 2025-09:21.0/-0.031 2025-10:17.0/+0.148 2025-11:17.0/+0.342 2025-12:20.0/+0.074 2026-01:20.0/+0.763 2026-02:14.0/-0.085 2026-03:17.0/+0.209 2026-04:17.0/+0.413 2026-05:16.0/-0.101 2026-06:18.0/+0.357 2026-07:20.0/+0.097 2026-08:21.0/+0.052 2026-09:15.0/-0.087
+
+=== SQZ: BB-inside-KC squeeze release — DISC tuning (37 combos) ===
+S1   tf=5,dir=mom,sess=all,kcm=1.5                    TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 239 pd= 2.81 avgR=+0.0090 se=0.0716 win=43.5
+S1   tf=5,dir=mom,sess=all,kcm=2.0                    TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 485 pd= 5.71 avgR=-0.0624 se=0.0486 win=40.6
+S1   tf=5,dir=mom,sess=act,kcm=1.5                    TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 112 pd= 1.32 avgR=-0.0456 se=0.1059 win=40.2
+S1   tf=5,dir=mom,sess=act,kcm=2.0                    TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 227 pd= 2.67 avgR=-0.1698 se=0.0689 win=34.4
+S1   tf=5,dir=box,sess=all,kcm=1.5                    TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 162 pd= 1.91 avgR=-0.0765 se=0.0859 win=39.5
+S1   tf=5,dir=box,sess=all,kcm=2.0                    TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 293 pd= 3.45 avgR=-0.1098 se=0.0631 win=37.9
+S1   tf=5,dir=box,sess=act,kcm=1.5                    TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  76 pd= 0.89 avgR=-0.2308 se=0.1217 win=31.6
+S1   tf=5,dir=box,sess=act,kcm=2.0                    TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 136 pd= 1.60 avgR=-0.2659 se=0.0888 win=29.4
+S1   tf=15,dir=mom,sess=all,kcm=1.5                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  86 pd= 1.01 avgR=-0.0037 se=0.0984 win=43.0
+S1   tf=15,dir=mom,sess=all,kcm=2.0                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 168 pd= 1.98 avgR=-0.0544 se=0.0685 win=50.0
+S1   tf=15,dir=mom,sess=act,kcm=1.5                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=+0.0392 se=0.1460 win=47.8
+S1   tf=15,dir=mom,sess=act,kcm=2.0                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  77 pd= 0.91 avgR=-0.1699 se=0.1065 win=37.7
+S1   tf=15,dir=box,sess=all,kcm=1.5                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  57 pd= 0.67 avgR=-0.0062 se=0.1215 win=43.9
+S1   tf=15,dir=box,sess=all,kcm=2.0                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 105 pd= 1.24 avgR=-0.0408 se=0.0920 win=48.6
+S1   tf=15,dir=box,sess=act,kcm=1.5                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  31 pd= 0.36 avgR=-0.0306 se=0.1688 win=45.2
+S1   tf=15,dir=box,sess=act,kcm=2.0                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  48 pd= 0.56 avgR=-0.1410 se=0.1370 win=41.7
+S1   tf=5,dir=mom,sess=all,kcm=1.0,minrun=1           TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  79 pd= 0.93 avgR=-0.1785 se=0.1144 win=30.4
+S1   tf=15,dir=mom,sess=all,kcm=1.0,minrun=1          TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  22 pd= 0.26 avgR=+0.1021 se=0.2229 win=54.5
+S1   tf=5,dir=alorse,sess=all,kcm=1.0                 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 159 pd= 1.87 avgR=-0.0236 se=0.0842 win=42.8
+S1   tf=15,dir=alorse,sess=all,kcm=1.0                TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  50 pd= 0.59 avgR=-0.1580 se=0.1236 win=40.0
+S1+  tf=15,dir=mom,sess=act,kcm=1.5,htf=True          TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  25 pd= 0.29 avgR=-0.1352 se=0.1888 win=40.0
+S2a  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=+0.0413 se=0.1223 win=52.2
+S2a  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  46 pd= 0.54 avgR=+0.0227 se=0.1127 win=65.2
+S2a  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=0.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=+0.0585 se=0.1325 win=50.0
+S2a  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  46 pd= 0.54 avgR=+0.0589 se=0.1251 win=65.2
+S2a  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=+0.0392 se=0.1460 win=47.8
+S2a  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=1.0 TP2=2.0 hold=120 be=True stopx=1.0 n=  46 pd= 0.54 avgR=+0.0165 se=0.1415 win=50.0
+S2a  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=1.0 TP2=3.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=+0.0564 se=0.1552 win=47.8
+S2a  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 n=  46 pd= 0.54 avgR=+0.0527 se=0.1529 win=50.0
+S2a  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=1.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=+0.0408 se=0.1606 win=43.5
+S2a  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=1.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  46 pd= 0.54 avgR=+0.0408 se=0.1606 win=43.5
+S2a  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  46 pd= 0.54 avgR=+0.0580 se=0.1696 win=43.5
+S2a  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  46 pd= 0.54 avgR=+0.0688 se=0.1702 win=43.5
+S2b  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=1.5 TP2=3.0 hold=60 be=True stopx=1.0 n=  46 pd= 0.54 avgR=+0.0092 se=0.1407 win=43.5
+S2b  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=1.5 TP2=3.0 hold=240 be=True stopx=1.0 n=  46 pd= 0.54 avgR=-0.0400 se=0.1863 win=37.0
+S2c  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=1.5 TP2=3.0 hold=120 be=True stopx=0.67 n=  46 pd= 0.54 avgR=+0.0103 se=0.1904 win=41.3
+S2c  tf=15,dir=mom,sess=act,kcm=1.5                   TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.33 n=  46 pd= 0.54 avgR=+0.0085 se=0.1387 win=45.7
+FROZEN SQZ: tf=15,dir=mom,sess=act,kcm=1.5 | TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 | DISC n=46 avgR=+0.0688
+
+=== SQZ: BB-inside-KC squeeze release — frozen: tf=15,dir=mom,sess=act,kcm=1.5 | TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 ===
+label | n | per_day | win | tp1 | tp2 | sl | avgR | se | pf | maxDD | sumR
+DISC | 46 | 0.54 | 43.5 | 23.9 | 10.9 | 39.1 | 0.0688 | 0.1702 | 1.15 | 8.8 | 3.2
+VAL | 46 | 0.52 | 32.6 | 19.6 | 8.7 | 47.8 | -0.1858 | 0.1579 | 0.67 | 8.6 | -8.5
+Y2025 | 111 | 0.43 | 36.9 | 25.2 | 9.0 | 47.7 | -0.0504 | 0.1111 | 0.91 | 16.0 | -5.6
+HOLD | 3 | 0.17 | 33.3 | 33.3 | 33.3 | 66.7 | 0.0513 | 1.0749 | 1.08 | 2.0 | 0.2
+STRESS | 46 | 0.56 | 32.6 | 19.6 | 8.7 | 47.8 | -0.1988 | 0.1576 | 0.65 | 8.7 | -9.1
+VAL random control (20 runs): median +0.0156  5-95% [-0.2291, +0.2730]
+checks: {'val>0 & t>=1': False, 'y2025>0': False, 'val-rand>=0.05': False, 'stress>=0': False, 'per_day>=0.5': True} -> FAIL
+monthly: 2025-01:10.0/-0.080 2025-02:5.0/-0.893 2025-03:9.0/+0.412 2025-04:8.0/-0.101 2025-05:5.0/-0.239 2025-06:9.0/+0.046 2025-07:15.0/-0.426 2025-08:11.0/-0.217 2025-09:6.0/+0.015 2025-10:6.0/+0.583 2025-11:10.0/+0.305 2025-12:17.0/-0.018 2026-01:14.0/+0.270 2026-02:11.0/+0.328 2026-03:8.0/-0.160 2026-04:13.0/-0.226 2026-05:13.0/-0.596 2026-06:8.0/-0.115 2026-07:15.0/+0.210 2026-08:10.0/-0.302 2026-09:3.0/+0.051
+
+=== NR: Inside-bar / NR4 / NR7 breakout — DISC tuning (40 combos) ===
+S1   tf=5,pat=IB,htf=False,sess=all                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=1232 pd=14.49 avgR=-0.0115 se=0.0306 win=42.6
+S1   tf=5,pat=IB,htf=False,sess=act                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 601 pd= 7.07 avgR=-0.0632 se=0.0435 win=39.8
+S1   tf=5,pat=IB,htf=True,sess=all                    TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 859 pd=10.11 avgR=-0.0331 se=0.0366 win=41.1
+S1   tf=5,pat=IB,htf=True,sess=act                    TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 398 pd= 4.68 avgR=-0.0204 se=0.0540 win=40.7
+S1   tf=5,pat=NR4,htf=False,sess=all                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=1598 pd=18.80 avgR=-0.0375 se=0.0268 win=41.5
+S1   tf=5,pat=NR4,htf=False,sess=act                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 812 pd= 9.55 avgR=-0.0899 se=0.0376 win=38.5
+S1   tf=5,pat=NR4,htf=True,sess=all                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=1178 pd=13.86 avgR=-0.0282 se=0.0314 win=42.1
+S1   tf=5,pat=NR4,htf=True,sess=act                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 585 pd= 6.88 avgR=-0.0864 se=0.0441 win=39.1
+S1   tf=5,pat=NR7,htf=False,sess=all                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=1264 pd=14.87 avgR=+0.0194 se=0.0301 win=44.5
+S1   tf=5,pat=NR7,htf=False,sess=act                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 626 pd= 7.36 avgR=-0.0007 se=0.0431 win=42.2
+S1   tf=5,pat=NR7,htf=True,sess=all                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 851 pd=10.01 avgR=+0.0612 se=0.0368 win=46.4
+S1   tf=5,pat=NR7,htf=True,sess=act                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 415 pd= 4.88 avgR=+0.0246 se=0.0531 win=44.3
+S1   tf=15,pat=IB,htf=False,sess=all                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 585 pd= 6.88 avgR=-0.0291 se=0.0379 win=46.2
+S1   tf=15,pat=IB,htf=False,sess=act                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 273 pd= 3.21 avgR=-0.0874 se=0.0550 win=44.7
+S1   tf=15,pat=IB,htf=True,sess=all                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 386 pd= 4.54 avgR=-0.0485 se=0.0462 win=44.8
+S1   tf=15,pat=IB,htf=True,sess=act                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 172 pd= 2.02 avgR=-0.0519 se=0.0701 win=45.3
+S1   tf=15,pat=NR4,htf=False,sess=all                 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 759 pd= 8.93 avgR=+0.0487 se=0.0332 win=49.9
+S1   tf=15,pat=NR4,htf=False,sess=act                 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 366 pd= 4.31 avgR=-0.0166 se=0.0482 win=49.2
+S1   tf=15,pat=NR4,htf=True,sess=all                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 502 pd= 5.91 avgR=+0.0068 se=0.0407 win=47.0
+S1   tf=15,pat=NR4,htf=True,sess=act                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 229 pd= 2.69 avgR=-0.0578 se=0.0618 win=45.9
+S1   tf=15,pat=NR7,htf=False,sess=all                 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 547 pd= 6.44 avgR=-0.0337 se=0.0366 win=46.4
+S1   tf=15,pat=NR7,htf=False,sess=act                 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 244 pd= 2.87 avgR=-0.1285 se=0.0540 win=44.3
+S1   tf=15,pat=NR7,htf=True,sess=all                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 351 pd= 4.13 avgR=-0.0631 se=0.0467 win=44.2
+S1   tf=15,pat=NR7,htf=True,sess=act                  TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 140 pd= 1.65 avgR=-0.1657 se=0.0740 win=40.0
+S2a  tf=5,pat=NR7,htf=True,sess=all                   TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 n= 851 pd=10.01 avgR=+0.0384 se=0.0307 win=44.8
+S2a  tf=5,pat=NR7,htf=True,sess=all                   TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 n= 990 pd=11.65 avgR=+0.0140 se=0.0250 win=67.8
+S2a  tf=5,pat=NR7,htf=True,sess=all                   TP1=0.5 TP2=3.0 hold=120 be=False stopx=1.0 n= 802 pd= 9.44 avgR=+0.0514 se=0.0346 win=41.6
+S2a  tf=5,pat=NR7,htf=True,sess=all                   TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 n= 953 pd=11.21 avgR=+0.0239 se=0.0267 win=68.3
+S2a  tf=5,pat=NR7,htf=True,sess=all                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 851 pd=10.01 avgR=+0.0612 se=0.0368 win=46.4
+S2a  tf=5,pat=NR7,htf=True,sess=all                   TP1=1.0 TP2=2.0 hold=120 be=True stopx=1.0 n= 891 pd=10.48 avgR=+0.0594 se=0.0347 win=53.8
+S2a  tf=5,pat=NR7,htf=True,sess=all                   TP1=1.0 TP2=3.0 hold=120 be=False stopx=1.0 n= 802 pd= 9.44 avgR=+0.0710 se=0.0405 win=43.8
+S2a  tf=5,pat=NR7,htf=True,sess=all                   TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 n= 849 pd= 9.99 avgR=+0.0750 se=0.0373 win=54.2
+S2a  tf=5,pat=NR7,htf=True,sess=all                   TP1=1.5 TP2=2.0 hold=120 be=False stopx=1.0 n= 851 pd=10.01 avgR=+0.0634 se=0.0415 win=44.9
+S2a  tf=5,pat=NR7,htf=True,sess=all                   TP1=1.5 TP2=2.0 hold=120 be=True stopx=1.0 n= 857 pd=10.08 avgR=+0.0652 se=0.0411 win=44.9
+S2a  tf=5,pat=NR7,htf=True,sess=all                   TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 n= 802 pd= 9.44 avgR=+0.0751 se=0.0452 win=44.9
+S2a  tf=5,pat=NR7,htf=True,sess=all                   TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 n= 815 pd= 9.59 avgR=+0.0808 se=0.0443 win=44.8
+S2b  tf=5,pat=NR7,htf=True,sess=all                   TP1=1.5 TP2=3.0 hold=60 be=True stopx=1.0 n= 942 pd=11.08 avgR=+0.0425 se=0.0368 win=45.3
+S2b  tf=5,pat=NR7,htf=True,sess=all                   TP1=1.5 TP2=3.0 hold=240 be=True stopx=1.0 n= 732 pd= 8.61 avgR=+0.0825 se=0.0489 win=44.3
+S2c  tf=5,pat=NR7,htf=True,sess=all                   TP1=1.5 TP2=3.0 hold=240 be=True stopx=0.67 n= 957 pd=11.26 avgR=+0.0651 se=0.0431 win=43.7
+S2c  tf=5,pat=NR7,htf=True,sess=all                   TP1=1.5 TP2=3.0 hold=240 be=True stopx=1.33 n= 619 pd= 7.28 avgR=+0.0814 se=0.0504 win=45.9
+FROZEN NR: tf=5,pat=NR7,htf=True,sess=all | TP1=1.5 TP2=3.0 hold=240 be=True stopx=1.0 | DISC n=732 avgR=+0.0825
+
+=== NR: Inside-bar / NR4 / NR7 breakout — frozen: tf=5,pat=NR7,htf=True,sess=all | TP1=1.5 TP2=3.0 hold=240 be=True stopx=1.0 ===
+label | n | per_day | win | tp1 | tp2 | sl | avgR | se | pf | maxDD | sumR
+DISC | 732 | 8.61 | 44.3 | 40.8 | 19.3 | 54.5 | 0.0825 | 0.0489 | 1.15 | 27.1 | 60.4
+VAL | 804 | 9.14 | 37.1 | 34.7 | 15.4 | 60.9 | -0.0995 | 0.0445 | 0.84 | 83.7 | -80.0
+Y2025 | 2292 | 8.88 | 40.9 | 37.5 | 16.0 | 57.2 | -0.055 | 0.0264 | 0.91 | 150.3 | -126.1
+HOLD | 149 | 8.28 | 44.3 | 43.0 | 16.1 | 54.4 | 0.0546 | 0.1052 | 1.1 | 17.9 | 8.1
+STRESS | 809 | 9.19 | 36.6 | 34.4 | 15.1 | 61.3 | -0.1274 | 0.0442 | 0.8 | 106.7 | -103.0
+VAL random control (20 runs): median -0.0515  5-95% [-0.0859, +0.0011]
+checks: {'val>0 & t>=1': False, 'y2025>0': False, 'val-rand>=0.05': False, 'stress>=0': False, 'per_day>=0.5': True} -> FAIL
+monthly: 2025-01:181.0/-0.150 2025-02:176.0/+0.000 2025-03:193.0/+0.044 2025-04:194.0/-0.114 2025-05:181.0/-0.083 2025-06:189.0/-0.127 2025-07:224.0/-0.053 2025-08:192.0/-0.163 2025-09:190.0/-0.029 2025-10:195.0/+0.184 2025-11:176.0/-0.117 2025-12:201.0/-0.064 2026-01:174.0/+0.015 2026-02:178.0/+0.007 2026-03:195.0/+0.166 2026-04:185.0/+0.131 2026-05:198.0/-0.103 2026-06:203.0/+0.013 2026-07:203.0/-0.187 2026-08:200.0/-0.122 2026-09:149.0/+0.055
+
+=== DRIFT: Time-of-day drift (DISC-fitted hours) — DISC tuning (26 combos) ===
+S1   k=1,score=t                                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=+0.0475 se=0.1048 win=51.2
+S1   k=1,score=mean                                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=+0.0154 se=0.1096 win=45.2
+S1   k=2,score=t                                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 168 pd= 1.98 avgR=+0.0352 se=0.0757 win=51.2
+S1   k=2,score=mean                                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 151 pd= 1.78 avgR=+0.0269 se=0.0856 win=46.4
+S1   k=3,score=t                                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 195 pd= 2.29 avgR=+0.0230 se=0.0711 win=50.8
+S1   k=3,score=mean                                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 190 pd= 2.24 avgR=+0.0192 se=0.0736 win=48.4
+S1   k=4,score=t                                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 258 pd= 3.04 avgR=+0.1153 se=0.0586 win=52.3
+S1   k=4,score=mean                                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 274 pd= 3.22 avgR=+0.0279 se=0.0602 win=49.3
+S1   k=6,score=t                                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 377 pd= 4.44 avgR=+0.1030 se=0.0495 win=53.6
+S1   k=6,score=mean                                   TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 441 pd= 5.19 avgR=+0.0650 se=0.0458 win=49.9
+S2a  k=4,score=t                                      TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 n= 258 pd= 3.04 avgR=+0.0622 se=0.0504 win=55.8
+S2a  k=4,score=t                                      TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 n= 276 pd= 3.25 avgR=+0.0348 se=0.0456 win=65.6
+S2a  k=4,score=t                                      TP1=0.5 TP2=3.0 hold=120 be=False stopx=1.0 n= 255 pd= 3.00 avgR=+0.0642 se=0.0533 win=54.1
+S2a  k=4,score=t                                      TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 n= 272 pd= 3.20 avgR=+0.0455 se=0.0487 win=65.1
+S2a  k=4,score=t                                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 258 pd= 3.04 avgR=+0.1153 se=0.0586 win=52.3
+S2a  k=4,score=t                                      TP1=1.0 TP2=2.0 hold=120 be=True stopx=1.0 n= 261 pd= 3.07 avgR=+0.1109 se=0.0569 win=54.0
+S2a  k=4,score=t                                      TP1=1.0 TP2=3.0 hold=120 be=False stopx=1.0 n= 255 pd= 3.00 avgR=+0.1137 se=0.0615 win=51.4
+S2a  k=4,score=t                                      TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 n= 258 pd= 3.04 avgR=+0.1096 se=0.0590 win=53.5
+S2a  k=4,score=t                                      TP1=1.5 TP2=2.0 hold=120 be=False stopx=1.0 n= 258 pd= 3.04 avgR=+0.1238 se=0.0647 win=48.8
+S2a  k=4,score=t                                      TP1=1.5 TP2=2.0 hold=120 be=True stopx=1.0 n= 258 pd= 3.04 avgR=+0.1205 se=0.0647 win=48.4
+S2a  k=4,score=t                                      TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 n= 255 pd= 3.00 avgR=+0.1218 se=0.0676 win=47.8
+S2a  k=4,score=t                                      TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 n= 255 pd= 3.00 avgR=+0.1174 se=0.0673 win=47.5
+S2b  k=4,score=t                                      TP1=1.5 TP2=2.0 hold=60 be=False stopx=1.0 n= 279 pd= 3.28 avgR=+0.0635 se=0.0510 win=51.3
+S2b  k=4,score=t                                      TP1=1.5 TP2=2.0 hold=240 be=False stopx=1.0 n= 216 pd= 2.54 avgR=+0.1031 se=0.0833 win=45.8
+S2c  k=4,score=t                                      TP1=1.5 TP2=2.0 hold=120 be=False stopx=0.67 n= 278 pd= 3.27 avgR=+0.1568 se=0.0746 win=46.0
+S2c  k=4,score=t                                      TP1=1.5 TP2=2.0 hold=120 be=False stopx=1.33 n= 254 pd= 2.99 avgR=+0.0619 se=0.0567 win=46.9
+FROZEN DRIFT: k=4,score=t | TP1=1.5 TP2=2.0 hold=120 be=False stopx=0.67 | DISC n=278 avgR=+0.1568
+
+=== DRIFT: Time-of-day drift (DISC-fitted hours) — frozen: k=4,score=t | TP1=1.5 TP2=2.0 hold=120 be=False stopx=0.67 ===
+label | n | per_day | win | tp1 | tp2 | sl | avgR | se | pf | maxDD | sumR
+DISC | 278 | 3.27 | 46.0 | 42.4 | 30.9 | 49.6 | 0.1568 | 0.0746 | 1.31 | 15.5 | 43.6
+VAL | 286 | 3.25 | 40.6 | 33.6 | 21.7 | 59.8 | -0.0735 | 0.069 | 0.87 | 29.2 | -21.0
+Y2025 | 861 | 3.34 | 38.9 | 33.7 | 23.7 | 61.1 | -0.0812 | 0.0405 | 0.86 | 80.6 | -69.9
+HOLD | 58 | 3.22 | 43.1 | 39.7 | 29.3 | 58.6 | 0.0662 | 0.1683 | 1.11 | 10.2 | 3.8
+STRESS | 287 | 3.3 | 40.8 | 33.8 | 21.6 | 59.9 | -0.086 | 0.0687 | 0.85 | 32.2 | -24.7
+VAL random control (20 runs): median -0.0502  5-95% [-0.1517, +0.0440]
+checks: {'val>0 & t>=1': False, 'y2025>0': False, 'val-rand>=0.05': False, 'stress>=0': False, 'per_day>=0.5': True} -> FAIL
+monthly: 2025-01:79.0/-0.322 2025-02:66.0/-0.129 2025-03:69.0/-0.149 2025-04:66.0/+0.119 2025-05:71.0/+0.054 2025-06:72.0/+0.102 2025-07:76.0/-0.148 2025-08:73.0/+0.150 2025-09:74.0/-0.008 2025-10:75.0/-0.195 2025-11:68.0/-0.257 2025-12:72.0/-0.163 2026-01:71.0/-0.125 2026-02:65.0/+0.105 2026-03:74.0/+0.312 2026-04:68.0/+0.331 2026-05:69.0/-0.003 2026-06:74.0/-0.201 2026-07:75.0/-0.045 2026-08:68.0/-0.038 2026-09:58.0/+0.066
+
+=== NEWS: 08:30/10:00 data-release momentum — DISC tuning (40 combos) ===
+S1   times=A,tf=1,x=0.0,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=-0.2445 se=0.1164 win=28.6
+S1   times=A,tf=1,x=0.0,stop=bar                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=-0.0833 se=0.1212 win=33.3
+S1   times=A,tf=1,x=0.75,stop=atr                     TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  43 pd= 0.51 avgR=-0.3070 se=0.1617 win=27.9
+S1   times=A,tf=1,x=0.75,stop=bar                     TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  43 pd= 0.51 avgR=-0.0482 se=0.1657 win=34.9
+S1   times=A,tf=1,x=1.5,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  22 pd= 0.26 avgR=-0.2777 se=0.2465 win=31.8
+S1   times=A,tf=1,x=1.5,stop=bar                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  22 pd= 0.26 avgR=-0.0469 se=0.2436 win=36.4
+S1   times=A,tf=5,x=0.0,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=+0.0975 se=0.1267 win=41.7
+S1   times=A,tf=5,x=0.0,stop=bar                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=+0.1264 se=0.1249 win=45.2
+S1   times=A,tf=5,x=0.75,stop=atr                     TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  38 pd= 0.45 avgR=-0.0780 se=0.1829 win=36.8
+S1   times=A,tf=5,x=0.75,stop=bar                     TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  38 pd= 0.45 avgR=-0.0558 se=0.1695 win=42.1
+S1   times=A,tf=5,x=1.5,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  13 pd= 0.15 avgR=+0.0778 se=0.3323 win=46.2
+S1   times=A,tf=5,x=1.5,stop=bar                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  13 pd= 0.15 avgR=+0.1040 se=0.2146 win=53.8
+S1   times=B,tf=1,x=0.0,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 167 pd= 1.96 avgR=-0.2490 se=0.0822 win=28.1
+S1   times=B,tf=1,x=0.0,stop=bar                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 166 pd= 1.95 avgR=-0.1638 se=0.0840 win=31.9
+S1   times=B,tf=1,x=0.75,stop=atr                     TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  81 pd= 0.95 avgR=-0.2252 se=0.1223 win=30.9
+S1   times=B,tf=1,x=0.75,stop=bar                     TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  81 pd= 0.95 avgR=-0.1085 se=0.1196 win=34.6
+S1   times=B,tf=1,x=1.5,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  28 pd= 0.33 avgR=-0.2584 se=0.2195 win=32.1
+S1   times=B,tf=1,x=1.5,stop=bar                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  28 pd= 0.33 avgR=-0.1231 se=0.2103 win=35.7
+S1   times=B,tf=5,x=0.0,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 163 pd= 1.92 avgR=+0.0057 se=0.0880 win=39.3
+S1   times=B,tf=5,x=0.0,stop=bar                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 159 pd= 1.87 avgR=+0.0230 se=0.0880 win=41.5
+S1   times=B,tf=5,x=0.75,stop=atr                     TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  70 pd= 0.82 avgR=-0.1231 se=0.1327 win=34.3
+S1   times=B,tf=5,x=0.75,stop=bar                     TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  67 pd= 0.79 avgR=-0.2110 se=0.1217 win=34.3
+S1   times=B,tf=5,x=1.5,stop=atr                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  21 pd= 0.25 avgR=+0.1887 se=0.2607 win=52.4
+S1   times=B,tf=5,x=1.5,stop=bar                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  21 pd= 0.25 avgR=+0.0556 se=0.1980 win=52.4
+S2a  times=A,tf=5,x=0.0,stop=bar                      TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=+0.1385 se=0.1012 win=44.0
+S2a  times=A,tf=5,x=0.0,stop=bar                      TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  84 pd= 0.99 avgR=+0.1560 se=0.0874 win=73.8
+S2a  times=A,tf=5,x=0.0,stop=bar                      TP1=0.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=+0.1175 se=0.1132 win=36.9
+S2a  times=A,tf=5,x=0.0,stop=bar                      TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  84 pd= 0.99 avgR=+0.1215 se=0.0912 win=73.8
+S2a  times=A,tf=5,x=0.0,stop=bar                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=+0.1264 se=0.1249 win=45.2
+S2a  times=A,tf=5,x=0.0,stop=bar                      TP1=1.0 TP2=2.0 hold=120 be=True stopx=1.0 n=  84 pd= 0.99 avgR=+0.1382 se=0.1214 win=54.8
+S2a  times=A,tf=5,x=0.0,stop=bar                      TP1=1.0 TP2=3.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=+0.1054 se=0.1343 win=38.1
+S2a  times=A,tf=5,x=0.0,stop=bar                      TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 n=  84 pd= 0.99 avgR=+0.0928 se=0.1242 win=54.8
+S2a  times=A,tf=5,x=0.0,stop=bar                      TP1=1.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=+0.1462 se=0.1417 win=45.2
+S2a  times=A,tf=5,x=0.0,stop=bar                      TP1=1.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  84 pd= 0.99 avgR=+0.1431 se=0.1400 win=45.2
+S2a  times=A,tf=5,x=0.0,stop=bar                      TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  84 pd= 0.99 avgR=+0.1251 se=0.1497 win=45.2
+S2a  times=A,tf=5,x=0.0,stop=bar                      TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  84 pd= 0.99 avgR=+0.1095 se=0.1434 win=45.2
+S2b  times=A,tf=5,x=0.0,stop=bar                      TP1=0.5 TP2=2.0 hold=60 be=True stopx=1.0 n=  84 pd= 0.99 avgR=+0.1177 se=0.0851 win=72.6
+S2b  times=A,tf=5,x=0.0,stop=bar                      TP1=0.5 TP2=2.0 hold=240 be=True stopx=1.0 n=  84 pd= 0.99 avgR=+0.1460 se=0.0880 win=73.8
+S2c  times=A,tf=5,x=0.0,stop=bar                      TP1=0.5 TP2=2.0 hold=120 be=True stopx=0.67 n=  84 pd= 0.99 avgR=-0.0585 se=0.0848 win=65.5
+S2c  times=A,tf=5,x=0.0,stop=bar                      TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.33 n=  84 pd= 0.99 avgR=+0.0786 se=0.0846 win=71.4
+FROZEN NEWS: times=A,tf=5,x=0.0,stop=bar | TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 | DISC n=84 avgR=+0.1560
+
+=== NEWS: 08:30/10:00 data-release momentum — frozen: times=A,tf=5,x=0.0,stop=bar | TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 ===
+label | n | per_day | win | tp1 | tp2 | sl | avgR | se | pf | maxDD | sumR
+DISC | 84 | 0.99 | 73.8 | 73.8 | 23.8 | 25.0 | 0.156 | 0.0874 | 1.6 | 4.1 | 13.1
+VAL | 86 | 0.98 | 66.3 | 66.3 | 16.3 | 33.7 | -0.0252 | 0.0862 | 0.93 | 9.0 | -2.2
+Y2025 | 257 | 1.0 | 68.9 | 68.9 | 17.1 | 31.1 | 0.002 | 0.0489 | 1.01 | 16.4 | 0.5
+HOLD | 17 | 0.94 | 52.9 | 52.9 | 17.6 | 47.1 | -0.1882 | 0.2167 | 0.62 | 4.7 | -3.2
+STRESS | 86 | 0.99 | 65.1 | 65.1 | 15.1 | 34.9 | -0.0655 | 0.0861 | 0.82 | 9.3 | -5.6
+VAL random control (20 runs): median -0.0182  5-95% [-0.1987, +0.0706]
+checks: {'val>0 & t>=1': False, 'y2025>0': True, 'val-rand>=0.05': False, 'stress>=0': False, 'per_day>=0.5': True} -> FAIL
+monthly: 2025-01:22.0/-0.247 2025-02:20.0/-0.214 2025-03:21.0/-0.057 2025-04:21.0/+0.402 2025-05:22.0/-0.265 2025-06:21.0/-0.343 2025-07:23.0/-0.001 2025-08:21.0/+0.094 2025-09:22.0/+0.190 2025-10:23.0/+0.094 2025-11:19.0/+0.129 2025-12:22.0/+0.241 2026-01:21.0/+0.343 2026-02:20.0/+0.103 2026-03:22.0/+0.114 2026-04:21.0/+0.063 2026-05:21.0/-0.040 2026-06:22.0/+0.085 2026-07:23.0/+0.017 2026-08:20.0/-0.179 2026-09:17.0/-0.188
+
+=== DON: Donchian breakout + H1 EMA filter — DISC tuning (40 combos) ===
+S1   tf=5,N=20,htf=0,sess=all                         TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=1074 pd=12.64 avgR=-0.0990 se=0.0325 win=38.3
+S1   tf=5,N=20,htf=0,sess=act                         TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 504 pd= 5.93 avgR=-0.1816 se=0.0466 win=34.1
+S1   tf=5,N=20,htf=50,sess=all                        TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 626 pd= 7.36 avgR=-0.0773 se=0.0428 win=40.3
+S1   tf=5,N=20,htf=50,sess=act                        TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 298 pd= 3.51 avgR=-0.1296 se=0.0606 win=38.3
+S1   tf=5,N=20,htf=200,sess=all                       TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 602 pd= 7.08 avgR=-0.0744 se=0.0439 win=39.9
+S1   tf=5,N=20,htf=200,sess=act                       TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 283 pd= 3.33 avgR=-0.1315 se=0.0632 win=37.1
+S1   tf=5,N=55,htf=0,sess=all                         TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 625 pd= 7.35 avgR=-0.1057 se=0.0431 win=37.8
+S1   tf=5,N=55,htf=0,sess=act                         TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 311 pd= 3.66 avgR=-0.2187 se=0.0574 win=32.2
+S1   tf=5,N=55,htf=50,sess=all                        TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 425 pd= 5.00 avgR=-0.0717 se=0.0526 win=39.3
+S1   tf=5,N=55,htf=50,sess=act                        TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 211 pd= 2.48 avgR=-0.1460 se=0.0705 win=36.0
+S1   tf=5,N=55,htf=200,sess=all                       TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 380 pd= 4.47 avgR=-0.0738 se=0.0562 win=38.7
+S1   tf=5,N=55,htf=200,sess=act                       TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 187 pd= 2.20 avgR=-0.1338 se=0.0776 win=35.8
+S1   tf=15,N=20,htf=0,sess=all                        TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 395 pd= 4.65 avgR=-0.0169 se=0.0482 win=47.1
+S1   tf=15,N=20,htf=0,sess=act                        TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 199 pd= 2.34 avgR=-0.0771 se=0.0662 win=43.7
+S1   tf=15,N=20,htf=50,sess=all                       TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 280 pd= 3.29 avgR=+0.0286 se=0.0585 win=48.9
+S1   tf=15,N=20,htf=50,sess=act                       TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 136 pd= 1.60 avgR=+0.0078 se=0.0808 win=49.3
+S1   tf=15,N=20,htf=200,sess=all                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 242 pd= 2.85 avgR=+0.0350 se=0.0630 win=48.3
+S1   tf=15,N=20,htf=200,sess=act                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 117 pd= 1.38 avgR=+0.0254 se=0.0856 win=48.7
+S1   tf=15,N=55,htf=0,sess=all                        TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 210 pd= 2.47 avgR=+0.0298 se=0.0679 win=46.2
+S1   tf=15,N=55,htf=0,sess=act                        TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 101 pd= 1.19 avgR=+0.0243 se=0.0965 win=44.6
+S1   tf=15,N=55,htf=50,sess=all                       TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 181 pd= 2.13 avgR=+0.0532 se=0.0741 win=47.5
+S1   tf=15,N=55,htf=50,sess=act                       TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  88 pd= 1.04 avgR=+0.0177 se=0.1039 win=45.5
+S1   tf=15,N=55,htf=200,sess=all                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 152 pd= 1.79 avgR=+0.0505 se=0.0808 win=45.4
+S1   tf=15,N=55,htf=200,sess=act                      TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  68 pd= 0.80 avgR=-0.0051 se=0.1150 win=42.6
+S2a  tf=15,N=55,htf=50,sess=all                       TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 n= 181 pd= 2.13 avgR=+0.0435 se=0.0622 win=49.2
+S2a  tf=15,N=55,htf=50,sess=all                       TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 n= 196 pd= 2.31 avgR=+0.0649 se=0.0549 win=66.8
+S2a  tf=15,N=55,htf=50,sess=all                       TP1=0.5 TP2=3.0 hold=120 be=False stopx=1.0 n= 173 pd= 2.04 avgR=+0.0166 se=0.0661 win=48.6
+S2a  tf=15,N=55,htf=50,sess=all                       TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 n= 189 pd= 2.22 avgR=+0.0228 se=0.0558 win=66.1
+S2a  tf=15,N=55,htf=50,sess=all                       TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 181 pd= 2.13 avgR=+0.0532 se=0.0741 win=47.5
+S2a  tf=15,N=55,htf=50,sess=all                       TP1=1.0 TP2=2.0 hold=120 be=True stopx=1.0 n= 182 pd= 2.14 avgR=+0.0830 se=0.0734 win=51.6
+S2a  tf=15,N=55,htf=50,sess=all                       TP1=1.0 TP2=3.0 hold=120 be=False stopx=1.0 n= 173 pd= 2.04 avgR=+0.0293 se=0.0771 win=46.8
+S2a  tf=15,N=55,htf=50,sess=all                       TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 n= 173 pd= 2.04 avgR=+0.0467 se=0.0752 win=50.9
+S2a  tf=15,N=55,htf=50,sess=all                       TP1=1.5 TP2=2.0 hold=120 be=False stopx=1.0 n= 181 pd= 2.13 avgR=+0.0548 se=0.0824 win=45.3
+S2a  tf=15,N=55,htf=50,sess=all                       TP1=1.5 TP2=2.0 hold=120 be=True stopx=1.0 n= 181 pd= 2.13 avgR=+0.0526 se=0.0821 win=45.3
+S2a  tf=15,N=55,htf=50,sess=all                       TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 n= 173 pd= 2.04 avgR=+0.0320 se=0.0851 win=44.5
+S2a  tf=15,N=55,htf=50,sess=all                       TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 n= 173 pd= 2.04 avgR=+0.0174 se=0.0839 win=44.5
+S2b  tf=15,N=55,htf=50,sess=all                       TP1=1.0 TP2=2.0 hold=60 be=True stopx=1.0 n= 198 pd= 2.33 avgR=+0.0226 se=0.0629 win=48.0
+S2b  tf=15,N=55,htf=50,sess=all                       TP1=1.0 TP2=2.0 hold=240 be=True stopx=1.0 n= 169 pd= 1.99 avgR=+0.0836 se=0.0799 win=54.4
+S2c  tf=15,N=55,htf=50,sess=all                       TP1=1.0 TP2=2.0 hold=240 be=True stopx=0.67 n= 197 pd= 2.32 avgR=+0.0064 se=0.0752 win=51.3
+S2c  tf=15,N=55,htf=50,sess=all                       TP1=1.0 TP2=2.0 hold=240 be=True stopx=1.33 n= 154 pd= 1.81 avgR=+0.0194 se=0.0788 win=51.3
+FROZEN DON: tf=15,N=55,htf=50,sess=all | TP1=1.0 TP2=2.0 hold=240 be=True stopx=1.0 | DISC n=169 avgR=+0.0836
+
+=== DON: Donchian breakout + H1 EMA filter — frozen: tf=15,N=55,htf=50,sess=all | TP1=1.0 TP2=2.0 hold=240 be=True stopx=1.0 ===
+label | n | per_day | win | tp1 | tp2 | sl | avgR | se | pf | maxDD | sumR
+DISC | 169 | 1.99 | 54.4 | 49.1 | 23.1 | 42.6 | 0.0836 | 0.0799 | 1.19 | 14.1 | 14.1
+VAL | 197 | 2.24 | 51.3 | 48.7 | 20.3 | 42.6 | 0.0359 | 0.0728 | 1.08 | 11.8 | 7.1
+Y2025 | 580 | 2.25 | 52.9 | 49.3 | 19.8 | 43.1 | 0.0196 | 0.0423 | 1.04 | 22.1 | 11.3
+HOLD | 33 | 1.83 | 60.6 | 57.6 | 36.4 | 33.3 | 0.2967 | 0.1891 | 1.81 | 3.3 | 9.8
+STRESS | 197 | 2.26 | 51.3 | 48.7 | 20.3 | 42.6 | 0.0269 | 0.0728 | 1.06 | 12.0 | 5.3
+VAL random control (20 runs): median -0.0165  5-95% [-0.0921, +0.1237]
+checks: {'val>0 & t>=1': False, 'y2025>0': True, 'val-rand>=0.05': True, 'stress>=0': True, 'per_day>=0.5': True} -> FAIL
+monthly: 2025-01:51.0/-0.204 2025-02:45.0/-0.146 2025-03:49.0/+0.040 2025-04:43.0/+0.213 2025-05:58.0/+0.029 2025-06:47.0/-0.000 2025-07:50.0/+0.133 2025-08:40.0/-0.097 2025-09:56.0/+0.091 2025-10:52.0/+0.151 2025-11:44.0/-0.122 2025-12:45.0/+0.115 2026-01:48.0/+0.372 2026-02:37.0/-0.094 2026-03:39.0/+0.065 2026-04:45.0/-0.062 2026-05:47.0/+0.000 2026-06:56.0/+0.124 2026-07:44.0/-0.018 2026-08:50.0/+0.018 2026-09:33.0/+0.297
+
+=== DCADX: Donchian-30 + ADX/DI/EMA50 (scout #11) — DISC tuning (24 combos) ===
+S1   tf=1,adx=25,cross=False                          TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=2476 pd=29.13 avgR=-0.1661 se=0.0219 win=33.7
+S1   tf=1,adx=25,cross=True                           TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=2047 pd=24.08 avgR=-0.1599 se=0.0243 win=34.0
+S1   tf=1,adx=30,cross=False                          TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=1600 pd=18.82 avgR=-0.1362 se=0.0278 win=34.9
+S1   tf=1,adx=30,cross=True                           TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=1315 pd=15.47 avgR=-0.1399 se=0.0307 win=34.9
+S1   tf=5,adx=25,cross=False                          TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 488 pd= 5.74 avgR=-0.1000 se=0.0489 win=38.3
+S1   tf=5,adx=25,cross=True                           TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 411 pd= 4.84 avgR=-0.1239 se=0.0528 win=37.5
+S1   tf=5,adx=30,cross=False                          TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 330 pd= 3.88 avgR=-0.0597 se=0.0598 win=40.9
+S1   tf=5,adx=30,cross=True                           TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 274 pd= 3.22 avgR=-0.0868 se=0.0646 win=39.1
+S2a  tf=5,adx=30,cross=False                          TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 n= 330 pd= 3.88 avgR=-0.0467 se=0.0498 win=37.9
+S2a  tf=5,adx=30,cross=False                          TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 n= 372 pd= 4.38 avgR=-0.0417 se=0.0417 win=63.7
+S2a  tf=5,adx=30,cross=False                          TP1=0.5 TP2=3.0 hold=120 be=False stopx=1.0 n= 292 pd= 3.44 avgR=-0.0260 se=0.0594 win=33.9
+S2a  tf=5,adx=30,cross=False                          TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 n= 337 pd= 3.96 avgR=+0.0012 se=0.0485 win=63.8
+S2a  tf=5,adx=30,cross=False                          TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 330 pd= 3.88 avgR=-0.0597 se=0.0598 win=40.9
+S2a  tf=5,adx=30,cross=False                          TP1=1.0 TP2=2.0 hold=120 be=True stopx=1.0 n= 335 pd= 3.94 avgR=-0.0588 se=0.0580 win=46.3
+S2a  tf=5,adx=30,cross=False                          TP1=1.0 TP2=3.0 hold=120 be=False stopx=1.0 n= 292 pd= 3.44 avgR=-0.0427 se=0.0694 win=36.6
+S2a  tf=5,adx=30,cross=False                          TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 n= 299 pd= 3.52 avgR=-0.0261 se=0.0667 win=45.8
+S2a  tf=5,adx=30,cross=False                          TP1=1.5 TP2=2.0 hold=120 be=False stopx=1.0 n= 330 pd= 3.88 avgR=-0.0355 se=0.0669 win=40.3
+S2a  tf=5,adx=30,cross=False                          TP1=1.5 TP2=2.0 hold=120 be=True stopx=1.0 n= 330 pd= 3.88 avgR=-0.0265 se=0.0667 win=40.3
+S2a  tf=5,adx=30,cross=False                          TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 n= 292 pd= 3.44 avgR=-0.0317 se=0.0768 win=38.4
+S2a  tf=5,adx=30,cross=False                          TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 n= 294 pd= 3.46 avgR=-0.0274 se=0.0760 win=38.1
+S2b  tf=5,adx=30,cross=False                          TP1=0.5 TP2=3.0 hold=60 be=True stopx=1.0 n= 347 pd= 4.08 avgR=-0.0194 se=0.0460 win=63.1
+S2b  tf=5,adx=30,cross=False                          TP1=0.5 TP2=3.0 hold=240 be=True stopx=1.0 n= 335 pd= 3.94 avgR=+0.0020 se=0.0488 win=64.2
+S2c  tf=5,adx=30,cross=False                          TP1=0.5 TP2=3.0 hold=240 be=True stopx=0.67 n= 417 pd= 4.91 avgR=-0.0490 se=0.0441 win=61.9
+S2c  tf=5,adx=30,cross=False                          TP1=0.5 TP2=3.0 hold=240 be=True stopx=1.33 n= 281 pd= 3.31 avgR=-0.0227 se=0.0529 win=61.9
+FROZEN DCADX: tf=5,adx=30,cross=False | TP1=0.5 TP2=3.0 hold=240 be=True stopx=1.0 | DISC n=335 avgR=+0.0020
+
+=== DCADX: Donchian-30 + ADX/DI/EMA50 (scout #11) — frozen: tf=5,adx=30,cross=False | TP1=0.5 TP2=3.0 hold=240 be=True stopx=1.0 ===
+label | n | per_day | win | tp1 | tp2 | sl | avgR | se | pf | maxDD | sumR
+DISC | 335 | 3.94 | 64.2 | 63.9 | 13.1 | 34.6 | 0.002 | 0.0488 | 1.01 | 10.6 | 0.7
+VAL | 351 | 3.99 | 64.4 | 64.4 | 9.7 | 34.8 | -0.0423 | 0.0451 | 0.88 | 22.3 | -14.8
+Y2025 | 1109 | 4.3 | 62.7 | 62.4 | 8.8 | 36.5 | -0.1123 | 0.0249 | 0.71 | 134.0 | -124.5
+HOLD | 64 | 3.56 | 53.1 | 53.1 | 4.7 | 43.8 | -0.2318 | 0.0969 | 0.48 | 15.1 | -14.8
+STRESS | 349 | 4.01 | 63.6 | 63.6 | 10.0 | 35.5 | -0.0619 | 0.0458 | 0.83 | 28.1 | -21.6
+VAL random control (20 runs): median -0.0648  5-95% [-0.0979, -0.0147]
+checks: {'val>0 & t>=1': False, 'y2025>0': False, 'val-rand>=0.05': False, 'stress>=0': False, 'per_day>=0.5': True} -> FAIL
+monthly: 2025-01:93.0/-0.351 2025-02:101.0/-0.122 2025-03:76.0/-0.114 2025-04:93.0/-0.079 2025-05:103.0/-0.020 2025-06:98.0/-0.149 2025-07:102.0/-0.224 2025-08:87.0/-0.047 2025-09:107.0/-0.080 2025-10:92.0/-0.151 2025-11:72.0/-0.081 2025-12:85.0/+0.099 2026-01:100.0/+0.014 2026-02:61.0/-0.023 2026-03:98.0/+0.003 2026-04:76.0/+0.004 2026-05:80.0/-0.018 2026-06:79.0/+0.027 2026-07:90.0/-0.106 2026-08:102.0/-0.059 2026-09:64.0/-0.232
+
+=== STRAD: 08:30 ATR news straddle (scout #19) — DISC tuning (24 combos) ===
+S1   tf=1,k=0.5,atf=5                                 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 126 pd= 1.48 avgR=-0.1829 se=0.0971 win=31.0
+S1   tf=1,k=0.5,atf=15                                TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 111 pd= 1.31 avgR=-0.1034 se=0.1017 win=35.1
+S1   tf=1,k=1.0,atf=5                                 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 100 pd= 1.18 avgR=-0.0330 se=0.1119 win=36.0
+S1   tf=1,k=1.0,atf=15                                TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  81 pd= 0.95 avgR=+0.0355 se=0.1275 win=43.2
+S1   tf=5,k=0.5,atf=5                                 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n= 111 pd= 1.31 avgR=+0.0014 se=0.1069 win=36.9
+S1   tf=5,k=0.5,atf=15                                TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  97 pd= 1.14 avgR=-0.0881 se=0.1103 win=35.1
+S1   tf=5,k=1.0,atf=5                                 TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  89 pd= 1.05 avgR=-0.0333 se=0.1183 win=36.0
+S1   tf=5,k=1.0,atf=15                                TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  71 pd= 0.84 avgR=+0.0313 se=0.1344 win=40.8
+S2a  tf=1,k=1.0,atf=15                                TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  81 pd= 0.95 avgR=+0.0664 se=0.1036 win=37.0
+S2a  tf=1,k=1.0,atf=15                                TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  81 pd= 0.95 avgR=+0.0248 se=0.0830 win=70.4
+S2a  tf=1,k=1.0,atf=15                                TP1=0.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  81 pd= 0.95 avgR=+0.0152 se=0.1120 win=27.2
+S2a  tf=1,k=1.0,atf=15                                TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  81 pd= 0.95 avgR=+0.0249 se=0.0882 win=70.4
+S2a  tf=1,k=1.0,atf=15                                TP1=1.0 TP2=2.0 hold=120 be=False stopx=1.0 n=  81 pd= 0.95 avgR=+0.0355 se=0.1275 win=43.2
+S2a  tf=1,k=1.0,atf=15                                TP1=1.0 TP2=2.0 hold=120 be=True stopx=1.0 n=  81 pd= 0.95 avgR=-0.0098 se=0.1182 win=50.6
+S2a  tf=1,k=1.0,atf=15                                TP1=1.0 TP2=3.0 hold=120 be=False stopx=1.0 n=  81 pd= 0.95 avgR=-0.0157 se=0.1331 win=35.8
+S2a  tf=1,k=1.0,atf=15                                TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 n=  81 pd= 0.95 avgR=+0.0025 se=0.1252 win=50.6
+S2a  tf=1,k=1.0,atf=15                                TP1=1.5 TP2=2.0 hold=120 be=False stopx=1.0 n=  81 pd= 0.95 avgR=+0.0332 se=0.1451 win=40.7
+S2a  tf=1,k=1.0,atf=15                                TP1=1.5 TP2=2.0 hold=120 be=True stopx=1.0 n=  81 pd= 0.95 avgR=+0.0154 se=0.1420 win=40.7
+S2a  tf=1,k=1.0,atf=15                                TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 n=  81 pd= 0.95 avgR=-0.0180 se=0.1489 win=40.7
+S2a  tf=1,k=1.0,atf=15                                TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 n=  81 pd= 0.95 avgR=-0.0144 se=0.1442 win=40.7
+S2b  tf=1,k=1.0,atf=15                                TP1=0.5 TP2=2.0 hold=60 be=False stopx=1.0 n=  81 pd= 0.95 avgR=+0.0531 se=0.0986 win=43.2
+S2b  tf=1,k=1.0,atf=15                                TP1=0.5 TP2=2.0 hold=240 be=False stopx=1.0 n=  81 pd= 0.95 avgR=+0.0564 se=0.1035 win=35.8
+S2c  tf=1,k=1.0,atf=15                                TP1=0.5 TP2=2.0 hold=120 be=False stopx=0.67 n=  81 pd= 0.95 avgR=-0.1098 se=0.1003 win=28.4
+S2c  tf=1,k=1.0,atf=15                                TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.33 n=  81 pd= 0.95 avgR=+0.0040 se=0.0995 win=34.6
+FROZEN STRAD: tf=1,k=1.0,atf=15 | TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 | DISC n=81 avgR=+0.0664
+
+=== STRAD: 08:30 ATR news straddle (scout #19) — frozen: tf=1,k=1.0,atf=15 | TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 ===
+label | n | per_day | win | tp1 | tp2 | sl | avgR | se | pf | maxDD | sumR
+DISC | 81 | 0.95 | 37.0 | 71.6 | 35.8 | 63.0 | 0.0664 | 0.1036 | 1.17 | 6.9 | 5.4
+VAL | 89 | 1.01 | 30.3 | 55.1 | 29.2 | 69.7 | -0.1755 | 0.1039 | 0.67 | 20.6 | -15.6
+Y2025 | 272 | 1.05 | 33.8 | 62.5 | 31.6 | 65.8 | -0.0803 | 0.0573 | 0.83 | 28.1 | -21.9
+HOLD | 17 | 0.94 | 35.3 | 64.7 | 35.3 | 64.7 | -0.0068 | 0.2382 | 0.98 | 4.2 | -0.1
+STRESS | 89 | 1.02 | 30.3 | 55.1 | 29.2 | 69.7 | -0.1904 | 0.104 | 0.65 | 21.4 | -16.9
+VAL random control (20 runs): median -0.0533  5-95% [-0.2217, +0.0746]
+checks: {'val>0 & t>=1': False, 'y2025>0': False, 'val-rand>=0.05': False, 'stress>=0': False, 'per_day>=0.5': True} -> FAIL
+monthly: 2025-01:26.0/-0.338 2025-02:24.0/+0.004 2025-03:25.0/-0.114 2025-04:21.0/-0.088 2025-05:20.0/-0.020 2025-06:25.0/-0.109 2025-07:20.0/-0.040 2025-08:22.0/-0.143 2025-09:24.0/-0.078 2025-10:26.0/-0.184 2025-11:16.0/+0.321 2025-12:23.0/+0.004 2026-01:23.0/+0.219 2026-02:19.0/-0.155 2026-03:18.0/+0.282 2026-04:21.0/-0.086 2026-05:20.0/+0.023 2026-06:22.0/-0.098 2026-07:21.0/-0.259 2026-08:26.0/-0.326 2026-09:17.0/-0.007
+
+| family | best params | combos | DISC avgR / n | VAL n | VAL /day | VAL win% | VAL TP1% | VAL TP2% | VAL avgR ± se | VAL PF | Y2025 avgR | HOLD avgR | rand median [5–95%] | stress avgR | PASS/FAIL |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| ASIA Asian-range breakout (London) | tf=15,end=690,stop=rng,wmax=None,per_dir=True; TP1=1.5 TP2=3.0 hold=240 be=False stopx=1.0 | 35 | +0.1581 / 66 | 85 | 0.97 | 43.5 | 16.5 | 3.5 | +0.0307 ± 0.1045 | 1.08 | -0.0170 | +0.2476 | -0.0030 [-0.2141, +0.1312] | +0.0216 | FAIL: val>0 & t>=1, y2025>0, val-rand>=0.05 |
+| ORB Opening-range breakout 03:00/08:20/09:30 | tf=5,sess=CMX,L=30,stop=opp,ocd=True; TP1=1.0 TP2=3.0 hold=120 be=True stopx=1.0 | 37 | +0.1168 / 58 | 68 | 0.77 | 52.9 | 52.9 | 10.3 | -0.0205 ± 0.1256 | 0.96 | -0.0775 | +0.3690 | -0.0251 [-0.0751, +0.1785] | -0.0882 | FAIL: val>0 & t>=1, y2025>0, val-rand>=0.05, stress>=0 |
+| SESS2 Two-session boxes + H1 EMA50/200 (scout #6) | tf=15,sess=AB,atrf=False; TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 | 29 | +0.0957 / 46 | 46 | 0.52 | 39.1 | 19.6 | 6.5 | -0.0854 ± 0.1562 | 0.83 | +0.1060 | +0.4668 | -0.0278 [-0.2849, +0.2867] | -0.0970 | FAIL: val>0 & t>=1, val-rand>=0.05, stress>=0 |
+| DT Dual Thrust (scout #8) | tf=15,anchor=D,k=0.2; TP1=0.5 TP2=3.0 hold=120 be=True stopx=1.0 | 28 | +0.0448 / 70 | 80 | 0.91 | 52.5 | 52.5 | 2.5 | -0.1911 ± 0.0857 | 0.56 | -0.0346 | +0.0990 | -0.0162 [-0.1905, +0.1159] | -0.2000 | FAIL: val>0 & t>=1, y2025>0, val-rand>=0.05, stress>=0 |
+| PDHL Prior-day high/low close-beyond | tf=15,sess=all,htf=True,first=True; TP1=1.5 TP2=3.0 hold=120 be=False stopx=1.0 | 32 | +0.3625 / 68 | 75 | 0.85 | 48.0 | 30.7 | 10.7 | +0.1046 ± 0.1341 | 1.23 | +0.1204 | -0.0865 | +0.0053 [-0.1000, +0.1724] | +0.0918 | FAIL: val>0 & t>=1 |
+| SQZ BB-inside-KC squeeze release | tf=15,dir=mom,sess=act,kcm=1.5; TP1=1.5 TP2=3.0 hold=120 be=True stopx=1.0 | 37 | +0.0688 / 46 | 46 | 0.52 | 32.6 | 19.6 | 8.7 | -0.1858 ± 0.1579 | 0.67 | -0.0504 | +0.0513 | +0.0156 [-0.2291, +0.2730] | -0.1988 | FAIL: val>0 & t>=1, y2025>0, val-rand>=0.05, stress>=0 |
+| NR Inside-bar / NR4 / NR7 breakout | tf=5,pat=NR7,htf=True,sess=all; TP1=1.5 TP2=3.0 hold=240 be=True stopx=1.0 | 40 | +0.0825 / 732 | 804 | 9.14 | 37.1 | 34.7 | 15.4 | -0.0995 ± 0.0445 | 0.84 | -0.0550 | +0.0546 | -0.0515 [-0.0859, +0.0011] | -0.1274 | FAIL: val>0 & t>=1, y2025>0, val-rand>=0.05, stress>=0 |
+| DRIFT Time-of-day drift (DISC-fitted hours) | k=4,score=t; TP1=1.5 TP2=2.0 hold=120 be=False stopx=0.67 | 26 | +0.1568 / 278 | 286 | 3.25 | 40.6 | 33.6 | 21.7 | -0.0735 ± 0.0690 | 0.87 | -0.0812 | +0.0662 | -0.0502 [-0.1517, +0.0440] | -0.0860 | FAIL: val>0 & t>=1, y2025>0, val-rand>=0.05, stress>=0 |
+| NEWS 08:30/10:00 data-release momentum | times=A,tf=5,x=0.0,stop=bar; TP1=0.5 TP2=2.0 hold=120 be=True stopx=1.0 | 40 | +0.1560 / 84 | 86 | 0.98 | 66.3 | 66.3 | 16.3 | -0.0252 ± 0.0862 | 0.93 | +0.0020 | -0.1882 | -0.0182 [-0.1987, +0.0706] | -0.0655 | FAIL: val>0 & t>=1, val-rand>=0.05, stress>=0 |
+| DON Donchian breakout + H1 EMA filter | tf=15,N=55,htf=50,sess=all; TP1=1.0 TP2=2.0 hold=240 be=True stopx=1.0 | 40 | +0.0836 / 169 | 197 | 2.24 | 51.3 | 48.7 | 20.3 | +0.0359 ± 0.0728 | 1.08 | +0.0196 | +0.2967 | -0.0165 [-0.0921, +0.1237] | +0.0269 | FAIL: val>0 & t>=1 |
+| DCADX Donchian-30 + ADX/DI/EMA50 (scout #11) | tf=5,adx=30,cross=False; TP1=0.5 TP2=3.0 hold=240 be=True stopx=1.0 | 24 | +0.0020 / 335 | 351 | 3.99 | 64.4 | 64.4 | 9.7 | -0.0423 ± 0.0451 | 0.88 | -0.1123 | -0.2318 | -0.0648 [-0.0979, -0.0147] | -0.0619 | FAIL: val>0 & t>=1, y2025>0, val-rand>=0.05, stress>=0 |
+| STRAD 08:30 ATR news straddle (scout #19) | tf=1,k=1.0,atf=15; TP1=0.5 TP2=2.0 hold=120 be=False stopx=1.0 | 24 | +0.0664 / 81 | 89 | 1.01 | 30.3 | 55.1 | 29.2 | -0.1755 ± 0.1039 | 0.67 | -0.0803 | -0.0068 | -0.0533 [-0.2217, +0.0746] | -0.1904 | FAIL: val>0 & t>=1, y2025>0, val-rand>=0.05, stress>=0 |
+
+[34s]

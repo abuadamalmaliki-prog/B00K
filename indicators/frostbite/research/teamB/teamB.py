@@ -450,11 +450,12 @@ def verdict(ev):
 
 
 # ─── frozen best technique for the lead ──────────────────────────────────────
-# Filled in from the DISC search output (see RESULTS.md); main() checks that the search reproduces it.
-BEST_FAM = None
-BEST_SP = None
-BEST_EX = None
-BEST_SIM = None
+# Frozen from the DISC search (see RESULTS.md); main() checks that the search reproduces it.
+# No family passed, so this is the highest-VAL-avgR family: ROUND ($5 round-number wick-and-reject, M15).
+BEST_FAM = "ROUND"
+BEST_SP = dict(tf=15, step=5.0, pen=0.25, htf="H1")
+BEST_EX = dict(k=2.0, t1=1.0, t2=2.0, be=False, mh=240)
+BEST_SIM = dict(be=False, max_hold=240)
 
 
 def best_signals():
