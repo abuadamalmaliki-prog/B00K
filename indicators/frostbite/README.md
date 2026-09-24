@@ -20,9 +20,11 @@ The panel at the top right has three rows: the current state, the lots and today
 
 ## How to take a signal (MT5)
 
-1. Open **two** orders with the lot size shown, both with the **same SL**.
-2. Order A: take profit = **TP1**. Order B: take profit = **TP2**.
-3. If you get a **"Close now: 2-hour limit"** alert, close whatever is still open.
+The alert tells you how many orders to open:
+- **1 order** (Auto picks this on $30): SL = **SL**, TP = **TP2**.
+- **2 orders**: both with the same **SL**. Order A has TP = **TP1**, order B has TP = **TP2**.
+
+If you get a **"Close now: 2-hour limit"** alert, close whatever is still open.
 
 If a signal is marked **skip**, don't take it.
 
@@ -33,19 +35,20 @@ If a signal is marked **skip**, don't take it.
 | Signals | **More** (about 2.3 a day) or **Fewer, stronger** (about 1.6 a day) |
 | Balance ($) | 30 |
 | Risk per signal (%) | 2 |
+| Orders per signal | **Auto**: 1 order → TP2 on small balances, 2 orders → TP1 + TP2 when the balance allows |
 | Spread ($) | 0.30. Set it to what MT5 shows. |
 | Show past trades | on |
 
 ## Test results (gold, $0.30 spread, periods not used for tuning)
 
-| Mode | Signals / day | Trades | Avg per trade | With a wider spread ($0.45) |
-|---|---|---|---|---|
-| More | 2.3 | 821 | +0.05 × risk | +0.03 × risk |
-| Fewer, stronger | 1.6 | 574 | +0.09 × risk | +0.07 × risk |
+| Mode | Signals / day | Trades | 2 orders: avg | 1 order → TP2: avg | Longest losing streak (1 order) |
+|---|---|---|---|---|---|
+| More | 2.3 | 821 | +0.05 × risk | +0.06 × risk | 9 |
+| Fewer, stronger | 1.6 | 574 | +0.09 × risk | +0.11 × risk | 6 |
 
-In both modes about **47% of trades end in profit**, so strings of 3–6 losing signals are normal. September 2026 is negative so far.
+About 43–47% of trades end in profit, so strings of losing signals are normal. September 2026 is negative so far.
 
-**Lot size:** gold's typical stop is about $13, so two 0.01-lot orders risk about $26. The panel and every alert show the exact lots and $ risk.
+**Your $30 account:** 0.01 lot of gold moves $1 per $1. A typical stop of about $13 therefore risks about $13 with 1 order and about $27 with 2. The panel and every alert show the exact $ risk and its % of your balance. The account notes are in [`ACCOUNT.md`](ACCOUNT.md).
 
 ## Signal times (Malaysia)
 

@@ -4,7 +4,8 @@
 // Signals: the two setups that held up in testing (612,880 one-minute gold bars, spread included):
 //   ICICLE     EMA 34/50/200 trend pullback, 13:00–17:00 UTC.  TP1 1R, TP2 2R.
 //   AVALANCHE  M15 close through yesterday's high/low with the H1 trend. TP1 1.5R, TP2 3R.
-// Every signal: BUY/SELL, SL, TP1, TP2. Open 2 orders with the same SL: A → TP1, B → TP2.
+// Every signal: BUY/SELL, SL, TP1, TP2. Small balance: 1 order → TP2. Larger: 2 orders (A → TP1, B → TP2).
+// Account (JustMarkets Standard): min lot 0.01 (= 1 oz, $1 per $1 move), no commission, 1:3000, stop-out 20%.
 // Decided on bar close; never repaints.
 indicator("Frostbite XAUUSD M5", shorttitle = "Frostbite", overlay = true, max_labels_count = 500, max_lines_count = 500)
 
@@ -15,6 +16,10 @@ mode     = input.string(MODE_MORE, "Signals", options = [MODE_MORE, MODE_FEW], t
 balance  = input.float(30, "Balance ($)", minval = 1)
 riskPct  = input.float(2, "Risk per signal, both orders (%)", minval = 0.1, maxval = 100, step = 0.5)
 spr      = input.float(0.30, "Spread ($)", minval = 0, step = 0.05)
+const string ORD_AUTO = "Auto"
+const string ORD_ONE  = "1 order → TP2"
+const string ORD_TWO  = "2 orders → TP1 + TP2"
+ordersIn = input.string(ORD_AUTO, "Orders per signal", options = [ORD_AUTO, ORD_ONE, ORD_TWO], tooltip = "Auto: 1 order when two 0.01-lot orders would risk more than your risk setting.\nTested: a single order aimed at TP2 averaged more per trade than the TP1 order, and halves the $ risk.")
 showPast = input.bool(true, "Show past trades")
 
 // ─── Constants (the tested settings) ─────────────────────────────────────────
@@ -180,13 +185,17 @@ float sigStop = iceDir != 0 ? iceStop : avaStop
 float sigT1   = iceDir != 0 ? ICE_T1 : AVA_T1
 float sigT2   = iceDir != 0 ? ICE_T2 : AVA_T2
 
-// ─── Lots: two orders; a buy's loss includes the spread ──────────────────────
-f_lots(float stopDist, int dir) =>
+// ─── Orders and lots (a buy's loss at the stop includes the spread) ─────────
+f_orders(float stopDist, int dir) =>
     float lossPerLot = (stopDist + (dir == 1 ? spr : 0.0)) * CONTRACT
-    float lots = math.floor(balance * riskPct / 100.0 / 2.0 / lossPerLot / LOT_STEP + 1e-9) * LOT_STEP
+    ordersIn == ORD_ONE ? 1 : ordersIn == ORD_TWO ? 2 : (2.0 * LOT_STEP * lossPerLot <= balance * riskPct / 100.0 ? 2 : 1)
+
+f_lots(float stopDist, int dir, int nOrd) =>
+    float lossPerLot = (stopDist + (dir == 1 ? spr : 0.0)) * CONTRACT
+    float lots = math.floor(balance * riskPct / 100.0 / nOrd / lossPerLot / LOT_STEP + 1e-9) * LOT_STEP
     bool minLot = lots < LOT_STEP
     lots := math.max(lots, LOT_STEP)
-    [lots, 2.0 * lots * lossPerLot, minLot]
+    [lots, nOrd * lots * lossPerLot, minLot]
 
 f_px(float p) =>
     str.tostring(p, "0.00")
@@ -209,6 +218,8 @@ var bool  gotT1 = false
 var bool  gotT2 = false
 var bool  gotSL = false
 var float tLots = na
+var int   tOrd = 2
+var float tRisk = na
 var line  lnE = na
 var line  lnSL = na
 var line  lnT1 = na
@@ -288,7 +299,7 @@ if tDir != 0 and not pend and (leg1 or leg2)
         leg2 := false
         gotT2 := true
     if gotT1 and not hadT1 and leg2
-        evt := "TP1 hit ✓ (order B still open, TP2 " + f_px(tT2) + ")"
+        evt := tOrd == 1 ? "Price reached TP1 · your order is still open to TP2 " + f_px(tT2) : "TP1 hit ✓ (order B still open, TP2 " + f_px(tT2) + ")"
     bool timeUp = tEnd - tEntryT >= MAX_HOLD * 60000
     bool flatNow = nyMinClose >= 16 * 60 + 50 and nyMin < 17 * 60
     bool newDay = tdayKey != tDay
@@ -302,13 +313,13 @@ if tDir != 0 and not pend and (leg1 or leg2)
             leg2 := false
         evt := "Close now: 2-hour limit"
     if not leg1 and not leg2
-        float rr = 0.5 * (r1 + r2)
+        float rr = tOrd == 1 ? r2 : 0.5 * (r1 + r2)
         nTr += 1
         nWin += rr > 0 ? 1 : 0
         sumR += rr
-        string res = gotT2 ? "TP2 ✓✓" : gotT1 ? "TP1 ✓" : gotSL ? "SL ✕" : "closed"
+        string res = gotT2 ? "TP2 ✓✓" : tOrd == 2 and gotT1 ? "TP1 ✓" : gotSL ? "SL ✕" : "closed"
         if evt == ""
-            evt := gotT2 ? "TP2 hit ✓✓" : gotSL and gotT1 ? "TP1 ✓, then order B stopped" : gotSL ? "SL hit ✕" : "Closed"
+            evt := gotT2 ? "TP2 hit ✓✓" : gotSL and gotT1 and tOrd == 2 ? "TP1 ✓, then order B stopped" : gotSL ? "SL hit ✕" : "Closed"
         if not na(lnSL)
             line.set_x2(lnE, bar_index)
             line.set_x2(lnSL, bar_index)
@@ -332,10 +343,14 @@ if newSig
     tSL := close - sigDir * sigStop
     tT1 := close + sigDir * sigStop * sigT1
     tT2 := close + sigDir * sigStop * sigT2
-    [lots, riskUsd, minLot] = f_lots(sigStop, sigDir)
+    int nOrd = f_orders(sigStop, sigDir)
+    [lots, riskUsd, minLot] = f_lots(sigStop, sigDir, nOrd)
     tLots := lots
+    tOrd := nOrd
+    tRisk := riskUsd
     string side = sigDir == 1 ? "BUY" : "SELL"
-    sigTxt := "❄ " + side + " XAUUSD " + f_px(close) + " | SL " + f_px(tSL) + " | TP1 " + f_px(tT1) + " | TP2 " + f_px(tT2) + " | " + str.tostring(lots, "0.00") + " lot × 2 orders, risk $" + str.tostring(riskUsd, "0.00") + (minLot ? " (min lot)" : "")
+    string ordTxt = nOrd == 1 ? " | TP " + f_px(tT2) + " (TP2) | 1 order × " + str.tostring(lots, "0.00") + " lot" : " | TP1 " + f_px(tT1) + " | TP2 " + f_px(tT2) + " | 2 orders × " + str.tostring(lots, "0.00") + " lot (A → TP1, B → TP2)"
+    sigTxt := "❄ " + side + " XAUUSD " + f_px(close) + " | SL " + f_px(tSL) + ordTxt + " | risk $" + str.tostring(riskUsd, "0.00") + " (" + str.tostring(100 * riskUsd / balance, "0") + "% of balance)" + (riskUsd > balance ? " ⚠ more than your balance" : minLot ? " · 0.01 is the minimum lot" : "")
     if todayKey != tdayKey
         todayKey := tdayKey
         todayN := 0
@@ -378,6 +393,6 @@ if barstate.islast
         table.cell(dash, 0, 0, "❄ FROSTBITE", text_color = C_TXT, text_size = size.small)
         table.cell(dash, 1, 0, now, text_color = tDir == 1 ? C_BUY : tDir == -1 ? C_SELL : C_TXT, text_size = size.small)
         table.cell(dash, 0, 1, "Lots", text_color = C_TXT, text_size = size.small)
-        table.cell(dash, 1, 1, tDir == 0 ? "—" : str.tostring(tLots, "0.00") + " × 2", text_color = C_TXT, text_size = size.small)
+        table.cell(dash, 1, 1, tDir == 0 ? "—" : str.tostring(tLots, "0.00") + " × " + str.tostring(tOrd) + " · risk $" + str.tostring(tRisk, "0.00") + " (" + str.tostring(100 * tRisk / balance, "0") + "%)", text_color = tRisk > balance ? C_SL : C_TXT, text_size = size.small)
         table.cell(dash, 0, 2, "Today", text_color = C_TXT, text_size = size.small)
         table.cell(dash, 1, 2, str.tostring(todayKey == tdayKey ? todayN : 0) + " signals · chart avg " + (nTr > 0 ? str.tostring(sumR / nTr, "+0.00;-0.00") + "R" : "—"), text_color = C_TXT, text_size = size.small)

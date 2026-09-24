@@ -112,3 +112,16 @@ None holds up. In v2 the Kalman filter draws the smooth trend line only.
 | + Icicle on M15 and Avalanche on M5 | 3.0 | +0.024R | −0.009R |
 
 v2 offers the first two as modes. Parity: 1,550 / 1,550 signals identical in More mode.
+
+## Follow-up (v2.1): account specs, one order, physics check
+
+- **One order vs two** (periods not used for tuning):
+  - Order B (TP2) alone: **+0.059R** in More mode and **+0.108R** in Fewer mode.
+  - Order A (TP1) alone: +0.045R and +0.069R.
+  - The tuning period ranks them the same way (B +0.263R / +0.343R vs A +0.177R / +0.215R).
+  - A single order halves the $ risk, so *Orders per signal = Auto* uses 1 order → TP2 on small balances.
+- **Physics filter:** keep only the signals that point the same way as the Kalman velocity (the smooth line's direction).
+  - 92% (More) and 98% (Fewer) of signals already do.
+  - Filtering didn't help: +0.045R vs +0.052R (More) and +0.082R vs +0.089R (Fewer).
+  - Not adopted.
+- **Account specs** (JustMarkets Standard): 0.01 minimum lot, 1:3000, stop-out 20%, no commission. See `ACCOUNT.md`.
