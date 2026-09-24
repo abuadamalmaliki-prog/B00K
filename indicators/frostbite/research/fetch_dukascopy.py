@@ -5,12 +5,13 @@ Closed-market minutes (volume 0, flat) are dropped.
 """
 import concurrent.futures as cf, datetime as dt, gzip, lzma, os, struct, sys, time, urllib.request
 
-SYM, SCALE = "XAUUSD", 1000.0
+SYM = os.environ.get("SYM", "XAUUSD")
+SCALE = {"XAUUSD": 1000.0, "XAGUSD": 1000.0, "USDJPY": 1000.0, "EURJPY": 1000.0, "GBPJPY": 1000.0}.get(SYM, 100000.0)
 def _d(x): return dt.date(int(x[:4]), int(x[4:6]), int(x[6:]))
 START, END = (_d(sys.argv[1]), _d(sys.argv[2])) if len(sys.argv) > 2 else (dt.date(2025, 1, 1), dt.date(2026, 9, 23))
 NAME = sys.argv[3] if len(sys.argv) > 3 else "XAUUSD_m1"
 OUT = os.path.join(os.path.dirname(__file__), "data")
-CACHE = os.path.join(OUT, "cache")
+CACHE = os.path.join(OUT, "cache" if SYM == "XAUUSD" else "cache_" + SYM)
 os.makedirs(CACHE, exist_ok=True)
 
 

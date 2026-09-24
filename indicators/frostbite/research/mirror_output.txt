@@ -1,0 +1,10 @@
+research signals 1026, mirror signals 1026, matched 1026, only research 0, only mirror 0
+matched: same direction 100.00%, same source 100.00%, SL max abs diff 0.006849, median 0.000000
+simulated: research n=703 avgR=+0.1235 | mirror n=703 avgR=+0.1235
+             model label   n  win  tp1  tp2   sl    avgR
+       engine (M1)   VAL 142 47.9 39.4 17.6 46.5  0.0956
+       engine (M1) Y2025 405 47.4 42.2 15.3 44.9  0.1031
+       engine (M1)  HOLD  27 37.0 22.2  3.7 48.1 -0.1663
+chart tracker (M5)   VAL 142 48.6 39.4 17.6 46.5  0.0979
+chart tracker (M5) Y2025 405 47.7 42.2 15.1 44.4  0.1180
+chart tracker (M5)  HOLD  27 29.6 22.2  3.7 48.1 -0.1718

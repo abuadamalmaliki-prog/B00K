@@ -27,7 +27,10 @@ import numba as nb
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(HERE, "data")
-SPREAD = 0.30          # JustMarkets Standard XAUUSD, typical (USD per oz); stress test 0.45
+SYMBOL = os.environ.get("FROST_SYM", "XAUUSD")   # other symbols: data/cache_<SYM>/ from fetch_dukascopy.py
+_SPREADS = {"XAUUSD": 0.30, "EURUSD": 0.00012, "GBPUSD": 0.00015, "USDJPY": 0.015}
+_SCALES = {"XAUUSD": 1000.0, "USDJPY": 1000.0}
+SPREAD = _SPREADS.get(SYMBOL, 0.30)   # XAUUSD: JustMarkets Standard typical (USD per oz); stress test 0.45
 SLIP = 0.0             # extra adverse fill per market order (USD)
 PERIODS = {
     "DISC": ("2026-01-01", "2026-05-01"),
@@ -81,7 +84,8 @@ _REC = np.dtype([("t", ">u4"), ("o", ">u4"), ("c", ">u4"), ("l", ">u4"), ("h", "
 def _load_raw():
     """Decode every cached Dukascopy day (data/cache/YYYYMMDD_BID.bin + _ASK.bin) into one frame.
     Closed-market minutes (volume 0) are dropped."""
-    cdir = os.path.join(DATA, "cache")
+    cdir = os.path.join(DATA, "cache" if SYMBOL == "XAUUSD" else "cache_" + SYMBOL)
+    scale = _SCALES.get(SYMBOL, 100000.0)
     days = sorted({f[:8] for f in os.listdir(cdir) if f.endswith("_BID.bin")})
     parts = []
     for day in days:
@@ -93,8 +97,8 @@ def _load_raw():
             continue
         base = int(pd.Timestamp(day, tz="UTC").timestamp())
         f = pd.DataFrame({"time": base + b["t"].astype(np.int64),
-                          "bo": b["o"] / 1000.0, "bh": b["h"] / 1000.0, "bl": b["l"] / 1000.0, "bc": b["c"] / 1000.0,
-                          "ao": a["o"] / 1000.0, "ah": a["h"] / 1000.0, "al": a["l"] / 1000.0, "ac": a["c"] / 1000.0,
+                          "bo": b["o"] / scale, "bh": b["h"] / scale, "bl": b["l"] / scale, "bc": b["c"] / scale,
+                          "ao": a["o"] / scale, "ah": a["h"] / scale, "al": a["l"] / scale, "ac": a["c"] / scale,
                           "vol": b["v"].astype(float)})
         parts.append(f[f.vol > 0])
     return pd.concat(parts).drop_duplicates("time").sort_values("time").reset_index(drop=True)

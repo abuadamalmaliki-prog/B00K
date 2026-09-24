@@ -2,3 +2,4 @@ data/
 __pycache__/
 *.pkl
 *.log
+fetch_*.log
