@@ -89,3 +89,26 @@ The daily results of the three are uncorrelated (|r| ≤ 0.06), so combining the
 | Independent code review | no compile errors; 6 issues fixed (see README) |
 
 Reproduce: `research/meeting.py` (this page) and `research/mirror.py` (parity). The team code and results are in `research/team{A,B,C,D}/`, and the scout's sources are in `research/SCOUT_REPORT.md`.
+
+## Follow-up (v2): XAUUSD M5 only, more signals, math-based filters
+
+**Math-based families** (`research/quant.py`, tuned on Jan–Apr 2026 only; target 2+ signals a day):
+
+| Family | Signals / day | May–Aug 2026 | 2025 | Stress (May–Aug 2026) |
+|---|---|---|---|---|
+| Kalman trend + residual z-score pullback | 2.4 | +0.004R | **−0.102R** | −0.012R |
+| Kalman slope flip | 4.8 | +0.009R | **−0.056R** | −0.005R |
+| Ehlers SuperSmoother + Fisher transform | 3.7 | −0.011R | −0.035R | −0.033R |
+| Regression-slope t-statistic pullback | 4.6 | −0.155R | −0.088R | −0.187R |
+
+None holds up. In v2 the Kalman filter draws the smooth trend line only.
+
+**More signals from the two setups that held up** (periods not used for tuning):
+
+| Version | Signals / day | Avg per trade | Stress |
+|---|---|---|---|
+| Icicle + Avalanche, first break per side per day (Fewer, stronger) | 1.6 | +0.089R | +0.066R |
+| Icicle + Avalanche, every break (**More**, v2 default) | 2.3 | +0.052R | +0.029R |
+| + Icicle on M15 and Avalanche on M5 | 3.0 | +0.024R | −0.009R |
+
+v2 offers the first two as modes. Parity: 1,550 / 1,550 signals identical in More mode.

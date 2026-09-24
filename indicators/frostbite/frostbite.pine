@@ -1,100 +1,83 @@
 //@version=6
-// ══════════════════════════════════════════════════════════════════════════════
-//  ❄ FROSTBITE · GOLD SCALPER  (TradingView signals · execute by hand in MT5)
-//
-//  Built by a 5-agent research team on 612,880 one-minute XAUUSD bars
-//  (Jan 2025 – Sep 2026, bid + ask, $0.30 spread). About 46 techniques were
-//  tested; these two setups held up best out of sample, so Frostbite runs both:
-//
-//   ICICLE     EMA 34/50/200 trend pullback on M5, 13:00–17:00 UTC
-//              (21:00–01:00 Malaysia time). Trend stacked, price dips to the
-//              EMA34 and a strong candle closes back through the prior bar.
-//              ADX(14) > 20, RSI(14) 45–70 (buy) / 30–55 (sell).
-//              SL beyond the 5-bar swing ± 0.2 ATR (0.6–3 ATR). TP1 1R, TP2 2R.
-//   AVALANCHE  First M15 close through yesterday's high (buy) or low (sell),
-//              with the last hourly close on the same side of the H1 EMA50.
-//              SL 1.5 × ATR(14) of M15. TP1 1.5R, TP2 3R.
-//
-//  Every signal: BUY or SELL, one stop loss, TP1 and TP2. In MT5 open TWO
-//  orders of the lot size shown, both with the same SL: order A takes profit
-//  at TP1, order B at TP2. Anything still open after 120 minutes is closed.
-//
-//  Use a 5-minute chart. Signals are decided on the CLOSE of a bar and never
-//  repaint; the alert fires once the bar has closed.
-// ══════════════════════════════════════════════════════════════════════════════
-indicator("Frostbite Gold Scalper", shorttitle = "Frostbite", overlay = true, max_labels_count = 500, max_lines_count = 500)
+// ❄ FROSTBITE v2 · XAUUSD M5 scalper
+// Smooth line: 2-state Kalman filter of price (level + slope). Blue = rising, pink = falling.
+// Signals: the two setups that held up in testing (612,880 one-minute gold bars, spread included):
+//   ICICLE     EMA 34/50/200 trend pullback, 13:00–17:00 UTC.  TP1 1R, TP2 2R.
+//   AVALANCHE  M15 close through yesterday's high/low with the H1 trend. TP1 1.5R, TP2 3R.
+// Every signal: BUY/SELL, SL, TP1, TP2. Open 2 orders with the same SL: A → TP1, B → TP2.
+// Decided on bar close; never repaints.
+indicator("Frostbite XAUUSD M5", shorttitle = "Frostbite", overlay = true, max_labels_count = 500, max_lines_count = 500)
 
-// ─── ① Setups ─────────────────────────────────────────────────────────────────
-const string G_SET = "① Setups"
-useIce = input.bool(true, "Icicle: EMA-stack pullback (M5, 13–17 UTC)", group = G_SET)
-useAva = input.bool(true, "Avalanche: yesterday's high/low break (M15)", group = G_SET)
+// ─── Inputs ───────────────────────────────────────────────────────────────────
+const string MODE_MORE = "More signals (about 2.3 a day)"
+const string MODE_FEW  = "Fewer, stronger (about 1.6 a day)"
+mode     = input.string(MODE_MORE, "Signals", options = [MODE_MORE, MODE_FEW], tooltip = "Tested on gold, periods not used for tuning:\nMore: +0.05 × risk per trade on average.\nFewer: +0.09 × risk per trade on average.")
+balance  = input.float(30, "Balance ($)", minval = 1)
+riskPct  = input.float(2, "Risk per signal, both orders (%)", minval = 0.1, maxval = 100, step = 0.5)
+spr      = input.float(0.30, "Spread ($)", minval = 0, step = 0.05)
+showPast = input.bool(true, "Show past trades")
 
-// ─── ② Orders ─────────────────────────────────────────────────────────────────
-const string G_ORD = "② Orders: SL · TP1 · TP2"
-const string M_SPLIT = "Leave both orders alone"
-const string M_BE = "Move order B's SL to entry at TP1"
-iceT1   = input.float(1.0, "Icicle TP1 / TP2 (× risk)", minval = 0.1, step = 0.25, group = G_ORD, inline = "ice")
-iceT2   = input.float(2.0, "", minval = 0.2, step = 0.25, group = G_ORD, inline = "ice")
-avaT1   = input.float(1.5, "Avalanche TP1 / TP2 (× risk)", minval = 0.1, step = 0.25, group = G_ORD, inline = "ava")
-avaT2   = input.float(3.0, "", minval = 0.2, step = 0.25, group = G_ORD, inline = "ava")
-mgmt    = input.string(M_SPLIT, "After TP1", options = [M_SPLIT, M_BE], group = G_ORD, tooltip = "The research tested both. Leaving both orders alone did as well or better, and needs nothing from you after entry.")
-maxHold = input.int(120, "Close anything still open after (minutes)", minval = 5, group = G_ORD)
-flatNY  = input.bool(true, "Close by 16:50 New York, before the daily rollover", group = G_ORD, tooltip = "16:50 New York = 04:50 Malaysia time (05:50 when the US is on winter time). Spreads jump at rollover, so no new signals until the market reopens.")
+// ─── Constants (the tested settings) ─────────────────────────────────────────
+const float ICE_T1 = 1.0
+const float ICE_T2 = 2.0
+const float AVA_T1 = 1.5
+const float AVA_T2 = 3.0
+const int   MAX_HOLD = 120        // minutes
+const int   HOLD_BARS = 24        // 120 minutes of M5 bars
+const float LOT_STEP = 0.01
+const float CONTRACT = 100.0      // oz per lot
+const float KF_QL = 0.001         // Kalman: level noise
+const float KF_QS = 0.000001      // Kalman: slope noise
+const float KF_R  = 1.0           // Kalman: measurement noise
 
-// ─── ③ Lot size (MT5) ─────────────────────────────────────────────────────────
-const string G_LOT = "③ Lot size for MT5"
-balance    = input.float(30, "Balance ($)", minval = 1, group = G_LOT, tooltip = "Update it now and then. Lots are sized from it.")
-riskPct    = input.float(2, "Risk per signal, both orders (% of balance)", minval = 0.1, maxval = 100, step = 0.5, group = G_LOT)
-lotStep    = input.float(0.01, "Lot step / minimum", minval = 0.001, step = 0.01, group = G_LOT, tooltip = "Standard account: 0.01. On a cent account enter the lot size in the same units your MT5 shows and set the contract size to match.")
-contractIn = input.float(0, "Contract size (0 = auto)", minval = 0, group = G_LOT, tooltip = "Auto: gold 100 oz, silver 5,000 oz, forex 100,000, crypto 1.")
-spreadIn   = input.float(0, "Spread in price (0 = auto)", minval = 0, step = 0.01, group = G_LOT, tooltip = "Auto: gold 0.30, silver 0.03, JPY pairs 0.015, other forex 0.00015. Set it to what MT5 shows. Used for the ask-side checks and the scorecard.")
-
-// ─── ④ Display ────────────────────────────────────────────────────────────────
-const string G_VIS = "④ Display"
-showPast = input.bool(true, "Show past signals and their levels", group = G_VIS)
-dashPos  = input.string("Top right", "Panel", options = ["Top right", "Bottom right", "Top left", "Bottom left", "Hidden"], group = G_VIS)
-dashSize = input.string("Small", "Panel size", options = ["Tiny", "Small", "Normal"], group = G_VIS)
-
-// ─── Colours (ice) ────────────────────────────────────────────────────────────
 const color C_BUY  = #29B6F6
 const color C_SELL = #FF4081
-const color C_SL   = #FF5252
-const color C_TP1  = #80DEEA
-const color C_TP2  = #00E5FF
+const color C_SL   = #FF1744
+const color C_TP   = #00E676
 const color C_TXT  = #E0F7FA
-const color C_DIM  = #90A4AE
-const color C_HEAD = #01579B
-const color C_GOOD = #69F0AE
+const color C_BG   = #0B1B2B
 
-// ─── Symbol helpers ───────────────────────────────────────────────────────────
-tkr      = syminfo.ticker
-isGold   = str.contains(tkr, "XAU") or str.contains(tkr, "GOLD")
-isSilver = str.contains(tkr, "XAG") or str.contains(tkr, "SILVER")
-isJpy    = str.endswith(tkr, "JPY")
-isFx     = syminfo.type == "forex" and not isGold and not isSilver
-contract = contractIn > 0 ? contractIn : isGold ? 100.0 : isSilver ? 5000.0 : syminfo.type == "crypto" ? 1.0 : 100000.0
-spr      = spreadIn > 0 ? spreadIn : isGold ? 0.30 : isSilver ? 0.03 : isJpy ? 0.015 : 0.00015
-pip      = isGold ? 0.1 : isSilver ? 0.01 : isJpy ? 0.01 : isFx ? 0.0001 : syminfo.mintick
-fxUsd    = request.currency_rate(syminfo.currency, "USD", ignore_invalid_currency = true)
-usdPer1  = syminfo.currency == "USD" ? contract : contract * fxUsd   // USD per 1.0 price move per 1 lot (na if no rate)
+firstOnly = mode == MODE_FEW
+tkr       = syminfo.ticker
+isGold    = str.contains(tkr, "XAUUSD") or str.contains(tkr, "GOLD")
+isM5      = timeframe.in_seconds() == 300
+active    = isGold and isM5
 
-f_px(float p) =>
-    str.tostring(p, format.mintick)
-
-f_dist(float d) =>
-    isGold or isSilver ? "$" + str.tostring(d, "0.00") : str.tostring(d / pip, "0.0") + " pips"
-
-isM5 = timeframe.in_seconds() == 300
-
-// Clocks. A trading day runs 17:00–17:00 New York and is named after the date it ends on.
+// ─── Clocks ───────────────────────────────────────────────────────────────────
 f_nyMin(int t) =>
     hour(t, "America/New_York") * 60 + minute(t, "America/New_York")
+tEnd       = time + timeframe.in_seconds() * 1000
 nyMin      = f_nyMin(time)
-tEnd       = time + timeframe.in_seconds() * 1000   // nominal bar end (a session-end bar can be cut short)
 nyMinClose = f_nyMin(tEnd)
 tdayKey    = year(time + 7 * 3600000, "America/New_York") * 10000 + month(time + 7 * 3600000, "America/New_York") * 100 + dayofmonth(time + 7 * 3600000, "America/New_York")
 
-// ─── Chart indicators (M5) ────────────────────────────────────────────────────
+// ─── Kalman filter (local linear trend): smooth line and its slope ───────────
+var float kLv = na
+var float kSl = 0.0
+var float kP11 = 1.0
+var float kP12 = 0.0
+var float kP22 = 1.0
+if na(kLv)
+    kLv := close
+else
+    float x1  = kLv + kSl
+    float p11 = kP11 + 2 * kP12 + kP22 + KF_QL
+    float p12 = kP12 + kP22
+    float p22 = kP22 + KF_QS
+    float s   = p11 + KF_R
+    float k1  = p11 / s
+    float k2  = p12 / s
+    float e   = close - x1
+    kLv  := x1 + k1 * e
+    kSl  := kSl + k2 * e
+    kP22 := p22 - k2 * p12
+    kP12 := (1 - k1) * p12
+    kP11 := (1 - k1) * p11
+color kCol = kSl >= 0 ? C_BUY : C_SELL
+plot(active ? kLv : na, "Trend glow", color.new(kCol, 85), 8)
+plot(active ? kLv : na, "Trend (Kalman)", kCol, 2)
+
+// ─── M5 indicators ────────────────────────────────────────────────────────────
 e34   = ta.ema(close, 34)
 e50   = ta.ema(close, 50)
 e200  = ta.ema(close, 200)
@@ -102,7 +85,7 @@ rsi14 = ta.rsi(close, 14)
 atr5  = ta.atr(14)
 [diP, diM, adx14] = ta.dmi(14, 14)
 
-// ─── Trading day: yesterday's high and low ────────────────────────────────────
+// ─── Yesterday's high/low (trading day = 17:00–17:00 New York) ───────────────
 var float dayHi = na
 var float dayLo = na
 var float pdh = na
@@ -116,7 +99,7 @@ else
     dayHi := math.max(dayHi, high)
     dayLo := math.min(dayLo, low)
 
-// ─── M15 bars built from the M5 chart (UTC quarter hours) ─────────────────────
+// ─── M15 bars and ATR(14) built from M5 ──────────────────────────────────────
 var float m15h = na
 var float m15l = na
 var int   m15nym = 0
@@ -131,14 +114,12 @@ else
     m15h := math.max(m15h, high)
     m15l := math.min(m15l, low)
 m15Done = tEnd % 900000 == 0
-
-// ATR(14) of M15, Wilder smoothing seeded with the mean of the first 14 ranges (as ta.atr)
 var int   n15 = 0
 var float acc15 = 0.0
 var float atr15 = na
 var float prev15c = na
 
-// ─── H1 closes built from the M5 chart, EMA 50 ────────────────────────────────
+// ─── H1 closes and EMA 50 built from M5 ──────────────────────────────────────
 var int   n60 = 0
 var float acc60 = 0.0
 var float h1ema = na
@@ -154,19 +135,18 @@ if tEnd % 3600000 == 0
         h1ema := 2.0 / 51.0 * close + (1 - 2.0 / 51.0) * h1ema
     h1trend := na(h1ema) ? 0.0 : math.sign(close - h1ema)
 
-// ─── ICICLE (EMA-stack pullback, M5, 13:00–17:00 UTC) ─────────────────────────
-utcH   = hour(time, "UTC")
-lo3    = ta.lowest(low, 3)
-hi3    = ta.highest(high, 3)
+// ─── ICICLE ───────────────────────────────────────────────────────────────────
+utcH = hour(time, "UTC")
+lo3  = ta.lowest(low, 3)
+hi3  = ta.highest(high, 3)
 iceL = e34 > e50 and e50 > e200 and close > e200 and lo3 <= e34 and close > open and close > high[1] and close > e34 and adx14 > 20 and rsi14 > 45 and rsi14 < 70
 iceS = e34 < e50 and e50 < e200 and close < e200 and hi3 >= e34 and close < open and close < low[1] and close < e34 and adx14 > 20 and rsi14 < 55 and rsi14 > 30
-iceWin = utcH >= 13 and utcH < 17 and bar_index >= 5
-int iceDir = iceWin and useIce and (iceL != iceS) ? (iceL ? 1 : -1) : 0
+int iceDir = utcH >= 13 and utcH < 17 and bar_index >= 5 and (iceL != iceS) ? (iceL ? 1 : -1) : 0
 swLo = ta.lowest(low, 5) - 0.2 * atr5
 swHi = ta.highest(high, 5) + 0.2 * atr5
 float iceStop = iceDir == 1 ? math.min(math.max(close - swLo, 0.6 * atr5), 3 * atr5) : iceDir == -1 ? math.min(math.max(swHi - close, 0.6 * atr5), 3 * atr5) : na
 
-// ─── AVALANCHE (first M15 close through yesterday's high/low, H1 EMA50 side) ──
+// ─── AVALANCHE ────────────────────────────────────────────────────────────────
 var int firstUpDay = -1
 var int firstDnDay = -1
 int   avaDir = 0
@@ -186,205 +166,161 @@ if m15Done
     if inWin and not na(pdh) and not na(prev15c) and not na(atr15)
         bool up = close > pdh and prev15c <= pdh and h1trend > 0
         bool dn = close < pdl and prev15c >= pdl and h1trend < 0
-        if up and firstUpDay != m15day
+        if up and (not firstOnly or firstUpDay != m15day)
             avaDir := 1
             firstUpDay := m15day
-        else if dn and firstDnDay != m15day
+        else if dn and (not firstOnly or firstDnDay != m15day)
             avaDir := -1
             firstDnDay := m15day
         avaStop := 1.5 * atr15
     prev15c := close
-if not useAva
-    avaDir := 0
 
-// One signal per bar: Icicle first, then Avalanche.
-int    sigDir  = iceDir != 0 ? iceDir : avaDir
-float  sigStop = iceDir != 0 ? iceStop : avaStop
-string sigName = iceDir != 0 ? "ICICLE" : "AVALANCHE"
-float  sigT1   = iceDir != 0 ? iceT1 : avaT1
-float  sigT2   = iceDir != 0 ? iceT2 : avaT2
+int   sigDir  = iceDir != 0 ? iceDir : avaDir
+float sigStop = iceDir != 0 ? iceStop : avaStop
+float sigT1   = iceDir != 0 ? ICE_T1 : AVA_T1
+float sigT2   = iceDir != 0 ? ICE_T2 : AVA_T2
 
-// ─── Lot size: per order, two orders per signal ──────────────────────────────
-// A buy fills at the ask and is stopped on the bid, so its real loss is stop + spread;
-// a sell is stopped on the ask at the SL price, so its loss is the stop distance.
+// ─── Lots: two orders; a buy's loss includes the spread ──────────────────────
 f_lots(float stopDist, int dir) =>
-    float lossPerLot = (stopDist + (dir == 1 ? spr : 0.0)) * usdPer1
-    float budget = balance * riskPct / 100.0 / 2.0
-    float lots = lossPerLot > 0 ? math.floor(budget / lossPerLot / lotStep + 1e-9) * lotStep : 0.0
-    bool minLot = lots < lotStep
-    lots := math.max(lots, lotStep)
+    float lossPerLot = (stopDist + (dir == 1 ? spr : 0.0)) * CONTRACT
+    float lots = math.floor(balance * riskPct / 100.0 / 2.0 / lossPerLot / LOT_STEP + 1e-9) * LOT_STEP
+    bool minLot = lots < LOT_STEP
+    lots := math.max(lots, LOT_STEP)
     [lots, 2.0 * lots * lossPerLot, minLot]
 
-// ─── Trade tracker: one signal at a time, same rules as the research engine ──
-// Entry at the next bar's open (a buy at the ask), stop checked before targets
-// inside a bar, a bar opening beyond the stop exits at that open.
-var int    tDir = 0
-var bool   pend = false
-var string tName = ""
-var float  tRef = na
-var float  tFill = na
-var float  tSL = na
-var float  tT1 = na
-var float  tT2 = na
-var float  tStop2 = na
-var bool   leg1 = false
-var bool   leg2 = false
-var float  r1 = 0.0
-var float  r2 = 0.0
-var int    tEntryT = na
-var int    tDay = 0
-var bool   gotT1 = false
-var bool   gotT2 = false
-var bool   gotSL = false
-var line   lnSL = na
-var line   lnT1 = na
-var line   lnT2 = na
-var line   lnE = na
-var label  lbSig = na
+f_px(float p) =>
+    str.tostring(p, "0.00")
+
+// ─── Trade tracker (one at a time; same rules as the research engine) ────────
+var int   tDir = 0
+var bool  pend = false
+var float tRef = na
+var float tFill = na
+var float tSL = na
+var float tT1 = na
+var float tT2 = na
+var bool  leg1 = false
+var bool  leg2 = false
+var float r1 = 0.0
+var float r2 = 0.0
+var int   tEntryT = na
+var int   tDay = 0
+var bool  gotT1 = false
+var bool  gotT2 = false
+var bool  gotSL = false
+var float tLots = na
+var line  lnE = na
+var line  lnSL = na
+var line  lnT1 = na
+var line  lnT2 = na
+var label lbSL = na
+var label lbT1 = na
+var label lbT2 = na
+var label lbSig = na
+var label lbRes = na
+var linefill fRisk = na
+var linefill fGain = na
 
 var int   nTr = 0
 var int   nWin = 0
-var int   nT1 = 0
-var int   nT2 = 0
-var int   nSL = 0
 var float sumR = 0.0
+var int   todayKey = 0
+var int   todayN = 0
 
 string evt = ""
 bool cancelNow = false
 
-f_endLines() =>
-    if not na(lnSL)
-        line.set_x2(lnSL, bar_index)
-        line.set_x2(lnT1, bar_index)
-        line.set_x2(lnT2, bar_index)
-        line.set_x2(lnE, bar_index)
-        line.set_extend(lnSL, extend.none)
-        line.set_extend(lnT1, extend.none)
-        line.set_extend(lnT2, extend.none)
-        line.set_extend(lnE, extend.none)
+f_clearTags() =>
+    label.delete(lbSL)
+    label.delete(lbT1)
+    label.delete(lbT2)
 
-// 1) fill the pending entry at this bar's open
+// 1) enter at this bar's open
 if pend
     pend := false
     bool stale = tDir == 1 ? (open <= tSL or open >= tT1) : (open + spr >= tSL or open + spr <= tT1)
     if stale
         tDir := 0
-        evt := tName + " cancelled: price opened beyond a level. Skip it"
+        evt := "Skip the last signal: price opened beyond a level"
         cancelNow := true
-        if not na(lnSL)
-            line.delete(lnSL)
-            line.delete(lnT1)
-            line.delete(lnT2)
-            line.delete(lnE)
-            lnSL := na
-        if not na(lbSig)
-            label.set_text(lbSig, tName + " skipped")
-            label.set_color(lbSig, color.new(C_DIM, 40))
+        line.delete(lnE)
+        line.delete(lnSL)
+        line.delete(lnT1)
+        line.delete(lnT2)
+        f_clearTags()
+        label.set_text(lbSig, "skip")
+        label.set_color(lbSig, color.new(#607D8B, 30))
     else
         tFill := tDir == 1 ? open + spr : open
         tEntryT := time
         tDay := tdayKey
         leg1 := true
         leg2 := true
-        tStop2 := tSL
         r1 := 0.0
         r2 := 0.0
-        gotT1 := false
-        gotT2 := false
-        gotSL := false
 
-// 2) manage the open trade on this bar
+// 2) manage the open trade: gap, stop first, then targets, then time exits
 if tDir != 0 and not pend and (leg1 or leg2)
     float risk = math.abs(tRef - tSL)
     bool hadT1 = gotT1
-    if tDir == 1
-        if leg1 and open <= tSL
-            r1 := (open - tFill) / risk
+    float bO = tDir == 1 ? open : open + spr
+    float bH = tDir == 1 ? high : high + spr
+    float bL = tDir == 1 ? low : low + spr
+    bool slGap = tDir == 1 ? bO <= tSL : bO >= tSL
+    bool slHit = tDir == 1 ? bL <= tSL : bH >= tSL
+    bool t1Hit = tDir == 1 ? bH >= tT1 : bL <= tT1
+    bool t2Hit = tDir == 1 ? bH >= tT2 : bL <= tT2
+    float slPx = slGap ? bO : tSL
+    if slGap or slHit
+        if leg1
+            r1 := tDir * (slPx - tFill) / risk
             leg1 := false
-            gotSL := true
-        if leg2 and open <= tStop2
-            r2 := (open - tFill) / risk
+        if leg2
+            r2 := tDir * (slPx - tFill) / risk
             leg2 := false
-            gotSL := gotSL or tStop2 == tSL
-        if leg1 and low <= tSL
-            r1 := (tSL - tFill) / risk
-            leg1 := false
-            gotSL := true
-        if leg2 and low <= tStop2
-            r2 := (tStop2 - tFill) / risk
-            leg2 := false
-            gotSL := gotSL or tStop2 == tSL
-        if leg1 and high >= tT1
-            r1 := (tT1 - tFill) / risk
-            leg1 := false
-            gotT1 := true
-            if mgmt == M_BE
-                tStop2 := math.max(tStop2, tFill)
-        if leg2 and high >= tT2
-            r2 := (tT2 - tFill) / risk
-            leg2 := false
-            gotT2 := true
-    else
-        float aO = open + spr
-        float aH = high + spr
-        float aL = low + spr
-        if leg1 and aO >= tSL
-            r1 := (tFill - aO) / risk
-            leg1 := false
-            gotSL := true
-        if leg2 and aO >= tStop2
-            r2 := (tFill - aO) / risk
-            leg2 := false
-            gotSL := gotSL or tStop2 == tSL
-        if leg1 and aH >= tSL
-            r1 := (tFill - tSL) / risk
-            leg1 := false
-            gotSL := true
-        if leg2 and aH >= tStop2
-            r2 := (tFill - tStop2) / risk
-            leg2 := false
-            gotSL := gotSL or tStop2 == tSL
-        if leg1 and aL <= tT1
-            r1 := (tFill - tT1) / risk
-            leg1 := false
-            gotT1 := true
-            if mgmt == M_BE
-                tStop2 := math.min(tStop2, tFill)
-        if leg2 and aL <= tT2
-            r2 := (tFill - tT2) / risk
-            leg2 := false
-            gotT2 := true
+        gotSL := true
+    if leg1 and t1Hit
+        r1 := tDir * (tT1 - tFill) / risk
+        leg1 := false
+        gotT1 := true
+    if leg2 and t2Hit
+        r2 := tDir * (tT2 - tFill) / risk
+        leg2 := false
+        gotT2 := true
     if gotT1 and not hadT1 and leg2
-        evt := mgmt == M_BE ? "TP1 hit ✓ Move order B's stop to entry " + f_px(tFill) : "TP1 hit ✓ Order B is still open, target TP2 " + f_px(tT2)
-    bool timeUp  = tEnd - tEntryT >= maxHold * 60000
-    bool newDay  = tdayKey != tDay
-    bool flatNow = flatNY and nyMinClose >= 16 * 60 + 50 and nyMin < 17 * 60
+        evt := "TP1 hit ✓ (order B still open, TP2 " + f_px(tT2) + ")"
+    bool timeUp = tEnd - tEntryT >= MAX_HOLD * 60000
+    bool flatNow = nyMinClose >= 16 * 60 + 50 and nyMin < 17 * 60
+    bool newDay = tdayKey != tDay
     if (leg1 or leg2) and (timeUp or flatNow or newDay)
         float px = tDir == 1 ? close : close + spr
         if leg1
-            r1 := (tDir == 1 ? px - tFill : tFill - px) / risk
+            r1 := tDir * (px - tFill) / risk
             leg1 := false
         if leg2
-            r2 := (tDir == 1 ? px - tFill : tFill - px) / risk
+            r2 := tDir * (px - tFill) / risk
             leg2 := false
-        evt := (timeUp ? "Time limit" : "Rollover soon") + ": close the open Frostbite order(s) now"
+        evt := "Close now: 2-hour limit"
     if not leg1 and not leg2
         float rr = 0.5 * (r1 + r2)
         nTr += 1
         nWin += rr > 0 ? 1 : 0
-        nT1 += gotT1 ? 1 : 0
-        nT2 += gotT2 ? 1 : 0
-        nSL += gotSL ? 1 : 0
         sumR += rr
+        string res = gotT2 ? "TP2 ✓✓" : gotT1 ? "TP1 ✓" : gotSL ? "SL ✕" : "closed"
         if evt == ""
-            evt := gotT2 ? "TP2 hit ✓✓ Trade finished" : gotSL and gotT1 ? "Order B stopped. Trade finished" : gotSL ? "SL hit. Trade finished" : "Trade finished"
-        evt := evt + " (" + str.tostring(rr, "+0.00;-0.00") + "R)"
-        f_endLines()
+            evt := gotT2 ? "TP2 hit ✓✓" : gotSL and gotT1 ? "TP1 ✓, then order B stopped" : gotSL ? "SL hit ✕" : "Closed"
+        if not na(lnSL)
+            line.set_x2(lnE, bar_index)
+            line.set_x2(lnSL, bar_index)
+            line.set_x2(lnT1, bar_index)
+            line.set_x2(lnT2, bar_index)
+            f_clearTags()
+            lbRes := label.new(bar_index, tDir == 1 ? (gotSL and not gotT1 ? low : high) : (gotSL and not gotT1 ? high : low), res, style = label.style_none, textcolor = gotT1 or gotT2 ? C_TP : C_SL, size = size.normal)
         tDir := 0
 
-// 3) new signal on this closed bar (one trade at a time; none around rollover)
-rolloverBlock = nyMinClose >= 16 * 60 + 50 and nyMinClose < 18 * 60
-bool newSig = isM5 and sigDir != 0 and tDir == 0 and not rolloverBlock and sigStop > 0 and barstate.isconfirmed
+// 3) new signal on this closed bar
+bool rollover = nyMinClose >= 16 * 60 + 50 and nyMinClose < 18 * 60
+bool newSig = active and sigDir != 0 and tDir == 0 and not rollover and sigStop > 0 and barstate.isconfirmed
 string sigTxt = ""
 if newSig
     tDir := sigDir
@@ -392,70 +328,56 @@ if newSig
     gotT1 := false
     gotT2 := false
     gotSL := false
-    tName := sigName
     tRef := close
     tSL := close - sigDir * sigStop
     tT1 := close + sigDir * sigStop * sigT1
     tT2 := close + sigDir * sigStop * sigT2
     [lots, riskUsd, minLot] = f_lots(sigStop, sigDir)
+    tLots := lots
     string side = sigDir == 1 ? "BUY" : "SELL"
-    sigTxt := "❄ FROSTBITE " + sigName + " · " + side + " " + tkr + " @≈" + f_px(close) + " | SL " + f_px(tSL) + " (" + f_dist(sigStop) + ") | TP1 " + f_px(tT1) + " | TP2 " + f_px(tT2) + " | 2 orders × " + (na(usdPer1) ? "? lots (no USD rate for " + syminfo.currency + ": size it in MT5)" : str.tostring(lots, "0.00#") + " lots, total risk ≈ $" + str.tostring(riskUsd, "0.00") + " (" + str.tostring(100 * riskUsd / balance, "0") + "% of balance)" + (minLot ? " ⚠ the minimum lot is above your risk setting" : "")) + (mgmt == M_BE ? " | at TP1 move order B's SL to entry" : "") + " | close after " + str.tostring(maxHold) + " min"
-    if showPast or barstate.islast
-        lbSig := label.new(bar_index, sigDir == 1 ? low : high, sigName + " " + side + "\nSL " + f_px(tSL) + "\nTP1 " + f_px(tT1) + "\nTP2 " + f_px(tT2) + "\n" + (na(usdPer1) ? "lots: see MT5" : str.tostring(lots, "0.00#") + " lots ×2"), style = sigDir == 1 ? label.style_label_up : label.style_label_down, color = sigDir == 1 ? C_BUY : C_SELL, textcolor = color.white, size = size.small)
-        lnE  := line.new(bar_index, close, bar_index + 1, close, color = C_DIM, style = line.style_dotted, extend = extend.right)
-        lnSL := line.new(bar_index, tSL, bar_index + 1, tSL, color = C_SL, width = 2, extend = extend.right)
-        lnT1 := line.new(bar_index, tT1, bar_index + 1, tT1, color = C_TP1, width = 1, extend = extend.right)
-        lnT2 := line.new(bar_index, tT2, bar_index + 1, tT2, color = C_TP2, width = 2, extend = extend.right)
-    else
-        lbSig := na
-        lnSL := na
+    sigTxt := "❄ " + side + " XAUUSD " + f_px(close) + " | SL " + f_px(tSL) + " | TP1 " + f_px(tT1) + " | TP2 " + f_px(tT2) + " | " + str.tostring(lots, "0.00") + " lot × 2 orders, risk $" + str.tostring(riskUsd, "0.00") + (minLot ? " (min lot)" : "")
+    if todayKey != tdayKey
+        todayKey := tdayKey
+        todayN := 0
+    todayN += 1
+    if not showPast
+        line.delete(lnE)
+        line.delete(lnSL)
+        line.delete(lnT1)
+        line.delete(lnT2)
+        label.delete(lbSig)
+        label.delete(lbRes)
+    int x2 = bar_index + HOLD_BARS
+    lbSig := label.new(bar_index, sigDir == 1 ? low : high, side, style = sigDir == 1 ? label.style_label_up : label.style_label_down, color = sigDir == 1 ? C_BUY : C_SELL, textcolor = color.white, size = size.normal)
+    lnE  := line.new(bar_index, close, x2, close, color = color.new(C_TXT, 60), style = line.style_dotted)
+    lnSL := line.new(bar_index, tSL, x2, tSL, color = C_SL, width = 2)
+    lnT1 := line.new(bar_index, tT1, x2, tT1, color = C_TP, width = 1, style = line.style_dashed)
+    lnT2 := line.new(bar_index, tT2, x2, tT2, color = C_TP, width = 2)
+    fRisk := linefill.new(lnE, lnSL, color.new(C_SL, 88))
+    fGain := linefill.new(lnE, lnT2, color.new(C_TP, 90))
+    lbSL := label.new(x2, tSL, "SL " + f_px(tSL), style = label.style_label_left, color = C_SL, textcolor = color.white, size = size.small)
+    lbT1 := label.new(x2, tT1, "TP1 " + f_px(tT1), style = label.style_label_left, color = color.new(C_TP, 30), textcolor = color.black, size = size.small)
+    lbT2 := label.new(x2, tT2, "TP2 " + f_px(tT2), style = label.style_label_left, color = C_TP, textcolor = color.black, size = size.small)
 
-// ─── Alerts (create ONE alert: "Any alert() function call") ──────────────────
+// ─── Alerts: create one alert with "Any alert() function call" ──────────────
 if newSig
     alert(sigTxt, alert.freq_once_per_bar_close)
-if cancelNow and isM5
-    alert("❄ FROSTBITE " + tkr + " · " + evt, alert.freq_once_per_bar)
-if evt != "" and barstate.isconfirmed and isM5 and not cancelNow
-    alert("❄ FROSTBITE " + tkr + " · " + evt, alert.freq_once_per_bar_close)
+if cancelNow and active
+    alert("❄ " + evt, alert.freq_once_per_bar)
+if evt != "" and barstate.isconfirmed and active and not cancelNow
+    alert("❄ XAUUSD · " + evt, alert.freq_once_per_bar_close)
 
-plotshape(newSig and sigDir == 1, "BUY", shape.triangleup, location.belowbar, C_BUY, size = size.tiny)
-plotshape(newSig and sigDir == -1, "SELL", shape.triangledown, location.abovebar, C_SELL, size = size.tiny)
-plot(pdh, "Yesterday's high", color.new(C_TP2, 60), 1, plot.style_linebr)
-plot(pdl, "Yesterday's low", color.new(C_SELL, 60), 1, plot.style_linebr)
-
-// ─── Panel ────────────────────────────────────────────────────────────────────
-var string lastSig = ""
-if newSig
-    lastSig := str.format_time(time_close, "dd MMM HH:mm", "Asia/Kuala_Lumpur") + " · " + sigName + " " + (sigDir == 1 ? "BUY" : "SELL") + " @" + f_px(close)
-var string lastEvt = ""
-if evt != ""
-    lastEvt := str.format_time(time_close, "dd MMM HH:mm", "Asia/Kuala_Lumpur") + " · " + evt
-
-f_pos() =>
-    dashPos == "Top right" ? position.top_right : dashPos == "Bottom right" ? position.bottom_right : dashPos == "Top left" ? position.top_left : position.bottom_left
-
-var table dash = dashPos == "Hidden" ? na : table.new(f_pos(), 2, 11, bgcolor = color.new(#0B1B2B, 8), border_color = color.new(C_HEAD, 40), border_width = 1)
-
-f_row(int r, string k, string v, color c, string sz) =>
-    table.cell(dash, 0, r, k, text_color = C_DIM, text_halign = text.align_left, text_size = sz)
-    table.cell(dash, 1, r, v, text_color = c, text_halign = text.align_right, text_size = sz)
-
-f_pct(int k, int n) =>
-    n > 0 ? str.tostring(100.0 * k / n, "0") + "%" : "—"
-
-if barstate.islast and not na(dash)
-    string sz = dashSize == "Tiny" ? size.tiny : dashSize == "Normal" ? size.normal : size.small
-    table.cell(dash, 0, 0, "❄ FROSTBITE", text_color = color.white, bgcolor = C_HEAD, text_size = sz)
-    table.cell(dash, 1, 0, tkr + " · " + timeframe.period, text_color = color.white, bgcolor = C_HEAD, text_size = sz)
-    f_row(1, "Chart", isM5 ? "M5 ✓ signals and alerts on" : "⚠ switch to 5 minutes: signals are off", isM5 ? C_GOOD : C_SL, sz)
-    string st = tDir == 0 ? "waiting for a signal" : tName + " " + (tDir == 1 ? "BUY" : "SELL") + (pend ? " (enter now)" : " open") + (gotT1 ? " · TP1 ✓" : "")
-    f_row(2, "Now", st, tDir == 0 ? C_TXT : tDir == 1 ? C_BUY : C_SELL, sz)
-    f_row(3, "Levels", tDir == 0 ? "—" : "SL " + f_px(tSL) + " · TP1 " + f_px(tT1) + " · TP2 " + f_px(tT2), C_TXT, sz)
-    f_row(4, "Last signal", lastSig == "" ? "none in the loaded history" : lastSig, C_TXT, sz)
-    f_row(5, "Last event", lastEvt == "" ? "—" : lastEvt, C_TXT, sz)
-    f_row(6, "This chart", str.tostring(nTr) + " trades · win " + f_pct(nWin, nTr) + " · TP1 " + f_pct(nT1, nTr) + " · TP2 " + f_pct(nT2, nTr), C_TXT, sz)
-    f_row(7, "Avg per trade", nTr > 0 ? str.tostring(sumR / nTr, "+0.00;-0.00") + "R after spread" : "—", sumR >= 0 ? C_GOOD : C_SL, sz)
-    f_row(8, "Research (gold)", "574 unseen trades · +0.09R avg · win 47%", C_DIM, sz)
-    f_row(9, "Yesterday", na(pdh) ? "—" : "high " + f_px(pdh) + " · low " + f_px(pdl), C_TXT, sz)
-    table.cell(dash, 0, 10, "Two orders per signal: A → TP1, B → TP2, same SL. Close anything open after " + str.tostring(maxHold) + " min.", text_color = C_DIM, text_size = size.tiny)
-    table.merge_cells(dash, 0, 10, 1, 10)
+// ─── Panel (3 rows) ───────────────────────────────────────────────────────────
+var table dash = table.new(position.top_right, 2, 3, bgcolor = color.new(C_BG, 10), border_width = 0)
+if barstate.islast
+    if not active
+        table.cell(dash, 0, 0, "❄ FROSTBITE", text_color = C_TXT, text_size = size.small)
+        table.cell(dash, 1, 0, "XAUUSD · M5 only", text_color = C_SL, text_size = size.small)
+    else
+        string now = tDir == 0 ? "waiting" : (tDir == 1 ? "BUY" : "SELL") + (pend ? " · enter now" : gotT1 ? " · TP1 ✓" : " · open")
+        table.cell(dash, 0, 0, "❄ FROSTBITE", text_color = C_TXT, text_size = size.small)
+        table.cell(dash, 1, 0, now, text_color = tDir == 1 ? C_BUY : tDir == -1 ? C_SELL : C_TXT, text_size = size.small)
+        table.cell(dash, 0, 1, "Lots", text_color = C_TXT, text_size = size.small)
+        table.cell(dash, 1, 1, tDir == 0 ? "—" : str.tostring(tLots, "0.00") + " × 2", text_color = C_TXT, text_size = size.small)
+        table.cell(dash, 0, 2, "Today", text_color = C_TXT, text_size = size.small)
+        table.cell(dash, 1, 2, str.tostring(todayKey == tdayKey ? todayN : 0) + " signals · chart avg " + (nTr > 0 ? str.tostring(sumR / nTr, "+0.00;-0.00") + "R" : "—"), text_color = C_TXT, text_size = size.small)

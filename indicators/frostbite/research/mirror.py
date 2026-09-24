@@ -63,7 +63,7 @@ def chart_indicators(b):
     return out
 
 
-def run():
+def run(first_only=True):
     b = frost.bars(5)
     ind = chart_indicators(b)
     o, h, l, c = b.o.values, b.h.values, b.l.values, b.c.values
@@ -135,9 +135,9 @@ def run():
             if in_win and np.isfinite(pdh) and np.isfinite(pc) and np.isfinite(a15):
                 up = m15["c"] > pdh and pc <= pdh and h1_trend > 0
                 dn = m15["c"] < pdl and pc >= pdl and h1_trend < 0
-                if up and first_up != m15["tday"]:
+                if up and (not first_only or first_up != m15["tday"]):
                     ava = 1; first_up = m15["tday"]
-                elif dn and first_dn != m15["tday"]:
+                elif dn and (not first_only or first_dn != m15["tday"]):
                     ava = -1; first_dn = m15["tday"]
                 ava_stop = 1.5 * a15
             prev15_close = m15["c"]
@@ -155,10 +155,19 @@ def run():
     return s
 
 
-def compare():
+def research_signals(first_only=True):
+    """Research definition: Icicle (Team A F10) + Avalanche (Team C PDHL), Icicle first on the same bar."""
     import meeting
-    ref = meeting.frostbite_signals()
-    mir = run()
+    a, _ = meeting.cand_A(); c, _ = meeting.cand_C(first=first_only)
+    u = pd.concat([a.assign(src=0), c.assign(src=1)], ignore_index=True).sort_values(["i", "src"], kind="stable")
+    return u.drop_duplicates("i", keep="first").reset_index(drop=True)
+
+
+def compare(first_only=True):
+    import meeting
+    print(f"== mode: {'Fewer, stronger (first break per side per day)' if first_only else 'More signals (every break)'}")
+    ref = research_signals(first_only)
+    mir = run(first_only)
     a = ref.set_index("i"); m = mir.set_index("i")
     both = a.index.intersection(m.index)
     only_ref = a.index.difference(m.index); only_mir = m.index.difference(a.index)
@@ -256,5 +265,6 @@ def chart_vs_engine():
 
 
 if __name__ == "__main__":
-    compare()
+    compare(True)
+    compare(False)
     chart_vs_engine()
