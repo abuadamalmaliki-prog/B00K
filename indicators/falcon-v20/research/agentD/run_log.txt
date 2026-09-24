@@ -1,0 +1,219 @@
+
+=== F1_FVG (6 configs) ===
+FVG H1 tp=1R                       ALL n=12083 win= 42.8% R=-0.162±0.009 PF=0.72 +cells=0/4 | s1: n=2851 win= 42.8% R=-0.160±0.019 | s2: n=3166 win= 45.0% R=-0.122±0.018 | u1: n=3066 win= 41.5% R=-0.185±0.018 | u2: n=3000 win= 41.9% R=-0.180±0.018 | GROSS R=-0.011 | score=-0.160
+FVG H1 tp=2R                       ALL n=10142 win= 29.1% R=-0.166±0.013 PF=0.77 +cells=0/4 | s1: n=2388 win= 29.2% R=-0.162±0.028 | s2: n=2598 win= 31.3% R=-0.112±0.028 | u1: n=2594 win= 27.5% R=-0.208±0.026 | u2: n=2562 win= 28.4% R=-0.183±0.026 | GROSS R=-0.003 | score=-0.162
+FVG H1 tp=swing                    ALL n=11472 win= 39.8% R=-0.175±0.012 PF=0.72 +cells=0/4 | s1: n=2768 win= 39.7% R=-0.181±0.024 | s2: n=2998 win= 42.4% R=-0.117±0.024 | u1: n=2854 win= 37.7% R=-0.234±0.023 | u2: n=2852 win= 39.2% R=-0.172±0.025 | GROSS R=-0.017 | score=-0.181
+FVG H4 tp=1R                       ALL n= 3646 win= 45.9% R=-0.099±0.016 PF=0.82 +cells=0/4 | s1: n= 874 win= 45.5% R=-0.105±0.033 | s2: n= 893 win= 46.4% R=-0.091±0.033 | u1: n= 898 win= 44.4% R=-0.127±0.032 | u2: n= 981 win= 47.3% R=-0.076±0.032 | GROSS R=-0.016 | score=-0.105
+FVG H4 tp=2R                       ALL n= 3257 win= 34.0% R=-0.084±0.023 PF=0.87 +cells=0/4 | s1: n= 764 win= 32.6% R=-0.135±0.046 | s2: n= 788 win= 35.8% R=-0.026±0.048 | u1: n= 819 win= 31.9% R=-0.140±0.045 | u2: n= 886 win= 35.4% R=-0.039±0.045 | GROSS R=+0.001 | score=-0.135
+FVG H4 tp=swing                    ALL n= 3401 win= 44.4% R=-0.102±0.021 PF=0.82 +cells=0/4 | s1: n= 798 win= 43.9% R=-0.089±0.045 | s2: n= 852 win= 44.4% R=-0.117±0.041 | u1: n= 835 win= 45.1% R=-0.116±0.042 | u2: n= 916 win= 44.3% R=-0.086±0.043 | GROSS R=-0.015 | score=-0.117
+--> chosen on SEEN: FVG H4 tp=1R (score -0.105)  [2s]
+
+=== F2_OB (10 configs) ===
+OB p3 H1 tp=1R                     ALL n= 6807 win= 43.6% R=-0.144±0.012 PF=0.75 +cells=0/4 | s1: n=1577 win= 45.0% R=-0.117±0.025 | s2: n=1543 win= 44.1% R=-0.134±0.026 | u1: n=1885 win= 43.1% R=-0.154±0.023 | u2: n=1802 win= 42.5% R=-0.166±0.023 | GROSS R=-0.033 | score=-0.134
+OB p3 H1 tp=2R                     ALL n= 5744 win= 31.3% R=-0.111±0.018 PF=0.84 +cells=0/4 | s1: n=1344 win= 33.1% R=-0.054±0.038 | s2: n=1324 win= 32.3% R=-0.075±0.038 | u1: n=1586 win= 30.9% R=-0.125±0.034 | u2: n=1490 win= 29.1% R=-0.179±0.034 | GROSS R=-0.002 | score=-0.075
+OB p5 H1 tp=1R                     ALL n= 4578 win= 44.8% R=-0.120±0.015 PF=0.79 +cells=0/4 | s1: n=1036 win= 48.1% R=-0.062±0.032 | s2: n=1023 win= 44.4% R=-0.124±0.031 | u1: n=1273 win= 44.1% R=-0.137±0.028 | u2: n=1246 win= 43.3% R=-0.149±0.028 | GROSS R=-0.014 | score=-0.124
+OB p5 H1 tp=2R                     ALL n= 4021 win= 32.2% R=-0.094±0.022 PF=0.86 +cells=0/4 | s1: n= 913 win= 34.7% R=-0.019±0.047 | s2: n= 891 win= 32.7% R=-0.070±0.046 | u1: n=1122 win= 32.0% R=-0.106±0.041 | u2: n=1095 win= 29.8% R=-0.163±0.040 | GROSS R=+0.027 | score=-0.070
+OB p3 H4 tp=1R                     ALL n= 1804 win= 46.9% R=-0.081±0.023 PF=0.84 +cells=0/4 | s1: n= 376 win= 46.0% R=-0.105±0.050 | s2: n= 425 win= 49.4% R=-0.032±0.048 | u1: n= 494 win= 45.7% R=-0.091±0.043 | u2: n= 509 win= 46.6% R=-0.095±0.044 | GROSS R=-0.007 | score=-0.105
+OB p3 H4 tp=2R                     ALL n= 1689 win= 35.0% R=-0.094±0.031 PF=0.85 +cells=0/4 | s1: n= 358 win= 33.2% R=-0.158±0.065 | s2: n= 400 win= 37.2% R=-0.001±0.066 | u1: n= 456 win= 34.4% R=-0.114±0.058 | u2: n= 475 win= 34.9% R=-0.107±0.058 | GROSS R=-0.024 | score=-0.158
+OB p5 H4 tp=1R                     ALL n= 1264 win= 45.6% R=-0.103±0.027 PF=0.80 +cells=0/4 | s1: n= 264 win= 43.2% R=-0.160±0.059 | s2: n= 304 win= 49.7% R=-0.037±0.056 | u1: n= 344 win= 45.6% R=-0.089±0.052 | u2: n= 352 win= 44.0% R=-0.131±0.051 | GROSS R=-0.025 | score=-0.160
+OB p5 H4 tp=2R                     ALL n= 1210 win= 35.0% R=-0.098±0.036 PF=0.84 +cells=1/4 | s1: n= 255 win= 31.4% R=-0.192±0.076 | s2: n= 292 win= 40.1% R=+0.034±0.077 | u1: n= 327 win= 34.3% R=-0.122±0.068 | u2: n= 336 win= 34.2% R=-0.116±0.067 | GROSS R=-0.028 | score=-0.192
+OB p5 H1 tp=ext                    ALL n= 4340 win= 38.0% R=-0.116±0.023 PF=0.82 +cells=0/4 | s1: n= 961 win= 36.6% R=-0.123±0.049 | s2: n= 959 win= 37.5% R=-0.102±0.048 | u1: n=1227 win= 38.1% R=-0.109±0.045 | u2: n=1193 win= 39.4% R=-0.130±0.040 | GROSS R=-0.011 | score=-0.123
+OB p5 H4 tp=ext                    ALL n= 1201 win= 37.6% R=-0.170±0.037 PF=0.72 +cells=0/4 | s1: n= 254 win= 34.3% R=-0.264±0.073 | s2: n= 293 win= 36.2% R=-0.175±0.076 | u1: n= 325 win= 40.6% R=-0.121±0.070 | u2: n= 329 win= 38.6% R=-0.143±0.074 | GROSS R=-0.096 | score=-0.264
+--> chosen on SEEN: OB p5 H1 tp=2R (score -0.070)  [4s]
+
+=== F3_CANDLE (10 configs) ===
+engulf H1 tp=1R                    ALL n= 3673 win= 43.9% R=-0.139±0.016 PF=0.76 +cells=0/4 | s1: n= 813 win= 45.8% R=-0.099±0.035 | s2: n= 784 win= 45.8% R=-0.105±0.036 | u1: n=1018 win= 42.5% R=-0.163±0.031 | u2: n=1058 win= 42.3% R=-0.171±0.031 | GROSS R=-0.031 | score=-0.105
+engulf H1 tp=2R                    ALL n= 3375 win= 30.1% R=-0.134±0.023 PF=0.81 +cells=0/4 | s1: n= 744 win= 30.9% R=-0.106±0.050 | s2: n= 723 win= 32.0% R=-0.085±0.052 | u1: n= 939 win= 29.9% R=-0.141±0.044 | u2: n= 969 win= 28.3% R=-0.186±0.043 | GROSS R=-0.029 | score=-0.106
+engulf H4 tp=1R                    ALL n=  962 win= 46.8% R=-0.085±0.031 PF=0.83 +cells=1/4 | s1: n= 195 win= 52.3% R=+0.014±0.070 | s2: n= 215 win= 47.9% R=-0.078±0.066 | u1: n= 277 win= 48.0% R=-0.063±0.057 | u2: n= 275 win= 40.7% R=-0.185±0.058 | GROSS R=-0.032 | score=-0.078
+engulf H4 tp=2R                    ALL n=  940 win= 35.7% R=-0.070±0.041 PF=0.89 +cells=1/4 | s1: n= 189 win= 40.2% R=+0.019±0.094 | s2: n= 210 win= 37.6% R=-0.084±0.085 | u1: n= 272 win= 35.3% R=-0.087±0.075 | u2: n= 269 win= 31.6% R=-0.105±0.079 | GROSS R=-0.013 | score=-0.084
+pin H1 tp=1R                       ALL n= 4257 win= 42.4% R=-0.168±0.015 PF=0.71 +cells=0/4 | s1: n= 970 win= 43.9% R=-0.141±0.033 | s2: n= 933 win= 43.3% R=-0.148±0.033 | u1: n=1171 win= 41.8% R=-0.172±0.029 | u2: n=1183 win= 40.8% R=-0.200±0.029 | GROSS R=-0.022 | score=-0.148
+pin H1 tp=2R                       ALL n= 4115 win= 28.8% R=-0.162±0.021 PF=0.78 +cells=0/4 | s1: n= 929 win= 29.2% R=-0.157±0.045 | s2: n= 904 win= 29.6% R=-0.135±0.045 | u1: n=1134 win= 28.0% R=-0.180±0.040 | u2: n=1148 win= 28.7% R=-0.168±0.040 | GROSS R=-0.014 | score=-0.157
+pin H4 tp=1R                       ALL n= 1050 win= 47.8% R=-0.065±0.031 PF=0.88 +cells=1/4 | s1: n= 240 win= 52.9% R=+0.043±0.064 | s2: n= 235 win= 46.8% R=-0.091±0.066 | u1: n= 270 win= 49.3% R=-0.032±0.060 | u2: n= 305 win= 43.3% R=-0.160±0.057 | GROSS R=+0.007 | score=-0.091
+pin H4 tp=2R                       ALL n= 1035 win= 34.7% R=-0.060±0.042 PF=0.91 +cells=1/4 | s1: n= 239 win= 36.0% R=+0.020±0.089 | s2: n= 228 win= 34.6% R=-0.072±0.089 | u1: n= 267 win= 36.7% R=-0.026±0.082 | u2: n= 301 win= 31.9% R=-0.144±0.077 | GROSS R=+0.027 | score=-0.072
+inside H1 tp=1R                    ALL n= 2475 win= 43.9% R=-0.142±0.020 PF=0.75 +cells=0/4 | s1: n= 592 win= 44.8% R=-0.115±0.041 | s2: n= 569 win= 46.7% R=-0.097±0.043 | u1: n= 659 win= 42.6% R=-0.164±0.038 | u2: n= 655 win= 41.8% R=-0.183±0.039 | GROSS R=-0.059 | score=-0.115
+inside H4 tp=1R                    ALL n=  692 win= 47.4% R=-0.055±0.035 PF=0.88 +cells=1/4 | s1: n= 155 win= 41.9% R=-0.183±0.075 | s2: n= 150 win= 53.3% R=+0.047±0.075 | u1: n= 217 win= 48.8% R=-0.026±0.062 | u2: n= 170 win= 45.3% R=-0.063±0.072 | GROSS R=-0.020 | score=-0.183
+--> chosen on SEEN: pin H4 tp=2R (score -0.072)  [7s]
+
+=== F4_FIB (8 configs) ===
+fib618 H1 leg>=2.0ATR tp=ext       ALL n= 2852 win= 38.8% R=-0.095±0.023 PF=0.84 +cells=1/4 | s1: n= 641 win= 35.6% R=-0.136±0.050 | s2: n= 693 win= 37.7% R=-0.137±0.046 | u1: n= 749 win= 43.4% R=+0.017±0.049 | u2: n= 769 win= 38.2% R=-0.133±0.043 | GROSS R=-0.028 | score=-0.137
+fib618 H1 leg>=2.0ATR tp=1R        ALL n= 3067 win= 46.6% R=-0.082±0.018 PF=0.85 +cells=0/4 | s1: n= 701 win= 46.5% R=-0.085±0.038 | s2: n= 743 win= 46.3% R=-0.092±0.037 | u1: n= 805 win= 49.8% R=-0.020±0.035 | u2: n= 818 win= 43.8% R=-0.130±0.035 | GROSS R=-0.015 | score=-0.092
+fib618 H1 leg>=4.0ATR tp=ext       ALL n= 1962 win= 38.0% R=-0.093±0.029 PF=0.85 +cells=1/4 | s1: n= 462 win= 35.1% R=-0.137±0.058 | s2: n= 511 win= 36.4% R=-0.162±0.052 | u1: n= 495 win= 43.4% R=+0.053±0.062 | u2: n= 494 win= 37.0% R=-0.126±0.055 | GROSS R=-0.032 | score=-0.162
+fib618 H1 leg>=4.0ATR tp=1R        ALL n= 2109 win= 47.2% R=-0.069±0.022 PF=0.87 +cells=1/4 | s1: n= 503 win= 46.9% R=-0.076±0.044 | s2: n= 541 win= 46.4% R=-0.090±0.043 | u1: n= 531 win= 51.4% R=+0.012±0.043 | u2: n= 534 win= 44.2% R=-0.122±0.043 | GROSS R=-0.009 | score=-0.090
+fib618 H4 leg>=2.0ATR tp=ext       ALL n=  865 win= 42.0% R=-0.090±0.037 PF=0.82 +cells=0/4 | s1: n= 184 win= 37.5% R=-0.180±0.078 | s2: n= 216 win= 39.8% R=-0.176±0.067 | u1: n= 224 win= 44.6% R=-0.020±0.070 | u2: n= 241 win= 44.8% R=-0.011±0.076 | GROSS R=-0.039 | score=-0.180
+fib618 H4 leg>=2.0ATR tp=1R        ALL n=  896 win= 45.5% R=-0.101±0.030 PF=0.79 +cells=0/4 | s1: n= 188 win= 39.4% R=-0.226±0.064 | s2: n= 228 win= 47.8% R=-0.069±0.060 | u1: n= 228 win= 46.1% R=-0.078±0.060 | u2: n= 252 win= 47.6% R=-0.057±0.057 | GROSS R=-0.053 | score=-0.226
+fib618 H4 leg>=4.0ATR tp=ext       ALL n=  623 win= 41.9% R=-0.094±0.042 PF=0.81 +cells=1/4 | s1: n= 139 win= 36.7% R=-0.177±0.090 | s2: n= 154 win= 40.3% R=-0.186±0.073 | u1: n= 166 win= 42.2% R=-0.058±0.078 | u2: n= 164 win= 47.6% R=+0.026±0.089 | GROSS R=-0.043 | score=-0.186
+fib618 H4 leg>=4.0ATR tp=1R        ALL n=  642 win= 45.2% R=-0.104±0.034 PF=0.77 +cells=0/4 | s1: n= 143 win= 37.8% R=-0.245±0.072 | s2: n= 163 win= 47.9% R=-0.074±0.068 | u1: n= 167 win= 44.9% R=-0.093±0.068 | u2: n= 169 win= 49.1% R=-0.023±0.066 | GROSS R=-0.053 | score=-0.245
+--> chosen on SEEN: fib618 H1 leg>=4.0ATR tp=1R (score -0.090)  [8s]
+
+=== F5_PIVOT (10 configs) ===
+pivot fade_touch stop0.5ATR tp=P   ALL n= 4105 win= 26.7% R=-0.186±0.025 PF=0.75 +cells=0/4 | s1: n= 898 win= 25.9% R=-0.155±0.056 | s2: n= 875 win= 26.5% R=-0.114±0.061 | u1: n=1140 win= 28.9% R=-0.150±0.048 | u2: n=1192 win= 25.1% R=-0.296±0.042 | GROSS R=-0.030 | score=-0.155
+pivot fade_touch stop1.0ATR tp=P   ALL n= 4739 win= 32.3% R=-0.151±0.021 PF=0.78 +cells=0/4 | s1: n=1033 win= 32.6% R=-0.059±0.051 | s2: n=1051 win= 30.1% R=-0.166±0.046 | u1: n=1312 win= 33.6% R=-0.149±0.039 | u2: n=1343 win= 32.5% R=-0.211±0.036 | GROSS R=-0.025 | score=-0.166
+pivot fade_reject stop0.5ATR tp=P  ALL n= 2745 win= 33.3% R=-0.118±0.029 PF=0.83 +cells=0/4 | s1: n= 600 win= 31.8% R=-0.080±0.065 | s2: n= 552 win= 34.8% R=-0.020±0.069 | u1: n= 770 win= 35.8% R=-0.093±0.053 | u2: n= 823 win= 30.9% R=-0.234±0.048 | GROSS R=+0.025 | score=-0.080
+pivot fade_reject stop1.0ATR tp=P  ALL n= 2704 win= 42.9% R=-0.091±0.023 PF=0.84 +cells=0/4 | s1: n= 588 win= 41.8% R=-0.062±0.050 | s2: n= 546 win= 43.4% R=-0.034±0.053 | u1: n= 756 win= 43.7% R=-0.105±0.042 | u2: n= 814 win= 42.5% R=-0.137±0.039 | GROSS R=+0.000 | score=-0.062
+pivot fade_reject stop0.5ATR tp=1R ALL n= 2816 win= 43.1% R=-0.149±0.019 PF=0.74 +cells=0/4 | s1: n= 622 win= 46.8% R=-0.073±0.040 | s2: n= 572 win= 43.7% R=-0.137±0.042 | u1: n= 786 win= 43.9% R=-0.140±0.037 | u2: n= 836 win= 39.2% R=-0.221±0.034 | GROSS R=-0.008 | score=-0.137
+pivot fade_reject stop1.0ATR tp=1R ALL n= 2750 win= 46.5% R=-0.081±0.019 PF=0.85 +cells=0/4 | s1: n= 604 win= 49.0% R=-0.031±0.041 | s2: n= 560 win= 47.5% R=-0.060±0.042 | u1: n= 765 win= 45.5% R=-0.106±0.037 | u2: n= 821 win= 44.9% R=-0.110±0.035 | GROSS R=+0.016 | score=-0.060
+pivot break_retest stop0.5ATR tp=1R ALL n= 1944 win= 39.2% R=-0.226±0.022 PF=0.63 +cells=0/4 | s1: n= 420 win= 44.8% R=-0.119±0.049 | s2: n= 419 win= 39.1% R=-0.228±0.048 | u1: n= 532 win= 38.7% R=-0.235±0.042 | u2: n= 573 win= 35.6% R=-0.295±0.040 | GROSS R=-0.093 | score=-0.228
+pivot break_retest stop0.5ATR tp=2R ALL n= 1931 win= 26.9% R=-0.213±0.030 PF=0.71 +cells=0/4 | s1: n= 417 win= 30.0% R=-0.130±0.067 | s2: n= 416 win= 28.4% R=-0.172±0.066 | u1: n= 527 win= 26.6% R=-0.219±0.057 | u2: n= 571 win= 24.0% R=-0.297±0.053 | GROSS R=-0.077 | score=-0.172
+pivot break_retest stop1.0ATR tp=1R ALL n= 1936 win= 44.5% R=-0.121±0.023 PF=0.78 +cells=1/4 | s1: n= 420 win= 51.2% R=+0.012±0.049 | s2: n= 418 win= 45.0% R=-0.110±0.049 | u1: n= 530 win= 43.2% R=-0.151±0.043 | u2: n= 568 win= 40.5% R=-0.201±0.041 | GROSS R=-0.026 | score=-0.110
+pivot break_retest stop1.0ATR tp=2R ALL n= 1884 win= 32.2% R=-0.065±0.032 PF=0.90 +cells=1/4 | s1: n= 405 win= 35.1% R=+0.012±0.070 | s2: n= 411 win= 33.3% R=-0.031±0.069 | u1: n= 515 win= 32.0% R=-0.065±0.061 | u2: n= 553 win= 29.3% R=-0.148±0.057 | GROSS R=+0.042 | score=-0.031
+--> chosen on SEEN: pivot break_retest stop1.0ATR tp=2R (score -0.031)  [11s]
+
+=== F6_ROUND (8 configs) ===
+round 00+50 H1 tp=1R               ALL n= 3703 win= 41.5% R=-0.181±0.016 PF=0.70 +cells=0/4 | s1: n= 658 win= 42.4% R=-0.176±0.041 | s2: n= 685 win= 43.2% R=-0.148±0.038 | u1: n=1141 win= 40.7% R=-0.192±0.029 | u2: n=1219 win= 40.9% R=-0.192±0.028 | GROSS R=-0.048 | score=-0.176
+round 00+50 H1 tp=2R               ALL n= 3634 win= 29.2% R=-0.146±0.023 PF=0.80 +cells=0/4 | s1: n= 650 win= 29.8% R=-0.129±0.054 | s2: n= 672 win= 30.1% R=-0.126±0.053 | u1: n=1119 win= 27.7% R=-0.184±0.040 | u2: n=1193 win= 29.8% R=-0.130±0.040 | GROSS R=-0.007 | score=-0.129
+round 00+50 H4 tp=1R               ALL n= 1710 win= 44.3% R=-0.126±0.024 PF=0.78 +cells=0/4 | s1: n= 320 win= 47.8% R=-0.060±0.056 | s2: n= 342 win= 47.1% R=-0.076±0.054 | u1: n= 504 win= 42.7% R=-0.160±0.044 | u2: n= 544 win= 42.1% R=-0.166±0.042 | GROSS R=-0.051 | score=-0.076
+round 00+50 H4 tp=2R               ALL n= 1705 win= 31.8% R=-0.089±0.033 PF=0.87 +cells=0/4 | s1: n= 320 win= 34.4% R=-0.019±0.078 | s2: n= 341 win= 32.8% R=-0.077±0.074 | u1: n= 503 win= 30.6% R=-0.123±0.060 | u2: n= 541 win= 30.9% R=-0.108±0.058 | GROSS R=+0.002 | score=-0.077
+round 00 H1 tp=1R                  ALL n= 2012 win= 42.2% R=-0.169±0.023 PF=0.71 +cells=0/4 | s1: n= 348 win= 41.4% R=-0.209±0.059 | s2: n= 344 win= 44.8% R=-0.118±0.054 | u1: n= 622 win= 42.0% R=-0.167±0.040 | u2: n= 698 win= 41.5% R=-0.175±0.037 | GROSS R=-0.038 | score=-0.209
+round 00 H1 tp=2R                  ALL n= 1975 win= 29.9% R=-0.130±0.031 PF=0.82 +cells=0/4 | s1: n= 344 win= 29.1% R=-0.157±0.073 | s2: n= 340 win= 31.2% R=-0.108±0.076 | u1: n= 607 win= 28.7% R=-0.162±0.055 | u2: n= 684 win= 30.8% R=-0.099±0.053 | GROSS R=-0.000 | score=-0.157
+round 00 H4 tp=1R                  ALL n= 1009 win= 47.1% R=-0.071±0.031 PF=0.87 +cells=1/4 | s1: n= 179 win= 50.8% R=+0.005±0.073 | s2: n= 185 win= 49.2% R=-0.037±0.073 | u1: n= 311 win= 47.6% R=-0.064±0.056 | u2: n= 334 win= 43.4% R=-0.136±0.054 | GROSS R=+0.010 | score=-0.037
+round 00 H4 tp=2R                  ALL n= 1006 win= 35.3% R=-0.013±0.043 PF=0.98 +cells=2/4 | s1: n= 179 win= 36.9% R=+0.034±0.103 | s2: n= 184 win= 38.0% R=+0.048±0.102 | u1: n= 310 win= 34.8% R=-0.044±0.077 | u2: n= 333 win= 33.3% R=-0.042±0.075 | GROSS R=+0.085 | score=+0.034
+--> chosen on SEEN: round 00 H4 tp=2R (score +0.034)  [12s]
+
+=== F7_PDPW (8 configs) ===
+prior-day H1 tp=1R                 ALL n= 2237 win= 40.3% R=-0.205±0.021 PF=0.66 +cells=0/4 | s1: n= 481 win= 42.4% R=-0.167±0.046 | s2: n= 495 win= 42.0% R=-0.169±0.045 | u1: n= 637 win= 38.3% R=-0.247±0.039 | u2: n= 624 win= 39.4% R=-0.219±0.039 | GROSS R=-0.033 | score=-0.169
+prior-day H1 tp=2R                 ALL n= 2199 win= 27.1% R=-0.208±0.029 PF=0.72 +cells=0/4 | s1: n= 470 win= 28.9% R=-0.156±0.063 | s2: n= 491 win= 31.2% R=-0.102±0.064 | u1: n= 624 win= 24.2% R=-0.300±0.052 | u2: n= 614 win= 25.6% R=-0.240±0.053 | GROSS R=-0.044 | score=-0.156
+prior-day H4 tp=1R                 ALL n= 1836 win= 42.8% R=-0.161±0.023 PF=0.72 +cells=0/4 | s1: n= 407 win= 44.7% R=-0.129±0.050 | s2: n= 401 win= 44.6% R=-0.126±0.051 | u1: n= 488 win= 42.4% R=-0.169±0.045 | u2: n= 540 win= 40.4% R=-0.203±0.042 | GROSS R=-0.073 | score=-0.129
+prior-day H4 tp=2R                 ALL n= 1760 win= 30.2% R=-0.153±0.032 PF=0.78 +cells=0/4 | s1: n= 384 win= 32.3% R=-0.105±0.069 | s2: n= 390 win= 30.3% R=-0.151±0.068 | u1: n= 474 win= 31.9% R=-0.095±0.063 | u2: n= 512 win= 27.0% R=-0.243±0.056 | GROSS R=-0.064 | score=-0.151
+prior-week H1 tp=1R                ALL n=  636 win= 41.0% R=-0.190±0.039 PF=0.68 +cells=1/4 | s1: n= 140 win= 37.9% R=-0.252±0.082 | s2: n= 125 win= 51.2% R=+0.014±0.089 | u1: n= 185 win= 40.0% R=-0.213±0.072 | u2: n= 186 win= 37.6% R=-0.257±0.071 | GROSS R=-0.069 | score=-0.252
+prior-week H1 tp=2R                ALL n=  636 win= 27.5% R=-0.200±0.052 PF=0.73 +cells=1/4 | s1: n= 140 win= 26.4% R=-0.225±0.111 | s2: n= 125 win= 36.0% R=+0.054±0.128 | u1: n= 185 win= 24.9% R=-0.293±0.093 | u2: n= 186 win= 25.3% R=-0.257±0.095 | GROSS R=-0.053 | score=-0.225
+prior-week H4 tp=1R                ALL n=  579 win= 41.5% R=-0.189±0.041 PF=0.68 +cells=0/4 | s1: n= 138 win= 40.6% R=-0.206±0.083 | s2: n= 125 win= 44.0% R=-0.138±0.089 | u1: n= 161 win= 41.6% R=-0.183±0.077 | u2: n= 155 win= 40.0% R=-0.220±0.078 | GROSS R=-0.086 | score=-0.206
+prior-week H4 tp=2R                ALL n=  575 win= 29.2% R=-0.181±0.055 PF=0.75 +cells=0/4 | s1: n= 136 win= 30.9% R=-0.152±0.113 | s2: n= 124 win= 29.8% R=-0.140±0.121 | u1: n= 161 win= 28.6% R=-0.194±0.103 | u2: n= 154 win= 27.9% R=-0.227±0.103 | GROSS R=-0.094 | score=-0.152
+--> chosen on SEEN: prior-day H4 tp=1R (score -0.129)  [15s]
+
+
+=========== CHOSEN CONFIGS (selected on SEEN only) ===========
+
+F1_FVG: FVG H4 tp=1R
+  ALL    45.9% -0.099±0.016 (n=3646)   SEEN 46.0% -0.098±0.023 (n=1767)   UNSEEN 45.9% -0.100±0.023 (n=1879)
+  SEEN halves  45.5% -0.105±0.033 (n=874) | 46.4% -0.091±0.033 (n=893)
+  UNSEEN halves 44.4% -0.127±0.032 (n=898) | 47.3% -0.076±0.032 (n=981)   PASS=False  win>=60%=False
+  GROSS  ALL -0.016±0.017 win 48.0% | SEEN -0.019 | UNSEEN -0.014
+  trades/week (11 instr) 25.7   avg hold 23.9 h
+  CONTROL random entry, same geometry: 44.9% -0.121±0.005 (n=32734)
+    EURUSD n=389 win=47.6% R=-0.063±0.051
+    GBPUSD n=377 win=49.1% R=-0.039±0.051
+    AUDUSD n=368 win=43.2% R=-0.155±0.051
+    USDJPY n=348 win=43.4% R=-0.152±0.052
+    XAUUSD n=285 win=46.3% R=-0.081±0.058
+    NZDUSD n=430 win=43.5% R=-0.165±0.047
+    USDCAD n=212 win=49.5% R=-0.047±0.066
+    GBPAUD n=289 win=48.1% R=-0.034±0.057
+    EURJPY n=324 win=48.5% R=-0.068±0.056
+    GBPJPY n=327 win=44.6% R=-0.103±0.055
+    XAGUSD n=297 win=43.4% R=-0.142±0.057
+
+F2_OB: OB p5 H1 tp=2R
+  ALL    32.2% -0.094±0.022 (n=4021)   SEEN 33.7% -0.044±0.033 (n=1804)   UNSEEN 30.9% -0.134±0.029 (n=2217)
+  SEEN halves  34.7% -0.019±0.047 (n=913) | 32.7% -0.070±0.046 (n=891)
+  UNSEEN halves 32.0% -0.106±0.041 (n=1122) | 29.8% -0.163±0.040 (n=1095)   PASS=False  win>=60%=False
+  GROSS  ALL +0.027±0.023 win 34.1% | SEEN +0.055 | UNSEEN +0.003
+  trades/week (11 instr) 28.2   avg hold 20.0 h
+  CONTROL random entry, same geometry: 30.6% -0.135±0.007 (n=37323)
+    EURUSD n=374 win=32.9% R=-0.074±0.074
+    GBPUSD n=383 win=31.3% R=-0.112±0.071
+    AUDUSD n=407 win=32.4% R=-0.069±0.069
+    USDJPY n=359 win=33.7% R=-0.052±0.071
+    XAUUSD n=281 win=39.9% R=+0.132±0.086
+    NZDUSD n=408 win=30.1% R=-0.162±0.068
+    USDCAD n=367 win=31.6% R=-0.121±0.070
+    GBPAUD n=370 win=30.3% R=-0.128±0.070
+    EURJPY n=368 win=32.9% R=-0.069±0.072
+    GBPJPY n=408 win=30.4% R=-0.156±0.065
+    XAGUSD n=296 win=30.1% R=-0.168±0.077
+
+F3_CANDLE: pin H4 tp=2R
+  ALL    34.7% -0.060±0.042 (n=1035)   SEEN 35.3% -0.025±0.063 (n=467)   UNSEEN 34.2% -0.089±0.056 (n=568)
+  SEEN halves  36.0% +0.020±0.089 (n=239) | 34.6% -0.072±0.089 (n=228)
+  UNSEEN halves 36.7% -0.026±0.082 (n=267) | 31.9% -0.144±0.077 (n=301)   PASS=False  win>=60%=False
+  GROSS  ALL +0.027±0.044 win 35.9% | SEEN +0.068 | UNSEEN -0.006
+  trades/week (11 instr) 7.3   avg hold 32.6 h
+  CONTROL random entry, same geometry: 33.9% -0.067±0.014 (n=9531)
+    EURUSD n=106 win=36.8% R=+0.001±0.132
+    GBPUSD n=90 win=31.1% R=-0.193±0.134
+    AUDUSD n=102 win=35.3% R=-0.001±0.136
+    USDJPY n=92 win=40.2% R=+0.126±0.146
+    XAUUSD n=77 win=32.5% R=-0.075±0.156
+    NZDUSD n=103 win=26.2% R=-0.273±0.124
+    USDCAD n=97 win=34.0% R=-0.107±0.133
+    GBPAUD n=105 win=28.6% R=-0.248±0.122
+    EURJPY n=98 win=38.8% R=+0.030±0.136
+    GBPJPY n=92 win=41.3% R=+0.084±0.141
+    XAGUSD n=73 win=38.4% R=+0.048±0.171
+
+F4_FIB: fib618 H1 leg>=4.0ATR tp=1R
+  ALL    47.2% -0.069±0.022 (n=2109)   SEEN 46.6% -0.084±0.031 (n=1044)   UNSEEN 47.8% -0.055±0.030 (n=1065)
+  SEEN halves  46.9% -0.076±0.044 (n=503) | 46.4% -0.090±0.043 (n=541)
+  UNSEEN halves 51.4% +0.012±0.043 (n=531) | 44.2% -0.122±0.043 (n=534)   PASS=False  win>=60%=False
+  GROSS  ALL -0.009±0.022 win 48.6% | SEEN -0.039 | UNSEEN +0.021
+  trades/week (11 instr) 14.8   avg hold 23.3 h
+  CONTROL random entry, same geometry: 46.3% -0.091±0.007 (n=21125)
+    EURUSD n=237 win=43.9% R=-0.139±0.065
+    GBPUSD n=218 win=50.9% R=+0.002±0.067
+    AUDUSD n=231 win=40.3% R=-0.210±0.064
+    USDJPY n=199 win=51.8% R=+0.001±0.070
+    XAUUSD n=159 win=47.8% R=-0.040±0.079
+    NZDUSD n=248 win=46.0% R=-0.102±0.063
+    USDCAD n=115 win=47.8% R=-0.066±0.090
+    GBPAUD n=178 win=52.8% R=+0.053±0.074
+    EURJPY n=188 win=53.7% R=+0.069±0.071
+    GBPJPY n=177 win=42.9% R=-0.137±0.074
+    XAGUSD n=159 win=43.4% R=-0.150±0.080
+
+F5_PIVOT: pivot break_retest stop1.0ATR tp=2R
+  ALL    32.2% -0.065±0.032 (n=1884)   SEEN 34.2% -0.009±0.049 (n=816)   UNSEEN 30.6% -0.108±0.042 (n=1068)
+  SEEN halves  35.1% +0.012±0.070 (n=405) | 33.3% -0.031±0.069 (n=411)
+  UNSEEN halves 32.0% -0.065±0.061 (n=515) | 29.3% -0.148±0.057 (n=553)   PASS=False  win>=60%=False
+  GROSS  ALL +0.042±0.034 win 33.9% | SEEN +0.079 | UNSEEN +0.015
+  trades/week (11 instr) 13.3   avg hold 19.2 h
+  CONTROL random entry, same geometry: 31.2% -0.097±0.011 (n=17013)
+    EURUSD n=147 win=29.3% R=-0.155±0.111
+    GBPUSD n=149 win=37.6% R=+0.065±0.116
+    AUDUSD n=164 win=27.4% R=-0.205±0.104
+    USDJPY n=189 win=38.6% R=+0.137±0.106
+    XAUUSD n=167 win=37.1% R=+0.079±0.110
+    NZDUSD n=141 win=26.2% R=-0.240±0.112
+    USDCAD n=206 win=33.5% R=-0.041±0.097
+    GBPAUD n=186 win=27.4% R=-0.180±0.098
+    EURJPY n=169 win=33.1% R=-0.029±0.107
+    GBPJPY n=195 win=28.7% R=-0.161±0.096
+    XAGUSD n=171 win=33.9% R=-0.019±0.107
+
+F6_ROUND: round 00 H4 tp=2R
+  ALL    35.3% -0.013±0.043 (n=1006)   SEEN 37.5% +0.041±0.072 (n=363)   UNSEEN 34.1% -0.043±0.054 (n=643)
+  SEEN halves  36.9% +0.034±0.103 (n=179) | 38.0% +0.048±0.102 (n=184)
+  UNSEEN halves 34.8% -0.044±0.077 (n=310) | 33.3% -0.042±0.075 (n=333)   PASS=False  win>=60%=False
+  GROSS  ALL +0.085±0.045 win 37.3% | SEEN +0.142 | UNSEEN +0.053
+  trades/week (11 instr) 7.1   avg hold 25.6 h
+  CONTROL random entry, same geometry: 31.2% -0.135±0.014 (n=9149)
+    EURUSD n=60 win=31.7% R=-0.195±0.160
+    GBPUSD n=76 win=42.1% R=+0.168±0.160
+    AUDUSD n=48 win=37.5% R=+0.008±0.199
+    USDJPY n=115 win=42.6% R=+0.223±0.134
+    XAUUSD n=64 win=28.1% R=-0.189±0.165
+    NZDUSD n=42 win=31.0% R=-0.109±0.207
+    USDCAD n=75 win=26.7% R=-0.297±0.143
+    GBPAUD n=128 win=35.9% R=-0.007±0.119
+    EURJPY n=111 win=42.3% R=+0.210±0.136
+    GBPJPY n=150 win=33.3% R=-0.064±0.110
+    XAGUSD n=137 win=31.4% R=-0.100±0.117
+
+F7_PDPW: prior-day H4 tp=1R
+  ALL    42.8% -0.161±0.023 (n=1836)   SEEN 44.7% -0.127±0.035 (n=808)   UNSEEN 41.3% -0.187±0.031 (n=1028)
+  SEEN halves  44.7% -0.129±0.050 (n=407) | 44.6% -0.126±0.051 (n=401)
+  UNSEEN halves 42.4% -0.169±0.045 (n=488) | 40.4% -0.203±0.042 (n=540)   PASS=False  win>=60%=False
+  GROSS  ALL -0.073±0.024 win 44.8% | SEEN -0.058 | UNSEEN -0.084
+  trades/week (11 instr) 12.9   avg hold 17.7 h
+  CONTROL random entry, same geometry: 43.9% -0.139±0.008 (n=17351)
+    EURUSD n=150 win=47.3% R=-0.062±0.080
+    GBPUSD n=159 win=41.5% R=-0.200±0.081
+    AUDUSD n=161 win=41.6% R=-0.205±0.080
+    USDJPY n=188 win=43.6% R=-0.136±0.071
+    XAUUSD n=150 win=50.0% R=-0.022±0.083
+    NZDUSD n=158 win=41.8% R=-0.188±0.079
+    USDCAD n=200 win=32.0% R=-0.379±0.066
+    GBPAUD n=163 win=39.9% R=-0.207±0.076
+    EURJPY n=166 win=47.6% R=-0.067±0.077
+    GBPJPY n=176 win=46.6% R=-0.069±0.074
+    XAGUSD n=165 win=41.8% R=-0.181±0.078
+
+done in 17s

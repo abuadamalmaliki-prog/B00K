@@ -1,0 +1,231 @@
+Selection: max min(SEEN h1 R, SEEN h2 R), n>=30 per SEEN half. Net of costs. UNSEEN per-config lines are post-selection disclosure only.
+
+=== F1_ma_cross (10 configs) ===
+  tf=H1,fast=9,slow=21,tgt=1.0           SEEN n= 3021 win= 47.2% R=-0.103±0.018 | s1 n= 1531 win= 45.9% R=-0.123±0.025 | s2 n= 1490 win= 48.6% R=-0.083±0.026 | score=-0.123
+  tf=H1,fast=9,slow=21,tgt=2.0           SEEN n= 2673 win= 31.2% R=-0.122±0.026 | s1 n= 1346 win= 30.2% R=-0.144±0.037 | s2 n= 1327 win= 32.3% R=-0.099±0.038 | score=-0.144
+  tf=H1,fast=20,slow=50,tgt=1.0          SEEN n= 1456 win= 47.1% R=-0.114±0.026 | s1 n=  712 win= 48.0% R=-0.095±0.037 | s2 n=  744 win= 46.2% R=-0.132±0.037 | score=-0.132
+  tf=H1,fast=20,slow=50,tgt=2.0          SEEN n= 1433 win= 31.2% R=-0.124±0.036 | s1 n=  700 win= 32.1% R=-0.092±0.052 | s2 n=  733 win= 30.3% R=-0.155±0.050 | score=-0.155
+  tf=H4,fast=9,slow=21,tgt=1.0           SEEN n=  714 win= 49.9% R=-0.042±0.037 | s1 n=  319 win= 49.8% R=-0.039±0.056 | s2 n=  395 win= 49.9% R=-0.045±0.050 | score=-0.045
+  tf=H4,fast=9,slow=21,tgt=2.0           SEEN n=  643 win= 36.1% R=+0.030±0.056 | s1 n=  290 win= 36.6% R=+0.049±0.084 | s2 n=  353 win= 35.7% R=+0.014±0.075 | score=+0.014
+  tf=H4,fast=20,slow=50,tgt=1.0          SEEN n=  372 win= 44.9% R=-0.132±0.051 | s1 n=  150 win= 50.0% R=-0.031±0.081 | s2 n=  222 win= 41.4% R=-0.201±0.065 | score=-0.201
+  tf=H4,fast=20,slow=50,tgt=2.0          SEEN n=  370 win= 33.0% R=-0.051±0.072 | s1 n=  149 win= 39.6% R=+0.144±0.118 | s2 n=  221 win= 28.5% R=-0.182±0.090 | score=-0.182
+  tf=H1,fast=20,slow=50,tgt=opp          SEEN n= 1540 win= 18.5% R=-0.120±0.062 | s1 n=  748 win= 18.6% R=-0.176±0.084 | s2 n=  792 win= 18.4% R=-0.066±0.089 | score=-0.176
+  tf=H4,fast=20,slow=50,tgt=opp          SEEN n=  384 win= 18.0% R=-0.126±0.138 | s1 n=  157 win= 24.2% R=+0.131±0.185 | s2 n=  227 win= 13.7% R=-0.304±0.194 | score=-0.304
+  [disclosure, not used] tf=H1,fast=9,slow=21,tgt=1.0           UNSEEN u1 n= 1819 win= 44.7% R=-0.156±0.022 | u2 n= 1786 win= 47.6% R=-0.106±0.023
+  [disclosure, not used] tf=H1,fast=9,slow=21,tgt=2.0           UNSEEN u1 n= 1552 win= 28.9% R=-0.193±0.033 | u2 n= 1534 win= 31.0% R=-0.133±0.034
+  [disclosure, not used] tf=H1,fast=20,slow=50,tgt=1.0          UNSEEN u1 n=  868 win= 47.7% R=-0.099±0.033 | u2 n=  889 win= 47.4% R=-0.114±0.033
+  [disclosure, not used] tf=H1,fast=20,slow=50,tgt=2.0          UNSEEN u1 n=  835 win= 31.4% R=-0.119±0.046 | u2 n=  861 win= 30.5% R=-0.147±0.046
+  [disclosure, not used] tf=H4,fast=9,slow=21,tgt=1.0           UNSEEN u1 n=  418 win= 51.4% R=-0.010±0.048 | u2 n=  478 win= 49.4% R=-0.048±0.045
+  [disclosure, not used] tf=H4,fast=9,slow=21,tgt=2.0           UNSEEN u1 n=  369 win= 36.0% R=+0.027±0.073 | u2 n=  395 win= 34.7% R=-0.010±0.070
+  [disclosure, not used] tf=H4,fast=20,slow=50,tgt=1.0          UNSEEN u1 n=  211 win= 50.2% R=-0.037±0.067 | u2 n=  236 win= 52.5% R=+0.011±0.064
+  [disclosure, not used] tf=H4,fast=20,slow=50,tgt=2.0          UNSEEN u1 n=  208 win= 37.0% R=+0.047±0.098 | u2 n=  225 win= 35.1% R=+0.002±0.093
+  [disclosure, not used] tf=H1,fast=20,slow=50,tgt=opp          UNSEEN u1 n=  925 win= 19.6% R=-0.204±0.067 | u2 n=  952 win= 18.3% R=-0.087±0.085
+  [disclosure, not used] tf=H4,fast=20,slow=50,tgt=opp          UNSEEN u1 n=  229 win= 22.3% R=-0.150±0.129 | u2 n=  244 win= 18.0% R=-0.141±0.149
+CHOSEN tf=H4,fast=9,slow=21,tgt=2.0
+   all              n= 1407 win= 35.7% R=+0.018±0.037 PF=1.03
+   seen             n=  643 win= 36.1% R=+0.030±0.056 PF=1.04
+   ('seen', 0)      n=  290 win= 36.6% R=+0.049±0.084 PF=1.07
+   ('seen', 1)      n=  353 win= 35.7% R=+0.014±0.075 PF=1.02
+   unseen           n=  764 win= 35.3% R=+0.008±0.050 PF=1.01
+   ('unseen', 0)    n=  369 win= 36.0% R=+0.027±0.073 PF=1.04
+   ('unseen', 1)    n=  395 win= 34.7% R=-0.010±0.070 PF=0.99
+   GROSS all n= 1391 win= 36.4% R=+0.087±0.039 | gross seen R=+0.085 unseen R=+0.089
+   trades/week(11 syms)=9.9 avg hold=69.9h | CONTROL(5 seeds) n= 6299 win= 32.3% R=-0.082±0.017 (~1260 trades/seed)
+   PASS=False win>=60%=no
+   exits: {'sl': 905, 'tp': 502}
+   [2s]
+
+=== F2_supertrend (10 configs) ===
+  tf=H1,stop=atr,tgt=1.0                 SEEN n= 2195 win= 47.1% R=-0.105±0.021 | s1 n= 1095 win= 46.5% R=-0.116±0.030 | s2 n= 1100 win= 47.7% R=-0.095±0.030 | score=-0.116
+  tf=H1,stop=atr,tgt=2.0                 SEEN n= 2054 win= 30.9% R=-0.131±0.030 | s1 n= 1022 win= 30.9% R=-0.126±0.042 | s2 n= 1032 win= 30.9% R=-0.136±0.042 | score=-0.136
+  tf=H1,stop=line,tgt=1.0                SEEN n= 1310 win= 48.9% R=-0.052±0.027 | s1 n=  652 win= 48.3% R=-0.063±0.039 | s2 n=  658 win= 49.5% R=-0.041±0.039 | score=-0.063
+  tf=H1,stop=line,tgt=2.0                SEEN n=  808 win= 35.5% R=+0.016±0.050 | s1 n=  395 win= 32.2% R=-0.083±0.070 | s2 n=  413 win= 38.7% R=+0.111±0.071 | score=-0.083
+  tf=H4,stop=atr,tgt=1.0                 SEEN n=  534 win= 52.4% R=+0.010±0.043 | s1 n=  247 win= 51.8% R=-0.000±0.063 | s2 n=  287 win= 53.0% R=+0.019±0.058 | score=-0.000
+  tf=H4,stop=atr,tgt=2.0                 SEEN n=  492 win= 35.6% R=+0.016±0.064 | s1 n=  229 win= 35.8% R=+0.024±0.093 | s2 n=  263 win= 35.4% R=+0.010±0.087 | score=+0.010
+  tf=H4,stop=line,tgt=1.0                SEEN n=  318 win= 51.3% R=-0.012±0.056 | s1 n=  158 win= 52.5% R=+0.018±0.079 | s2 n=  160 win= 50.0% R=-0.042±0.079 | score=-0.042
+  tf=H4,stop=line,tgt=2.0                SEEN n=  197 win= 35.0% R=-0.017±0.100 | s1 n=  105 win= 36.2% R=+0.023±0.138 | s2 n=   92 win= 33.7% R=-0.063±0.145 | score=-0.063
+  tf=H1,stop=line,tgt=opp                SEEN n= 2196 win= 33.2% R=-0.038±0.027 | s1 n= 1099 win= 32.5% R=-0.068±0.036 | s2 n= 1097 win= 34.0% R=-0.009±0.040 | score=-0.068
+  tf=H4,stop=line,tgt=opp                SEEN n=  532 win= 37.2% R=-0.024±0.046 | s1 n=  247 win= 38.1% R=-0.015±0.068 | s2 n=  285 win= 36.5% R=-0.032±0.061 | score=-0.032
+  [disclosure, not used] tf=H1,stop=atr,tgt=1.0                 UNSEEN u1 n= 1158 win= 47.2% R=-0.110±0.028 | u2 n= 1148 win= 45.5% R=-0.151±0.029
+  [disclosure, not used] tf=H1,stop=atr,tgt=2.0                 UNSEEN u1 n= 1081 win= 30.9% R=-0.132±0.040 | u2 n= 1075 win= 31.6% R=-0.120±0.041
+  [disclosure, not used] tf=H1,stop=line,tgt=1.0                UNSEEN u1 n=  690 win= 46.8% R=-0.105±0.038 | u2 n=  702 win= 48.0% R=-0.077±0.037
+  [disclosure, not used] tf=H1,stop=line,tgt=2.0                UNSEEN u1 n=  436 win= 32.1% R=-0.097±0.066 | u2 n=  446 win= 34.1% R=-0.030±0.066
+  [disclosure, not used] tf=H4,stop=atr,tgt=1.0                 UNSEEN u1 n=  291 win= 49.8% R=-0.043±0.057 | u2 n=  315 win= 51.4% R=-0.011±0.055
+  [disclosure, not used] tf=H4,stop=atr,tgt=2.0                 UNSEEN u1 n=  261 win= 30.7% R=-0.135±0.083 | u2 n=  290 win= 33.8% R=-0.042±0.081
+  [disclosure, not used] tf=H4,stop=line,tgt=1.0                UNSEEN u1 n=  166 win= 53.0% R=+0.019±0.077 | u2 n=  168 win= 50.0% R=-0.041±0.076
+  [disclosure, not used] tf=H4,stop=line,tgt=2.0                UNSEEN u1 n=  109 win= 34.9% R=-0.026±0.135 | u2 n=   94 win= 29.8% R=-0.184±0.138
+  [disclosure, not used] tf=H1,stop=line,tgt=opp                UNSEEN u1 n= 1165 win= 33.7% R=-0.057±0.034 | u2 n= 1147 win= 33.9% R=-0.029±0.038
+  [disclosure, not used] tf=H4,stop=line,tgt=opp                UNSEEN u1 n=  294 win= 35.4% R=-0.096±0.059 | u2 n=  321 win= 33.3% R=-0.043±0.071
+CHOSEN tf=H4,stop=atr,tgt=2.0
+   all              n= 1043 win= 33.8% R=-0.038±0.043 PF=0.94
+   seen             n=  492 win= 35.6% R=+0.016±0.064 PF=1.02
+   ('seen', 0)      n=  229 win= 35.8% R=+0.024±0.093 PF=1.04
+   ('seen', 1)      n=  263 win= 35.4% R=+0.010±0.087 PF=1.01
+   unseen           n=  551 win= 32.3% R=-0.086±0.058 PF=0.88
+   ('unseen', 0)    n=  261 win= 30.7% R=-0.135±0.083 PF=0.81
+   ('unseen', 1)    n=  290 win= 33.8% R=-0.042±0.081 PF=0.94
+   GROSS all n= 1042 win= 34.5% R=+0.035±0.044 | gross seen R=+0.083 unseen R=-0.007
+   trades/week(11 syms)=7.3 avg hold=82.6h | CONTROL(5 seeds) n= 4477 win= 33.5% R=-0.046±0.021 (~895 trades/seed)
+   PASS=False win>=60%=no
+   exits: {'tp': 353, 'sl': 690}
+   [2s]
+
+=== F3_macd_ema200 (10 configs) ===
+  tf=H1,zero=False,tgt=1.0               SEEN n= 2820 win= 49.5% R=-0.062±0.018 | s1 n= 1377 win= 51.2% R=-0.024±0.026 | s2 n= 1443 win= 47.8% R=-0.099±0.026 | score=-0.099
+  tf=H1,zero=False,tgt=2.0               SEEN n= 2522 win= 34.0% R=-0.041±0.028 | s1 n= 1231 win= 34.7% R=-0.013±0.039 | s2 n= 1291 win= 33.4% R=-0.067±0.039 | score=-0.067
+  tf=H1,zero=True,tgt=1.0                SEEN n= 1159 win= 48.8% R=-0.071±0.029 | s1 n=  571 win= 51.5% R=-0.014±0.041 | s2 n=  588 win= 46.3% R=-0.126±0.040 | score=-0.126
+  tf=H1,zero=True,tgt=2.0                SEEN n= 1115 win= 32.4% R=-0.088±0.041 | s1 n=  545 win= 33.4% R=-0.045±0.059 | s2 n=  570 win= 31.4% R=-0.129±0.057 | score=-0.129
+  tf=H4,zero=False,tgt=1.0               SEEN n=  685 win= 47.9% R=-0.080±0.038 | s1 n=  325 win= 46.2% R=-0.107±0.055 | s2 n=  360 win= 49.4% R=-0.055±0.052 | score=-0.107
+  tf=H4,zero=False,tgt=2.0               SEEN n=  627 win= 33.7% R=-0.041±0.055 | s1 n=  303 win= 33.3% R=-0.043±0.080 | s2 n=  324 win= 34.0% R=-0.040±0.077 | score=-0.043
+  tf=H4,zero=True,tgt=1.0                SEEN n=  288 win= 47.6% R=-0.082±0.058 | s1 n=  117 win= 47.9% R=-0.074±0.091 | s2 n=  171 win= 47.4% R=-0.088±0.075 | score=-0.088
+  tf=H4,zero=True,tgt=2.0                SEEN n=  277 win= 32.9% R=-0.059±0.083 | s1 n=  116 win= 34.5% R=-0.007±0.130 | s2 n=  161 win= 31.7% R=-0.097±0.108 | score=-0.097
+  tf=H1,zero=False,tgt=opp               SEEN n= 3136 win= 30.7% R=+0.024±0.028 | s1 n= 1531 win= 31.4% R=+0.044±0.039 | s2 n= 1605 win= 30.1% R=+0.006±0.039 | score=+0.006
+  tf=H4,zero=False,tgt=opp               SEEN n=  747 win= 33.2% R=+0.046±0.056 | s1 n=  356 win= 31.5% R=+0.008±0.074 | s2 n=  391 win= 34.8% R=+0.081±0.084 | score=+0.008
+  [disclosure, not used] tf=H1,zero=False,tgt=1.0               UNSEEN u1 n= 1663 win= 47.5% R=-0.109±0.024 | u2 n= 1730 win= 46.3% R=-0.131±0.023
+  [disclosure, not used] tf=H1,zero=False,tgt=2.0               UNSEEN u1 n= 1442 win= 32.0% R=-0.108±0.035 | u2 n= 1519 win= 31.2% R=-0.126±0.034
+  [disclosure, not used] tf=H1,zero=True,tgt=1.0                UNSEEN u1 n=  677 win= 48.0% R=-0.094±0.037 | u2 n=  694 win= 44.7% R=-0.163±0.036
+  [disclosure, not used] tf=H1,zero=True,tgt=2.0                UNSEEN u1 n=  639 win= 31.0% R=-0.133±0.052 | u2 n=  668 win= 30.1% R=-0.158±0.051
+  [disclosure, not used] tf=H4,zero=False,tgt=1.0               UNSEEN u1 n=  402 win= 47.3% R=-0.096±0.049 | u2 n=  424 win= 50.2% R=-0.036±0.047
+  [disclosure, not used] tf=H4,zero=False,tgt=2.0               UNSEEN u1 n=  359 win= 32.3% R=-0.084±0.072 | u2 n=  363 win= 32.5% R=-0.076±0.072
+  [disclosure, not used] tf=H4,zero=True,tgt=1.0                UNSEEN u1 n=  159 win= 49.1% R=-0.065±0.078 | u2 n=  169 win= 49.7% R=-0.045±0.075
+  [disclosure, not used] tf=H4,zero=True,tgt=2.0                UNSEEN u1 n=  155 win= 38.7% R=+0.095±0.114 | u2 n=  157 win= 32.5% R=-0.074±0.109
+  [disclosure, not used] tf=H1,zero=False,tgt=opp               UNSEEN u1 n= 1925 win= 29.4% R=-0.062±0.031 | u2 n= 1979 win= 28.5% R=-0.105±0.030
+  [disclosure, not used] tf=H4,zero=False,tgt=opp               UNSEEN u1 n=  465 win= 30.8% R=-0.103±0.055 | u2 n=  467 win= 31.7% R=-0.062±0.060
+CHOSEN tf=H4,zero=False,tgt=opp
+   all              n= 1679 win= 32.1% R=-0.025±0.034 PF=0.95
+   seen             n=  747 win= 33.2% R=+0.046±0.056 PF=1.09
+   ('seen', 0)      n=  356 win= 31.5% R=+0.008±0.074 PF=1.02
+   ('seen', 1)      n=  391 win= 34.8% R=+0.081±0.084 PF=1.16
+   unseen           n=  932 win= 31.2% R=-0.083±0.041 PF=0.83
+   ('unseen', 0)    n=  465 win= 30.8% R=-0.103±0.055 PF=0.79
+   ('unseen', 1)    n=  467 win= 31.7% R=-0.062±0.060 PF=0.87
+   GROSS all n= 1678 win= 34.0% R=+0.039±0.035 | gross seen R=+0.111 unseen R=-0.019
+   trades/week(11 syms)=11.8 avg hold=54.5h | CONTROL(5 seeds) n= 6615 win= 39.6% R=-0.033±0.021 (~1323 trades/seed)
+   PASS=False win>=60%=no
+   exits: {'sl': 563, 'time': 1116}
+   [3s]
+
+=== F4_adx_di (6 configs) ===
+  tf=H1,tgt=1.0                          SEEN n= 1066 win= 48.0% R=-0.078±0.030 | s1 n=  523 win= 47.4% R=-0.091±0.043 | s2 n=  543 win= 48.6% R=-0.066±0.042 | score=-0.091
+  tf=H1,tgt=2.0                          SEEN n= 1015 win= 31.8% R=-0.095±0.043 | s1 n=  497 win= 31.6% R=-0.100±0.061 | s2 n=  518 win= 32.0% R=-0.091±0.060 | score=-0.100
+  tf=H1,tgt=opp                          SEEN n= 1314 win= 23.8% R=-0.168±0.037 | s1 n=  632 win= 24.4% R=-0.193±0.051 | s2 n=  682 win= 23.3% R=-0.145±0.054 | score=-0.193
+  tf=H4,tgt=1.0                          SEEN n=  272 win= 47.1% R=-0.087±0.060 | s1 n=  136 win= 45.6% R=-0.115±0.084 | s2 n=  136 win= 48.5% R=-0.059±0.085 | score=-0.115
+  tf=H4,tgt=2.0                          SEEN n=  260 win= 34.6% R=+0.001±0.087 | s1 n=  130 win= 31.5% R=-0.088±0.121 | s2 n=  130 win= 37.7% R=+0.090±0.126 | score=-0.088
+  tf=H4,tgt=opp                          SEEN n=  351 win= 28.8% R=-0.002±0.079 | s1 n=  173 win= 31.8% R=+0.019±0.106 | s2 n=  178 win= 25.8% R=-0.021±0.117 | score=-0.021
+  [disclosure, not used] tf=H1,tgt=1.0                          UNSEEN u1 n=  584 win= 47.3% R=-0.103±0.040 | u2 n=  601 win= 44.9% R=-0.156±0.039
+  [disclosure, not used] tf=H1,tgt=2.0                          UNSEEN u1 n=  548 win= 31.6% R=-0.111±0.057 | u2 n=  570 win= 31.6% R=-0.117±0.056
+  [disclosure, not used] tf=H1,tgt=opp                          UNSEEN u1 n=  743 win= 24.1% R=-0.137±0.047 | u2 n=  751 win= 23.7% R=-0.102±0.066
+  [disclosure, not used] tf=H4,tgt=1.0                          UNSEEN u1 n=  142 win= 45.1% R=-0.137±0.082 | u2 n=  164 win= 47.6% R=-0.094±0.077
+  [disclosure, not used] tf=H4,tgt=2.0                          UNSEEN u1 n=  137 win= 29.2% R=-0.175±0.113 | u2 n=  158 win= 34.8% R=-0.016±0.111
+  [disclosure, not used] tf=H4,tgt=opp                          UNSEEN u1 n=  185 win= 20.0% R=-0.299±0.073 | u2 n=  216 win= 23.6% R=-0.127±0.080
+CHOSEN tf=H4,tgt=opp
+   all              n=  752 win= 25.1% R=-0.111±0.047 PF=0.76
+   seen             n=  351 win= 28.8% R=-0.002±0.079 PF=1.00
+   ('seen', 0)      n=  173 win= 31.8% R=+0.019±0.106 PF=1.05
+   ('seen', 1)      n=  178 win= 25.8% R=-0.021±0.117 PF=0.96
+   unseen           n=  401 win= 21.9% R=-0.206±0.055 PF=0.58
+   ('unseen', 0)    n=  185 win= 20.0% R=-0.299±0.073 PF=0.44
+   ('unseen', 1)    n=  216 win= 23.6% R=-0.127±0.080 PF=0.72
+   GROSS all n=  752 win= 27.0% R=-0.050±0.049 | gross seen R=+0.056 unseen R=-0.142
+   trades/week(11 syms)=5.3 avg hold=59.2h | CONTROL(5 seeds) n= 3395 win= 39.5% R=-0.077±0.020 (~679 trades/seed)
+   PASS=False win>=60%=no
+   exits: {'time': 565, 'sl': 187}
+   [3s]
+
+=== F5_bb_squeeze (8 configs) ===
+  tf=H1,stop=atr,tgt=1.0                 SEEN n=  618 win= 47.9% R=-0.088±0.040 | s1 n=  301 win= 45.8% R=-0.127±0.056 | s2 n=  317 win= 49.8% R=-0.052±0.056 | score=-0.127
+  tf=H1,stop=atr,tgt=2.0                 SEEN n=  596 win= 30.9% R=-0.125±0.055 | s1 n=  295 win= 31.2% R=-0.111±0.078 | s2 n=  301 win= 30.6% R=-0.140±0.079 | score=-0.140
+  tf=H1,stop=mid,tgt=1.0                 SEEN n=  608 win= 48.8% R=-0.065±0.040 | s1 n=  296 win= 46.6% R=-0.113±0.056 | s2 n=  312 win= 51.0% R=-0.020±0.056 | score=-0.113
+  tf=H1,stop=mid,tgt=2.0                 SEEN n=  573 win= 32.1% R=-0.087±0.057 | s1 n=  283 win= 30.0% R=-0.150±0.078 | s2 n=  290 win= 34.1% R=-0.025±0.081 | score=-0.150
+  tf=H4,stop=atr,tgt=1.0                 SEEN n=  155 win= 43.9% R=-0.157±0.078 | s1 n=   69 win= 44.9% R=-0.130±0.118 | s2 n=   86 win= 43.0% R=-0.178±0.105 | score=-0.178
+  tf=H4,stop=atr,tgt=2.0                 SEEN n=  151 win= 31.1% R=-0.113±0.111 | s1 n=   69 win= 29.0% R=-0.163±0.162 | s2 n=   82 win= 32.9% R=-0.072±0.151 | score=-0.163
+  tf=H4,stop=mid,tgt=1.0                 SEEN n=  156 win= 45.5% R=-0.125±0.079 | s1 n=   69 win= 44.9% R=-0.131±0.118 | s2 n=   87 win= 46.0% R=-0.120±0.105 | score=-0.131
+  tf=H4,stop=mid,tgt=2.0                 SEEN n=  150 win= 32.0% R=-0.089±0.112 | s1 n=   68 win= 32.4% R=-0.068±0.167 | s2 n=   82 win= 31.7% R=-0.105±0.150 | score=-0.105
+  [disclosure, not used] tf=H1,stop=atr,tgt=1.0                 UNSEEN u1 n=  360 win= 50.6% R=-0.051±0.051 | u2 n=  386 win= 53.4% R=+0.011±0.049
+  [disclosure, not used] tf=H1,stop=atr,tgt=2.0                 UNSEEN u1 n=  347 win= 33.7% R=-0.066±0.072 | u2 n=  369 win= 36.3% R=+0.029±0.072
+  [disclosure, not used] tf=H1,stop=mid,tgt=1.0                 UNSEEN u1 n=  361 win= 47.4% R=-0.125±0.051 | u2 n=  386 win= 52.1% R=-0.020±0.049
+  [disclosure, not used] tf=H1,stop=mid,tgt=2.0                 UNSEEN u1 n=  347 win= 32.6% R=-0.111±0.072 | u2 n=  367 win= 35.7% R=+0.010±0.072
+  [disclosure, not used] tf=H4,stop=atr,tgt=1.0                 UNSEEN u1 n=   82 win= 43.9% R=-0.163±0.106 | u2 n=   91 win= 60.4% R=+0.166±0.101
+  [disclosure, not used] tf=H4,stop=atr,tgt=2.0                 UNSEEN u1 n=   82 win= 26.8% R=-0.244±0.141 | u2 n=   89 win= 37.1% R=+0.052±0.149
+  [disclosure, not used] tf=H4,stop=mid,tgt=1.0                 UNSEEN u1 n=   80 win= 48.8% R=-0.074±0.108 | u2 n=   91 win= 51.6% R=-0.005±0.102
+  [disclosure, not used] tf=H4,stop=mid,tgt=2.0                 UNSEEN u1 n=   79 win= 27.8% R=-0.221±0.145 | u2 n=   87 win= 36.8% R=+0.043±0.150
+CHOSEN tf=H4,stop=mid,tgt=2.0
+   all              n=  316 win= 32.3% R=-0.085±0.077 PF=0.88
+   seen             n=  150 win= 32.0% R=-0.089±0.112 PF=0.87
+   ('seen', 0)      n=   68 win= 32.4% R=-0.068±0.167 PF=0.90
+   ('seen', 1)      n=   82 win= 31.7% R=-0.105±0.150 PF=0.85
+   unseen           n=  166 win= 32.5% R=-0.083±0.105 PF=0.88
+   ('unseen', 0)    n=   79 win= 27.8% R=-0.221±0.145 PF=0.70
+   ('unseen', 1)    n=   87 win= 36.8% R=+0.043±0.150 PF=1.07
+   GROSS all n=  315 win= 33.0% R=-0.011±0.080 | gross seen R=-0.036 unseen R=+0.012
+   trades/week(11 syms)=2.2 avg hold=73.6h | CONTROL(5 seeds) n= 1518 win= 32.2% R=-0.088±0.035 (~304 trades/seed)
+   PASS=False win>=60%=no
+   exits: {'sl': 214, 'tp': 102}
+   [4s]
+
+=== F6_tsmom_daily (6 configs) ===
+  tf=H1,hold=1,stop=1.0                  SEEN n= 3388 win= 47.2% R=-0.015±0.011 | s1 n= 1644 win= 45.6% R=-0.020±0.016 | s2 n= 1744 win= 48.8% R=-0.010±0.015 | score=-0.020
+  tf=H1,hold=1,stop=2.0                  SEEN n= 3388 win= 47.4% R=-0.009±0.006 | s1 n= 1644 win= 45.7% R=-0.010±0.008 | s2 n= 1744 win= 49.0% R=-0.008±0.008 | score=-0.010
+  tf=H1,hold=3,stop=1.0                  SEEN n= 1279 win= 44.1% R=-0.011±0.029 | s1 n=  633 win= 43.3% R=-0.020±0.041 | s2 n=  646 win= 44.9% R=-0.002±0.040 | score=-0.020
+  tf=H1,hold=3,stop=2.0                  SEEN n= 1146 win= 48.0% R=+0.001±0.017 | s1 n=  558 win= 48.9% R=+0.008±0.024 | s2 n=  588 win= 47.1% R=-0.005±0.023 | score=-0.005
+  tf=H1,hold=5,stop=1.0                  SEEN n=  890 win= 40.3% R=-0.036±0.042 | s1 n=  446 win= 39.2% R=-0.041±0.060 | s2 n=  444 win= 41.4% R=-0.031±0.059 | score=-0.041
+  tf=H1,hold=5,stop=2.0                  SEEN n=  706 win= 50.4% R=+0.035±0.027 | s1 n=  347 win= 49.3% R=+0.018±0.038 | s2 n=  359 win= 51.5% R=+0.051±0.037 | score=+0.018
+  [disclosure, not used] tf=H1,hold=1,stop=1.0                  UNSEEN u1 n= 1992 win= 45.7% R=-0.046±0.014 | u2 n= 2111 win= 45.9% R=-0.042±0.013
+  [disclosure, not used] tf=H1,hold=1,stop=2.0                  UNSEEN u1 n= 1992 win= 46.1% R=-0.024±0.007 | u2 n= 2111 win= 46.1% R=-0.020±0.007
+  [disclosure, not used] tf=H1,hold=3,stop=1.0                  UNSEEN u1 n=  772 win= 44.2% R=-0.074±0.035 | u2 n=  795 win= 42.1% R=-0.084±0.034
+  [disclosure, not used] tf=H1,hold=3,stop=2.0                  UNSEEN u1 n=  678 win= 45.7% R=-0.047±0.021 | u2 n=  714 win= 44.7% R=-0.047±0.020
+  [disclosure, not used] tf=H1,hold=5,stop=1.0                  UNSEEN u1 n=  528 win= 39.4% R=-0.094±0.052 | u2 n=  537 win= 37.4% R=-0.109±0.050
+  [disclosure, not used] tf=H1,hold=5,stop=2.0                  UNSEEN u1 n=  425 win= 47.3% R=-0.058±0.033 | u2 n=  438 win= 46.1% R=-0.065±0.031
+CHOSEN tf=H1,hold=5,stop=2.0
+   all              n= 1569 win= 48.4% R=-0.018±0.017 PF=0.94
+   seen             n=  706 win= 50.4% R=+0.035±0.027 PF=1.13
+   ('seen', 0)      n=  347 win= 49.3% R=+0.018±0.038 PF=1.07
+   ('seen', 1)      n=  359 win= 51.5% R=+0.051±0.037 PF=1.20
+   unseen           n=  863 win= 46.7% R=-0.062±0.023 PF=0.80
+   ('unseen', 0)    n=  425 win= 47.3% R=-0.058±0.033 PF=0.81
+   ('unseen', 1)    n=  438 win= 46.1% R=-0.065±0.031 PF=0.78
+   GROSS all n= 1569 win= 50.1% R=+0.011±0.018 | gross seen R=+0.061 unseen R=-0.031
+   trades/week(11 syms)=11.0 avg hold=160.0h | CONTROL(5 seeds) n= 7903 win= 47.8% R=-0.035±0.008 (~1581 trades/seed)
+   PASS=False win>=60%=no
+   exits: {'time': 1336, 'sl': 233}
+   [5s]
+
+=== F7_donchian (8 configs) ===
+  tf=H1,stop=1.0,tgt=0.5                 SEEN n= 6020 win= 59.1% R=-0.168±0.009 | s1 n= 2948 win= 58.9% R=-0.168±0.013 | s2 n= 3072 win= 59.3% R=-0.168±0.013 | score=-0.168
+  tf=H1,stop=1.0,tgt=1.0                 SEEN n= 5649 win= 45.5% R=-0.148±0.013 | s1 n= 2773 win= 45.3% R=-0.150±0.018 | s2 n= 2876 win= 45.6% R=-0.147±0.018 | score=-0.150
+  tf=H1,stop=2.0,tgt=0.5                 SEEN n= 5285 win= 63.2% R=-0.085±0.010 | s1 n= 2599 win= 62.5% R=-0.094±0.014 | s2 n= 2686 win= 63.9% R=-0.077±0.014 | score=-0.094
+  tf=H1,stop=2.0,tgt=1.0                 SEEN n= 4120 win= 48.3% R=-0.073±0.015 | s1 n= 2012 win= 48.3% R=-0.071±0.022 | s2 n= 2108 win= 48.3% R=-0.075±0.021 | score=-0.075
+  tf=H4,stop=1.0,tgt=0.5                 SEEN n= 1525 win= 63.6% R=-0.080±0.018 | s1 n=  702 win= 66.0% R=-0.045±0.027 | s2 n=  823 win= 61.6% R=-0.111±0.025 | score=-0.111
+  tf=H4,stop=1.0,tgt=1.0                 SEEN n= 1413 win= 49.9% R=-0.043±0.026 | s1 n=  653 win= 52.1% R=-0.001±0.039 | s2 n=  760 win= 48.0% R=-0.080±0.035 | score=-0.080
+  tf=H4,stop=2.0,tgt=0.5                 SEEN n= 1331 win= 66.4% R=-0.028±0.019 | s1 n=  620 win= 67.3% R=-0.013±0.028 | s2 n=  711 win= 65.7% R=-0.041±0.027 | score=-0.041
+  tf=H4,stop=2.0,tgt=1.0                 SEEN n= 1020 win= 50.9% R=-0.018±0.031 | s1 n=  482 win= 50.0% R=-0.031±0.045 | s2 n=  538 win= 51.7% R=-0.005±0.043 | score=-0.031
+  [disclosure, not used] tf=H1,stop=1.0,tgt=0.5                 UNSEEN u1 n= 3385 win= 59.3% R=-0.183±0.012 | u2 n= 3511 win= 59.2% R=-0.178±0.012
+  [disclosure, not used] tf=H1,stop=1.0,tgt=1.0                 UNSEEN u1 n= 3171 win= 44.8% R=-0.179±0.017 | u2 n= 3271 win= 44.4% R=-0.179±0.016
+  [disclosure, not used] tf=H1,stop=2.0,tgt=0.5                 UNSEEN u1 n= 2956 win= 63.1% R=-0.098±0.013 | u2 n= 3033 win= 64.3% R=-0.078±0.013
+  [disclosure, not used] tf=H1,stop=2.0,tgt=1.0                 UNSEEN u1 n= 2278 win= 45.7% R=-0.134±0.020 | u2 n= 2273 win= 47.9% R=-0.090±0.020
+  [disclosure, not used] tf=H4,stop=1.0,tgt=0.5                 UNSEEN u1 n=  847 win= 61.9% R=-0.114±0.024 | u2 n= 1002 win= 61.7% R=-0.117±0.022
+  [disclosure, not used] tf=H4,stop=1.0,tgt=1.0                 UNSEEN u1 n=  782 win= 46.3% R=-0.123±0.034 | u2 n=  922 win= 48.0% R=-0.088±0.032
+  [disclosure, not used] tf=H4,stop=2.0,tgt=0.5                 UNSEEN u1 n=  726 win= 67.2% R=-0.021±0.026 | u2 n=  869 win= 66.4% R=-0.034±0.024
+  [disclosure, not used] tf=H4,stop=2.0,tgt=1.0                 UNSEEN u1 n=  542 win= 51.1% R=-0.016±0.042 | u2 n=  606 win= 49.5% R=-0.058±0.041
+CHOSEN tf=H4,stop=2.0,tgt=1.0
+   all              n= 2168 win= 50.6% R=-0.029±0.021 PF=0.94
+   seen             n= 1020 win= 50.9% R=-0.018±0.031 PF=0.97
+   ('seen', 0)      n=  482 win= 50.0% R=-0.031±0.045 PF=0.94
+   ('seen', 1)      n=  538 win= 51.7% R=-0.005±0.043 PF=0.99
+   unseen           n= 1148 win= 50.3% R=-0.038±0.029 PF=0.92
+   ('unseen', 0)    n=  542 win= 51.1% R=-0.016±0.042 PF=0.97
+   ('unseen', 1)    n=  606 win= 49.5% R=-0.058±0.041 PF=0.89
+   GROSS all n= 2176 win= 51.3% R=+0.021±0.022 | gross seen R=+0.021 unseen R=+0.022
+   trades/week(11 syms)=15.3 avg hold=60.2h | CONTROL(5 seeds) n= 9506 win= 49.1% R=-0.054±0.010 (~1901 trades/seed)
+   PASS=False win>=60%=no
+   exits: {'sl': 1072, 'tp': 1096}
+   [6s]
+
+=== SUMMARY ===
+F1_ma_cross      tf=H4,fast=9,slow=21,tgt=2.0         ALL 36% +0.018±0.037 | SEEN 36% +0.030±0.056 | UNSEEN 35% +0.008±0.050 (u1 +0.027, u2 -0.010) | gross +0.087 | 9.9/wk | 70h | ctrl -0.082 32% | PASS=False
+F2_supertrend    tf=H4,stop=atr,tgt=2.0               ALL 34% -0.038±0.043 | SEEN 36% +0.016±0.064 | UNSEEN 32% -0.086±0.058 (u1 -0.135, u2 -0.042) | gross +0.035 | 7.3/wk | 83h | ctrl -0.046 34% | PASS=False
+F3_macd_ema200   tf=H4,zero=False,tgt=opp             ALL 32% -0.025±0.034 | SEEN 33% +0.046±0.056 | UNSEEN 31% -0.083±0.041 (u1 -0.103, u2 -0.062) | gross +0.039 | 11.8/wk | 54h | ctrl -0.033 40% | PASS=False
+F4_adx_di        tf=H4,tgt=opp                        ALL 25% -0.111±0.047 | SEEN 29% -0.002±0.079 | UNSEEN 22% -0.206±0.055 (u1 -0.299, u2 -0.127) | gross -0.050 | 5.3/wk | 59h | ctrl -0.077 39% | PASS=False
+F5_bb_squeeze    tf=H4,stop=mid,tgt=2.0               ALL 32% -0.085±0.077 | SEEN 32% -0.089±0.112 | UNSEEN 33% -0.083±0.105 (u1 -0.221, u2 +0.043) | gross -0.011 | 2.2/wk | 74h | ctrl -0.088 32% | PASS=False
+F6_tsmom_daily   tf=H1,hold=5,stop=2.0                ALL 48% -0.018±0.017 | SEEN 50% +0.035±0.027 | UNSEEN 47% -0.062±0.023 (u1 -0.058, u2 -0.065) | gross +0.011 | 11.0/wk | 160h | ctrl -0.035 48% | PASS=False
+F7_donchian      tf=H4,stop=2.0,tgt=1.0               ALL 51% -0.029±0.021 | SEEN 51% -0.018±0.031 | UNSEEN 50% -0.038±0.029 (u1 -0.016, u2 -0.058) | gross +0.021 | 15.3/wk | 60h | ctrl -0.054 49% | PASS=False

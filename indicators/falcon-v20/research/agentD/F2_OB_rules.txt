@@ -1,0 +1,34 @@
+F2_OB  chosen config: OB p5 H1 tp=2R   (agentD)
+Pickle: agentD/F2_OB.pkl = list of 4021 NET sim15 trade dicts (all 11 instruments), each with 'sym' and 'setup'.
+
+Order-block retest after break of structure.
+- Swing pivots: fractal strength p (H[k] > max of p bars left, >= max of p bars right), usable only from bar k+p.
+- Bullish BOS at bar b: close > last confirmed swing high (each swing high breaks once). Impulse origin m = lowest-low bar
+  between that swing high's bar and b. Order block = last bearish candle (C<O) at or up to 5 bars before m.
+  Zone = [L_ob, H_ob]. Bearish mirror (close < last swing low; last bullish candle before the highest-high origin).
+- Armed 48 bars after b. Signal = first later bar touching the block (low <= H_ob for longs): enter at its close.
+  Stop structure = far side of block (L_ob longs / H_ob shorts). Target per config (1R/2R, 'ext' = impulse extreme).
+
+COMMON RULES (all agentD families)
+- Data: sim15 bars (BID), bar time = bar open (UTC); New York time via sim.ny(). H4 = common.resample(H1, 14400).
+- ATR = Wilder ATR(14) of the signal-bar timeframe, value at the signal bar (uses bars <= i only).
+- Entry at the CLOSE of signal bar i (long at ask = close + spread, short at bid). Zone/level "touch" entries are
+  therefore entered at the close of the first touching bar, not at the level (sim15 has no limit fills).
+- Stop: structure price named below +/- 0.10 x ATR buffer; widened if needed so it is >= 0.50 x ATR from the close.
+  Setup discarded if the close is already beyond the structure.
+- R-multiple targets: tp = fill + dir * k * (fill-to-stop distance), fill includes spread.
+- Time exit: close of the 72nd H1 bar / 18th H4 bar after entry (72 hours), if neither stop nor target hit.
+- One position at a time per instrument (sim15 run_sequential semantics, cooldown 0).
+- Costs (net): sim15 SPREAD per symbol, swap 0.5 pip per 17:00 NY rollover (Wed x3). Gross = same setups, spread 0, swap 0.
+- Setup tuple (i, dir, sl_price, tp_price, max_bars). Regenerate: cd v15 && python3 -c "import sys; sys.path.insert(0,'agentD');
+  import fam; name,gen,tf=[g for g in fam.GRIDS['F2_OB'] if g[0]=='OB p5 H1 tp=2R'][0]; print(gen('EURUSD',tf)[:5])"
+- Selection: best of the family grid by min(SEEN half-1 avg R, SEEN half-2 avg R) net, n>=30 per half; UNSEEN untouched.
+
+RESULTS (net unless stated)
+  ALL    win 32.2%  avgR -0.094 +/- 0.022  (n=4021)
+  SEEN   win 33.7%  avgR -0.044 +/- 0.033  (n=1804)   halves: win 34.7%  avgR -0.019 +/- 0.047  (n=913) | win 32.7%  avgR -0.070 +/- 0.046  (n=891)
+  UNSEEN win 30.9%  avgR -0.134 +/- 0.029  (n=2217)   halves: win 32.0%  avgR -0.106 +/- 0.041  (n=1122) | win 29.8%  avgR -0.163 +/- 0.040  (n=1095)
+  GROSS avg R: ALL +0.027  SEEN +0.055  UNSEEN +0.003
+  trades/week (11 instruments) 28.2; average hold 20.0 h
+  Random-entry control (random bar & direction, same ATR-scaled stop/target, same time exit, 10 seeds): win 30.6%  avgR -0.135 +/- 0.007  (n=37323)
+  PASS (UNSEEN avg R > 0 in both halves): False    win>=60%: False

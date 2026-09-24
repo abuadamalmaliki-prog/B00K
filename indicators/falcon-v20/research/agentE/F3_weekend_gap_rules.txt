@@ -1,0 +1,9 @@
+F3 weekend gap fade. Reopen bar = first H1 bar after a >20h break (in this data the week starts at 00:00 UTC Monday, i.e. 19:00/20:00 NY Sunday).
+gap = reopen bar open - previous (Friday) close. Trade only if |gap| >= 0.20 * avg FX-day range of the previous 20 days.
+Enter at the close of the reopen bar, direction = against the gap. Target = Friday close (full fill). Stop = reopen open + sign(gap)*2*|gap| (2x gap beyond the reopen price).
+Setups whose entry is already past the stop or the target are skipped (sim15 returns None). Time exit after 48 bars.
+
+Costs (sim15): spread EURUSD1.2 GBPUSD1.5 AUDUSD1.5 NZDUSD2 USDCAD2 GBPAUD3.5 USDJPY1.5 EURJPY2 GBPJPY3 XAU3 XAG3 pips; swap 0.5 pip/night cost (Wed x3); stop-first; gapped stops at open; one position per instrument (sim15.run_sequential, cooldown 0).
+H1 bars, BID prices, bar time = bar open; New York time = sim.ny().
+Selected on SEEN only by max(min(SEEN-half avg R)). Pickle: 373 NET sim15 trade dicts (all 11 instruments) with 'sym','setup'.
+Result: UNSEEN h1 -0.099 h2 -0.007 -> FAIL.

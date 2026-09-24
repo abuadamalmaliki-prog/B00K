@@ -1,0 +1,33 @@
+F7_PDPW  chosen config: prior-day H4 tp=1R   (agentD)
+Pickle: agentD/F7_PDPW.pkl = list of 1836 NET sim15 trade dicts (all 11 instruments), each with 'sym' and 'setup'.
+
+Prior-day / prior-week high-low break-and-retest continuation.
+- Levels from H1 bars: previous New York day (17:00 rollover, >= 10 bars) or previous NY week (>= 50 bars) high and low.
+  Period of a bar = period of its open time (H4 bars too).
+- Break: first bar of the period that closes above the prior high with the previous close at/below it (long side);
+  mirror below the prior low. Retest: first later bar (<= 24 bars) with low <= level; long at its close if it closes above the
+  level, else cancelled. Stop structure = retest bar low (high for shorts). Target per config (1R / 2R).
+
+COMMON RULES (all agentD families)
+- Data: sim15 bars (BID), bar time = bar open (UTC); New York time via sim.ny(). H4 = common.resample(H1, 14400).
+- ATR = Wilder ATR(14) of the signal-bar timeframe, value at the signal bar (uses bars <= i only).
+- Entry at the CLOSE of signal bar i (long at ask = close + spread, short at bid). Zone/level "touch" entries are
+  therefore entered at the close of the first touching bar, not at the level (sim15 has no limit fills).
+- Stop: structure price named below +/- 0.10 x ATR buffer; widened if needed so it is >= 0.50 x ATR from the close.
+  Setup discarded if the close is already beyond the structure.
+- R-multiple targets: tp = fill + dir * k * (fill-to-stop distance), fill includes spread.
+- Time exit: close of the 72nd H1 bar / 18th H4 bar after entry (72 hours), if neither stop nor target hit.
+- One position at a time per instrument (sim15 run_sequential semantics, cooldown 0).
+- Costs (net): sim15 SPREAD per symbol, swap 0.5 pip per 17:00 NY rollover (Wed x3). Gross = same setups, spread 0, swap 0.
+- Setup tuple (i, dir, sl_price, tp_price, max_bars). Regenerate: cd v15 && python3 -c "import sys; sys.path.insert(0,'agentD');
+  import fam; name,gen,tf=[g for g in fam.GRIDS['F7_PDPW'] if g[0]=='prior-day H4 tp=1R'][0]; print(gen('EURUSD',tf)[:5])"
+- Selection: best of the family grid by min(SEEN half-1 avg R, SEEN half-2 avg R) net, n>=30 per half; UNSEEN untouched.
+
+RESULTS (net unless stated)
+  ALL    win 42.8%  avgR -0.161 +/- 0.023  (n=1836)
+  SEEN   win 44.7%  avgR -0.127 +/- 0.035  (n=808)   halves: win 44.7%  avgR -0.129 +/- 0.050  (n=407) | win 44.6%  avgR -0.126 +/- 0.051  (n=401)
+  UNSEEN win 41.3%  avgR -0.187 +/- 0.031  (n=1028)   halves: win 42.4%  avgR -0.169 +/- 0.045  (n=488) | win 40.4%  avgR -0.203 +/- 0.042  (n=540)
+  GROSS avg R: ALL -0.073  SEEN -0.058  UNSEEN -0.084
+  trades/week (11 instruments) 12.9; average hold 17.7 h
+  Random-entry control (random bar & direction, same ATR-scaled stop/target, same time exit, 10 seeds): win 43.9%  avgR -0.139 +/- 0.008  (n=17351)
+  PASS (UNSEEN avg R > 0 in both halves): False    win>=60%: False

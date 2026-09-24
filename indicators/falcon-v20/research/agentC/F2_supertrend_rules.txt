@@ -1,0 +1,25 @@
+F2_supertrend  chosen config: tf=H4,stop=atr,tgt=2.0
+
+RULES
+Timeframe H4. Supertrend(ATR period 10, multiplier 3, TradingView formulation, Wilder ATR). Long on the bar the trend flips from down to up; short on flip up->down. Stop = 1.5*ATR(10). Target = 2R. No time exit.
+
+Common: entry at the CLOSE of signal bar i (long at ask = close+spread, short at bid). One position per instrument
+(sim15-style sequential; a new setup is taken once flat, including on the exit bar). Stop/target prices are anchored on the
+signal-bar close: long SL = close - dist, TP = close + m*dist (short mirrored). ATR = Wilder ATR(14) of the same timeframe.
+Signals only from bar index >= 250 (warm-up). Costs: sim15 SPREAD per symbol + 0.5 pip swap per 17:00 NY rollover (Wed x3).
+Setup tuple in pickle: (i, dir, sl_price, tp_price[, max_bars]) on the stated timeframe (H1 = bars(sym,3600), H4 = bars(sym,14400)).
+Selection (pre-registered): max over grid of min(SEEN half-1 net avgR, SEEN half-2 net avgR), n>=30 per half; UNSEEN untouched.
+Code: agentC/trend.py ; full grid in agentC/grid_log.txt
+
+RESULTS (net)
+  ALL        n=1043 win=33.8% netR=-0.038+-0.043
+  SEEN       n=492 win=35.6% netR=+0.016+-0.064
+  SEEN h1    n=229 win=35.8% netR=+0.024+-0.093
+  SEEN h2    n=263 win=35.4% netR=+0.010+-0.087
+  UNSEEN     n=551 win=32.3% netR=-0.086+-0.058
+  UNSEEN h1  n=261 win=30.7% netR=-0.135+-0.083
+  UNSEEN h2  n=290 win=33.8% netR=-0.042+-0.081
+  GROSS (no spread/swap) ALL avgR=+0.035+-0.044
+  trades/week (11 syms)=7.3  avg hold=82.6h
+  random-entry control (5 seeds, same geometry, net): win=33.5% avgR=-0.046+-0.021
+  PASS (UNSEEN avgR>0 both halves): False

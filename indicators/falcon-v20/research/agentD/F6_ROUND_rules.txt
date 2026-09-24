@@ -1,0 +1,32 @@
+F6_ROUND  chosen config: round 00 H4 tp=2R   (agentD)
+Pickle: agentD/F6_ROUND.pkl = list of 1006 NET sim15 trade dicts (all 11 instruments), each with 'sym' and 'setup'.
+
+Round-number rejection fades. Level grid: '00+50' = every 50 pips (FX, JPY 0.50), XAGUSD $0.50, XAUUSD $50;
+  '00' = every 100 pips (1.0800, 150.00), XAGUSD $1, XAUUSD $100.
+- Short: X = nearest grid level above the close; bar high >= X > close, previous close < X, and no high >= X in the prior 24 bars
+  (first touch from below). Stop structure = the bar's high. Long mirror at the level below the close (bar low).
+- Entry at the rejection bar close. Target per config (1R / 2R).
+
+COMMON RULES (all agentD families)
+- Data: sim15 bars (BID), bar time = bar open (UTC); New York time via sim.ny(). H4 = common.resample(H1, 14400).
+- ATR = Wilder ATR(14) of the signal-bar timeframe, value at the signal bar (uses bars <= i only).
+- Entry at the CLOSE of signal bar i (long at ask = close + spread, short at bid). Zone/level "touch" entries are
+  therefore entered at the close of the first touching bar, not at the level (sim15 has no limit fills).
+- Stop: structure price named below +/- 0.10 x ATR buffer; widened if needed so it is >= 0.50 x ATR from the close.
+  Setup discarded if the close is already beyond the structure.
+- R-multiple targets: tp = fill + dir * k * (fill-to-stop distance), fill includes spread.
+- Time exit: close of the 72nd H1 bar / 18th H4 bar after entry (72 hours), if neither stop nor target hit.
+- One position at a time per instrument (sim15 run_sequential semantics, cooldown 0).
+- Costs (net): sim15 SPREAD per symbol, swap 0.5 pip per 17:00 NY rollover (Wed x3). Gross = same setups, spread 0, swap 0.
+- Setup tuple (i, dir, sl_price, tp_price, max_bars). Regenerate: cd v15 && python3 -c "import sys; sys.path.insert(0,'agentD');
+  import fam; name,gen,tf=[g for g in fam.GRIDS['F6_ROUND'] if g[0]=='round 00 H4 tp=2R'][0]; print(gen('EURUSD',tf)[:5])"
+- Selection: best of the family grid by min(SEEN half-1 avg R, SEEN half-2 avg R) net, n>=30 per half; UNSEEN untouched.
+
+RESULTS (net unless stated)
+  ALL    win 35.3%  avgR -0.013 +/- 0.043  (n=1006)
+  SEEN   win 37.5%  avgR +0.041 +/- 0.072  (n=363)   halves: win 36.9%  avgR +0.034 +/- 0.103  (n=179) | win 38.0%  avgR +0.048 +/- 0.102  (n=184)
+  UNSEEN win 34.1%  avgR -0.043 +/- 0.054  (n=643)   halves: win 34.8%  avgR -0.044 +/- 0.077  (n=310) | win 33.3%  avgR -0.042 +/- 0.075  (n=333)
+  GROSS avg R: ALL +0.085  SEEN +0.142  UNSEEN +0.053
+  trades/week (11 instruments) 7.1; average hold 25.6 h
+  Random-entry control (random bar & direction, same ATR-scaled stop/target, same time exit, 10 seeds): win 31.2%  avgR -0.135 +/- 0.014  (n=9149)
+  PASS (UNSEEN avg R > 0 in both halves): False    win>=60%: False

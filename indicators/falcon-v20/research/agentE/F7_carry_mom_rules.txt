@@ -1,0 +1,10 @@
+F7 carry direction + 20-day momentum. Assumed avg policy rates Dec-2023..Sep-2026 (%): {'USD': 4.4, 'GBP': 4.4, 'AUD': 3.8, 'NZD': 3.8, 'CAD': 3.1, 'EUR': 2.6, 'JPY': 0.3, 'XAU': 0.0, 'XAG': 0.0}.
+Carry dir = sign(rate_base - rate_quote) if |diff| >= 0.5 else no trade -> short EURUSD, AUDUSD, NZDUSD, XAUUSD, XAGUSD; long USDCAD, USDJPY, EURJPY, GBPJPY, GBPAUD; GBPUSD none.
+Daily at the FX-day close (close of the H1 bar opening 16:00 NY): enter in the carry direction only if the FX-day close is beyond (in carry direction) the close 20 FX days earlier.
+Stop = 2.0 x avg FX-day range(20) from entry; no target; time exit after 24 bars; re-enter at the next daily close if still valid.
+Swap: carry side EARNS +0.5 pip/night (Wed x3) instead of paying (sim15 trade(..., swap=-0.5)). Random control: carry side +0.5, other side -0.5.
+
+Costs (sim15): spread EURUSD1.2 GBPUSD1.5 AUDUSD1.5 NZDUSD2 USDCAD2 GBPAUD3.5 USDJPY1.5 EURJPY2 GBPJPY3 XAU3 XAG3 pips; swap 0.5 pip/night cost (Wed x3); stop-first; gapped stops at open; one position per instrument (sim15.run_sequential, cooldown 0).
+H1 bars, BID prices, bar time = bar open; New York time = sim.ny().
+Selected on SEEN only by max(min(SEEN-half avg R)). Pickle: 2549 NET sim15 trade dicts (all 11 instruments) with 'sym','setup'.
+Result: UNSEEN h1 -0.020 h2 -0.013 -> FAIL.

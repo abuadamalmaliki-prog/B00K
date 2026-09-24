@@ -1,0 +1,10 @@
+F1 time-of-day, 'sell the currency whose market is opening' at the New York open.
+Signal bar = H1 bar opening 07:00 New York (enter at its close = 08:00 NY), Mon-Fri. Opening currencies at 08:00 NY = USD, CAD.
+Direction: sell the opening currency: long EURUSD/GBPUSD/AUDUSD/NZDUSD/XAUUSD/XAGUSD, short USDJPY/USDCAD; crosses (GBPAUD,EURJPY,GBPJPY) no trade.
+Hold 3 bars (time exit at close of bar opening 10:00 NY = 11:00 NY). ATR24 = simple mean of the last 24 H1 true ranges incl. the signal bar. Stop distance = 1.5*sqrt(hold_hours)*ATR24 from entry (long entry = ask). Target = 50x risk (i.e. none: stop or time exit).
+(Grid: open 03/08/19 NY x hold 3/6 x sell/buy opening ccy; 10 configs, see run_log.txt.)
+
+Costs (sim15): spread EURUSD1.2 GBPUSD1.5 AUDUSD1.5 NZDUSD2 USDCAD2 GBPAUD3.5 USDJPY1.5 EURJPY2 GBPJPY3 XAU3 XAG3 pips; swap 0.5 pip/night cost (Wed x3); stop-first; gapped stops at open; one position per instrument (sim15.run_sequential, cooldown 0).
+H1 bars, BID prices, bar time = bar open; New York time = sim.ny().
+Selected on SEEN only by max(min(SEEN-half avg R)). Pickle: 4811 NET sim15 trade dicts (all 11 instruments) with 'sym','setup'.
+Result: UNSEEN h1 -0.097 h2 -0.022 -> FAIL.

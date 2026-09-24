@@ -1,0 +1,34 @@
+F5_PIVOT  chosen config: pivot break_retest stop1.0ATR tp=2R   (agentD)
+Pickle: agentD/F5_PIVOT.pkl = list of 1884 NET sim15 trade dicts (all 11 instruments), each with 'sym' and 'setup'.
+
+Classic floor pivots (H1). Day = New York 17:00 rollover day. From the previous completed day (>= 10 H1 bars):
+  P = (H+L+C)/3, R1 = 2P - L, S1 = 2P - H. Only days whose first bar opens between S1 and R1.
+- fade_touch: first bar of the day with high >= R1 -> short at its close (low <= S1 -> long). fade_reject: same first touch,
+  but only if that bar closes back below R1 (above S1); otherwise no trade that day at that level.
+  Stop = level +/- stop_atr x ATR. Target 'P' (pivot) or 1R.
+- break_retest: first close above R1 in the day, then the first later bar (<= 24 bars) with low <= R1: long at its close if it
+  closes above R1, otherwise cancelled (mirror at S1 for shorts). Stop = R1 - stop_atr x ATR (S1 + ... for shorts). Target 1R/2R.
+
+COMMON RULES (all agentD families)
+- Data: sim15 bars (BID), bar time = bar open (UTC); New York time via sim.ny(). H4 = common.resample(H1, 14400).
+- ATR = Wilder ATR(14) of the signal-bar timeframe, value at the signal bar (uses bars <= i only).
+- Entry at the CLOSE of signal bar i (long at ask = close + spread, short at bid). Zone/level "touch" entries are
+  therefore entered at the close of the first touching bar, not at the level (sim15 has no limit fills).
+- Stop: structure price named below +/- 0.10 x ATR buffer; widened if needed so it is >= 0.50 x ATR from the close.
+  Setup discarded if the close is already beyond the structure.
+- R-multiple targets: tp = fill + dir * k * (fill-to-stop distance), fill includes spread.
+- Time exit: close of the 72nd H1 bar / 18th H4 bar after entry (72 hours), if neither stop nor target hit.
+- One position at a time per instrument (sim15 run_sequential semantics, cooldown 0).
+- Costs (net): sim15 SPREAD per symbol, swap 0.5 pip per 17:00 NY rollover (Wed x3). Gross = same setups, spread 0, swap 0.
+- Setup tuple (i, dir, sl_price, tp_price, max_bars). Regenerate: cd v15 && python3 -c "import sys; sys.path.insert(0,'agentD');
+  import fam; name,gen,tf=[g for g in fam.GRIDS['F5_PIVOT'] if g[0]=='pivot break_retest stop1.0ATR tp=2R'][0]; print(gen('EURUSD',tf)[:5])"
+- Selection: best of the family grid by min(SEEN half-1 avg R, SEEN half-2 avg R) net, n>=30 per half; UNSEEN untouched.
+
+RESULTS (net unless stated)
+  ALL    win 32.2%  avgR -0.065 +/- 0.032  (n=1884)
+  SEEN   win 34.2%  avgR -0.009 +/- 0.049  (n=816)   halves: win 35.1%  avgR +0.012 +/- 0.070  (n=405) | win 33.3%  avgR -0.031 +/- 0.069  (n=411)
+  UNSEEN win 30.6%  avgR -0.108 +/- 0.042  (n=1068)   halves: win 32.0%  avgR -0.065 +/- 0.061  (n=515) | win 29.3%  avgR -0.148 +/- 0.057  (n=553)
+  GROSS avg R: ALL +0.042  SEEN +0.079  UNSEEN +0.015
+  trades/week (11 instruments) 13.3; average hold 19.2 h
+  Random-entry control (random bar & direction, same ATR-scaled stop/target, same time exit, 10 seeds): win 31.2%  avgR -0.097 +/- 0.011  (n=17013)
+  PASS (UNSEEN avg R > 0 in both halves): False    win>=60%: False

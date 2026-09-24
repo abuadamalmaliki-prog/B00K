@@ -1,0 +1,500 @@
+//@version=6
+// ═════════════════════════════════════════════════════════════════════════════
+//  FALCON V20 · TREND-SWEEP SCANNER  (TradingView only · execute by hand in MT5)
+//
+//  Strategy (winner of a 5-team comparison of ~40 techniques and combinations,
+//  the only one that stayed positive after costs on unseen instruments):
+//    H4 EMA 9/21 cross, taken only within 6 bars after a liquidity-sweep setup
+//    in the same direction. Stop 1.5 x ATR(14), target 2R.
+//    Sweep setup = close back beyond a swept swing or previous-day high/low,
+//    confirmed by a pin bar or a close beyond the last 3 bars, RSI(14) not
+//    stretched, sweep stop <= 100 pips.
+//
+//  One chart, one alert: it scans up to 11 symbols on H4 and every alert
+//  carries the MT5 order to type (side, lots, stop, target).
+//
+//  Sizing and the probability meter come from an exact dynamic programme over
+//  the strategy's net trade outcomes: the risk that maximises P(reach goal by
+//  the deadline) for the current balance and the trades still available.
+//
+//  Non-repainting: every value comes from the last CLOSED H4 bar
+//  ([1] with lookahead_on). Signals appear at the open of the next H4 bar.
+// ═════════════════════════════════════════════════════════════════════════════
+indicator("Falcon V20 Trend-Sweep Scanner", shorttitle = "Falcon V20", overlay = true, max_labels_count = 500, max_lines_count = 500)
+
+// ─── ① Plan ──────────────────────────────────────────────────────────────────
+const string G_PLAN = "① Plan"
+planStart = input.time(timestamp("Asia/Kuwait", 2026, 10, 2, 0, 0), "Plan start", group = G_PLAN)
+planEnd   = input.time(timestamp("Asia/Kuwait", 2026, 11, 1, 0, 0), "Deadline", group = G_PLAN)
+startBal  = input.float(30, "Start balance ($)", minval = 1, group = G_PLAN)
+balance   = input.float(30, "Current balance ($)", minval = 0.01, group = G_PLAN, tooltip = "Update after every closed trade (MT5 → History). Lot sizes and probabilities are computed from it.")
+goal      = input.float(5000, "Goal ($)", minval = 1, group = G_PLAN)
+aimMode   = input.string("Goal", "Size trades to maximise P of", options = ["Goal", "Next milestone"], group = G_PLAN, tooltip = "Goal: the risk that maximises the probability of reaching the goal by the deadline. Next milestone: the risk that maximises the probability of the next rung ($60, $150, $500, $1,500, goal).")
+tradesDay = input.float(0.33, "Trade opportunities per trading day", minval = 0.05, step = 0.01, group = G_PLAN, tooltip = "Research: a median of 7 trades per 21 trading days when holding one position at a time across 11 symbols.")
+
+// ─── ② Account (JustMarkets Standard) ────────────────────────────────────────
+const string G_ACC = "② Account"
+leverage   = input.int(3000, "Leverage 1:", minval = 1, group = G_ACC, inline = "lev")
+safety     = input.float(3.0, "margin safety ×", minval = 1, step = 0.5, group = G_ACC, inline = "lev", tooltip = "Lots are capped as if margin were this many times higher, so a leverage cut around news, weekends or bigger balances cannot stop you out before your stop.")
+stopOut    = input.float(50, "Stop-out %", minval = 0, maxval = 100, group = G_ACC)
+lotStep    = input.float(0.01, "Lot step / minimum", minval = 0.001, step = 0.01, group = G_ACC)
+swapNight  = input.float(0.5, "Swap cost per night (pips)", minval = 0, step = 0.1, group = G_ACC, tooltip = "Used for the scorecard only. Charged at each 17:00 New York rollover, Wednesday x3.")
+
+// ─── ③ Watchlist ─────────────────────────────────────────────────────────────
+const string G_W = "③ Watchlist · spread (pips) · on"
+s01 = input.symbol("OANDA:EURUSD", "", group = G_W, inline = "01")
+p01 = input.float(1.2, "", minval = 0, step = 0.1, group = G_W, inline = "01")
+o01 = input.bool(true, "", group = G_W, inline = "01")
+s02 = input.symbol("OANDA:GBPUSD", "", group = G_W, inline = "02")
+p02 = input.float(1.5, "", minval = 0, step = 0.1, group = G_W, inline = "02")
+o02 = input.bool(true, "", group = G_W, inline = "02")
+s03 = input.symbol("OANDA:AUDUSD", "", group = G_W, inline = "03")
+p03 = input.float(1.5, "", minval = 0, step = 0.1, group = G_W, inline = "03")
+o03 = input.bool(true, "", group = G_W, inline = "03")
+s04 = input.symbol("OANDA:NZDUSD", "", group = G_W, inline = "04")
+p04 = input.float(2.0, "", minval = 0, step = 0.1, group = G_W, inline = "04")
+o04 = input.bool(true, "", group = G_W, inline = "04")
+s05 = input.symbol("OANDA:USDCAD", "", group = G_W, inline = "05")
+p05 = input.float(2.0, "", minval = 0, step = 0.1, group = G_W, inline = "05")
+o05 = input.bool(true, "", group = G_W, inline = "05")
+s06 = input.symbol("OANDA:GBPAUD", "", group = G_W, inline = "06")
+p06 = input.float(3.5, "", minval = 0, step = 0.1, group = G_W, inline = "06")
+o06 = input.bool(true, "", group = G_W, inline = "06")
+s07 = input.symbol("OANDA:USDJPY", "", group = G_W, inline = "07")
+p07 = input.float(1.5, "", minval = 0, step = 0.1, group = G_W, inline = "07")
+o07 = input.bool(true, "", group = G_W, inline = "07")
+s08 = input.symbol("OANDA:EURJPY", "", group = G_W, inline = "08")
+p08 = input.float(2.0, "", minval = 0, step = 0.1, group = G_W, inline = "08")
+o08 = input.bool(true, "", group = G_W, inline = "08")
+s09 = input.symbol("OANDA:GBPJPY", "", group = G_W, inline = "09")
+p09 = input.float(3.0, "", minval = 0, step = 0.1, group = G_W, inline = "09")
+o09 = input.bool(true, "", group = G_W, inline = "09")
+s10 = input.symbol("OANDA:XAGUSD", "", group = G_W, inline = "10")
+p10 = input.float(3.0, "", minval = 0, step = 0.1, group = G_W, inline = "10")
+o10 = input.bool(true, "", group = G_W, inline = "10")
+s11 = input.symbol("OANDA:XAUUSD", "", group = G_W, inline = "11")
+p11 = input.float(3.0, "", minval = 0, step = 0.1, group = G_W, inline = "11")
+o11 = input.bool(true, "", group = G_W, inline = "11")
+
+// ─── ④ Display ───────────────────────────────────────────────────────────────
+const string G_D = "④ Display"
+dashPos  = input.string("Top Right", "Panel position", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = G_D)
+dashSize = input.string("Small", "Text size", options = ["Tiny", "Small", "Normal"], group = G_D)
+
+// ─── Constants: optimal-policy tables ────────────────────────────────────────
+// Exact dynamic programme over the strategy's net trade outcomes (research/plan20b.py).
+// Rows n = 1..12 trades left; 40 columns x = balance/goal, log-spaced 0.001..1.
+// F = risk fraction that maximises P(reach goal); P = that maximum probability.
+const int TAB_N = 12
+const int TAB_X = 40
+var array<float> F_TAB = array.from(0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.00, 0.80, 0.60, 0.40, 0.25, 0.60, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.00, 1.00, 0.70, 0.50, 0.40, 1.00, 1.00, 0.80, 0.60, 0.40, 0.30, 0.50, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.00, 1.00, 1.00, 0.80, 0.60, 1.00, 1.00, 1.00, 1.00, 0.70, 1.00, 1.00, 1.00, 1.00, 1.00, 0.60, 0.40, 0.25, 0.15, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.00, 1.00, 1.00, 0.90, 0.70, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.80, 1.00, 1.00, 0.10, 0.10, 0.40, 0.25, 0.10, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.80, 1.00, 1.00, 0.70, 0.25, 0.40, 0.25, 0.10, 0.00, 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.50, 0.30, 0.40, 0.25, 0.10, 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.40, 0.60, 0.70, 0.60, 0.40, 0.50, 0.15, 0.20, 0.10, 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.60, 0.50, 0.60, 0.50, 0.50, 0.50, 0.40, 0.30, 0.15, 0.20, 0.10, 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.60, 0.60, 0.60, 0.50, 0.50, 0.50, 0.50, 0.50, 0.50, 0.50, 0.30, 0.30, 0.25, 0.20, 0.10, 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.60, 0.60, 0.60, 0.60, 0.50, 0.50, 0.50, 0.50, 0.50, 0.50, 0.50, 0.40, 0.40, 0.40, 0.30, 0.20, 0.25, 0.20, 0.10, 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.60, 0.60, 0.60, 0.60, 0.60, 0.60, 0.50, 0.50, 0.50, 0.50, 0.50, 0.50, 0.50, 0.40, 0.40, 0.40, 0.40, 0.40, 0.30, 0.30, 0.30, 0.20, 0.20, 0.10, 0.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.60, 0.60, 0.60, 0.60, 0.60, 0.60, 0.60, 0.60, 0.50, 0.50, 0.50, 0.50, 0.50, 0.50, 0.50, 0.50, 0.40, 0.40, 0.40, 0.40, 0.40, 0.30, 0.30, 0.25, 0.25, 0.20, 0.20, 0.10, 0.00)
+var array<float> P_TAB = array.from(0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.18262, 0.36691, 0.36691, 0.36691, 0.36691, 0.38417, 1.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.06642, 0.13462, 0.13462, 0.13462, 0.13508, 0.14729, 0.30764, 0.37324, 0.37324, 0.48428, 0.59945, 0.60059, 1.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00001, 0.02421, 0.04933, 0.04939, 0.04939, 0.04987, 0.05628, 0.11161, 0.13927, 0.13927, 0.17709, 0.22291, 0.23557, 0.33392, 0.37338, 0.45768, 0.56032, 0.60711, 0.74660, 1.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00002, 0.00872, 0.01804, 0.01812, 0.01812, 0.01856, 0.02142, 0.04058, 0.05193, 0.05195, 0.06590, 0.08300, 0.08968, 0.12519, 0.14137, 0.17132, 0.20581, 0.24033, 0.28390, 0.34854, 0.40243, 0.47700, 0.58122, 0.66193, 0.79804, 1.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00003, 0.00318, 0.00657, 0.00665, 0.00665, 0.00687, 0.00816, 0.01496, 0.01935, 0.01938, 0.02444, 0.03092, 0.03442, 0.04668, 0.05353, 0.06407, 0.07706, 0.09017, 0.10671, 0.13031, 0.15136, 0.17915, 0.21576, 0.25223, 0.29807, 0.35805, 0.41661, 0.49529, 0.59115, 0.68875, 0.82492, 1.00000, 0.00000, 0.00000, 0.00002, 0.00115, 0.00239, 0.00244, 0.00244, 0.00256, 0.00311, 0.00553, 0.00720, 0.00723, 0.00909, 0.01152, 0.01300, 0.01739, 0.02011, 0.02401, 0.02871, 0.03386, 0.04011, 0.04862, 0.05700, 0.06725, 0.08064, 0.09479, 0.11179, 0.13403, 0.15651, 0.18608, 0.22048, 0.25999, 0.30725, 0.36400, 0.42836, 0.50567, 0.59759, 0.70246, 0.83598, 1.00000, 0.00090, 0.00095, 0.00118, 0.00205, 0.00268, 0.00270, 0.00338, 0.00429, 0.00492, 0.00648, 0.00755, 0.00898, 0.01072, 0.01269, 0.01504, 0.01817, 0.02138, 0.02522, 0.03018, 0.03560, 0.04198, 0.05011, 0.05881, 0.06983, 0.08255, 0.09758, 0.11514, 0.13638, 0.16064, 0.18979, 0.22440, 0.26484, 0.31298, 0.36990, 0.43629, 0.51442, 0.60493, 0.71379, 0.84340, 1.00000, 0.00126, 0.00160, 0.00185, 0.00241, 0.00283, 0.00336, 0.00400, 0.00476, 0.00564, 0.00680, 0.00802, 0.00945, 0.01130, 0.01335, 0.01574, 0.01876, 0.02206, 0.02618, 0.03095, 0.03661, 0.04320, 0.05112, 0.06025, 0.07120, 0.08414, 0.09931, 0.11732, 0.13864, 0.16389, 0.19350, 0.22852, 0.26966, 0.31793, 0.37506, 0.44171, 0.52050, 0.61216, 0.72155, 0.84804, 1.00000, 0.00150, 0.00178, 0.00211, 0.00254, 0.00301, 0.00354, 0.00423, 0.00501, 0.00590, 0.00703, 0.00827, 0.00981, 0.01160, 0.01372, 0.01619, 0.01916, 0.02259, 0.02669, 0.03155, 0.03725, 0.04401, 0.05199, 0.06143, 0.07256, 0.08575, 0.10130, 0.11955, 0.14111, 0.16650, 0.19654, 0.23178, 0.27337, 0.32230, 0.37978, 0.44712, 0.52584, 0.61758, 0.72671, 0.85164, 1.00000, 0.00159, 0.00188, 0.00221, 0.00263, 0.00310, 0.00368, 0.00435, 0.00515, 0.00607, 0.00718, 0.00847, 0.01001, 0.01183, 0.01396, 0.01650, 0.01949, 0.02303, 0.02721, 0.03215, 0.03798, 0.04488, 0.05300, 0.06257, 0.07388, 0.08718, 0.10292, 0.12144, 0.14331, 0.16910, 0.19946, 0.23515, 0.27699, 0.32619, 0.38385, 0.45161, 0.53089, 0.62283, 0.73088, 0.85520, 1.00000, 0.00163, 0.00193, 0.00228, 0.00269, 0.00318, 0.00375, 0.00444, 0.00524, 0.00619, 0.00731, 0.00864, 0.01020, 0.01205, 0.01424, 0.01682, 0.01987, 0.02348, 0.02773, 0.03274, 0.03866, 0.04564, 0.05388, 0.06361, 0.07510, 0.08864, 0.10460, 0.12337, 0.14547, 0.17144, 0.20204, 0.23799, 0.28034, 0.32991, 0.38794, 0.45575, 0.53503, 0.62739, 0.73475, 0.85826, 1.00000, 0.00166, 0.00196, 0.00232, 0.00274, 0.00324, 0.00382, 0.00452, 0.00534, 0.00631, 0.00745, 0.00880, 0.01040, 0.01228, 0.01450, 0.01713, 0.02023, 0.02389, 0.02821, 0.03331, 0.03933, 0.04644, 0.05482, 0.06468, 0.07630, 0.08997, 0.10609, 0.12506, 0.14742, 0.17377, 0.20466, 0.24088, 0.28334, 0.33316, 0.39161, 0.45967, 0.53907, 0.63136, 0.73811, 0.86080, 1.00000)
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+f_tk(simple string s) =>
+    str.substring(s, str.pos(s, ":") + 1)
+
+f_pip(simple string tk) =>
+    str.contains(tk, "XAU") ? 0.1 : str.contains(tk, "XAG") ? 0.01 : str.endswith(tk, "JPY") ? 0.01 : 0.0001
+
+f_contract(simple string tk) =>
+    str.contains(tk, "XAU") ? 100.0 : str.contains(tk, "XAG") ? 5000.0 : 100000.0
+
+f_quote(simple string tk) =>
+    str.substring(tk, str.length(tk) - 3)
+
+f_col(float x) =>
+    float u = (math.log(x) - math.log(0.001)) / (0.0 - math.log(0.001)) * (TAB_X - 1)
+    math.max(0.0, math.min(TAB_X - 1.0, u))
+
+// Max probability of reaching `target` from `bal` with `n` trades left.
+f_prob(float bal, float target, int n) =>
+    float x = bal / target
+    float p = 0.0
+    if x >= 1
+        p := 1.0
+    else if n >= 1 and x >= 0.001
+        int row = math.min(n, TAB_N) - 1
+        float u = f_col(x)
+        int j = int(math.floor(u))
+        float a = u - j
+        float v0 = array.get(P_TAB, row * TAB_X + j)
+        float v1 = j + 1 < TAB_X ? array.get(P_TAB, row * TAB_X + j + 1) : 1.0
+        p := v0 * (1 - a) + v1 * a
+    p
+
+// Optimal risk fraction toward `target` from `bal` with `n` trades left.
+f_frac(float bal, float target, int n) =>
+    float x = bal / target
+    float f = 0.0
+    if x < 1 and n >= 1 and x >= 0.001
+        int row = math.min(n, TAB_N) - 1
+        int j = int(math.round(f_col(x)))
+        f := array.get(F_TAB, row * TAB_X + j)
+    f
+
+// Swap rollovers (17:00 New York weekdays, Wednesday x3) in (t0, t1].
+f_roll(int t0, int t1) =>
+    int n = 0
+    int lastR = na
+    for k = 0 to 6
+        int dt = t1 - k * 86400000
+        int r = timestamp("America/New_York", year(dt, "America/New_York"), month(dt, "America/New_York"), dayofmonth(dt, "America/New_York"), 17, 0)
+        int dw = dayofweek(r, "America/New_York")
+        if r > t0 and r <= t1 and (na(lastR) or r != lastR) and dw != dayofweek.saturday and dw != dayofweek.sunday
+            n += dw == dayofweek.wednesday ? 3 : 1
+        lastR := r
+    n
+
+// ─── Strategy engine (runs inside each symbol's H4 context) ──────────────────
+// Mirrors research/v20_mirror.py line by line. Returns the LAST CLOSED bar's
+// values: [signal dir, close, stop, target, stop pips, bar time, trades, wins, sum R].
+f_engine(simple float pipS, simple float spr, simple float swp) =>
+    // --- liquidity-sweep setup engine ---
+    var float shP = na
+    var int shB = -1
+    var bool shBr = true
+    var bool shSw = false
+    var float slP = na
+    var int slB = -1
+    var bool slBr = true
+    var bool slSw = false
+    var int lastBull = -1000000
+    var int lastBear = -1000000
+    var int lastSetL = -1000000
+    var int lastSetS = -1000000
+    var int curDay = -1
+    var float curH = na
+    var float curL = na
+    var float pdh = na
+    var float pdl = na
+    int i = bar_index
+    int dayIdx = int(math.floor(time / 86400000))
+    if dayIdx != curDay
+        if curDay >= 0
+            pdh := curH
+            pdl := curL
+        curDay := dayIdx
+        curH := high
+        curL := low
+    else
+        curH := math.max(curH, high)
+        curL := math.min(curL, low)
+    // swings: 5 bars left, 3 bars right, strict
+    if i >= 8
+        bool isH = true
+        bool isL = true
+        for k = 0 to 8
+            if k != 3
+                if high[k] >= high[3]
+                    isH := false
+                if low[k] <= low[3]
+                    isL := false
+        if isH
+            shP := high[3]
+            shB := i - 3
+            shBr := false
+            shSw := false
+        if isL
+            slP := low[3]
+            slB := i - 3
+            slBr := false
+            slSw := false
+    if shB >= 0 and not shBr and close > shP
+        shBr := true
+    if slB >= 0 and not slBr and close < slP
+        slBr := true
+    bool swL = slB >= 0 and not slBr and not slSw and low < slP and close > slP
+    bool swH = shB >= 0 and not shBr and not shSw and high > shP and close < shP
+    if swL
+        slSw := true
+    if swH
+        shSw := true
+    bool pdL = not na(pdl) and low < pdl and close > pdl
+    bool pdH = not na(pdh) and high > pdh and close < pdh
+    if swL or pdL
+        lastBull := i
+    if swH or pdH
+        lastBear := i
+    float r14 = ta.rsi(close, 14)
+    float hh = ta.highest(high, 3)[1]
+    float ll = ta.lowest(low, 3)[1]
+    float lo5 = ta.lowest(low, 5)
+    float hi5 = ta.highest(high, 5)
+    float body = math.abs(close - open)
+    float rng = high - low
+    float lw = math.min(open, close) - low
+    float uw = high - math.max(open, close)
+    bool pinL = rng > 0 and lw >= 2 * body and lw >= 0.5 * rng and high - close <= rng / 3.0
+    bool pinS = rng > 0 and uw >= 2 * body and uw >= 0.5 * rng and close - low <= rng / 3.0
+    bool mssL = close > hh and close > open
+    bool mssS = close < ll and close < open
+    bool ready = i >= 205 and not na(r14)
+    bool longOk = i - lastBull <= 5 and (pinL or mssL) and r14 < 70
+    bool shortOk = i - lastBear <= 5 and (pinS or mssS) and r14 > 30
+    float rpL = math.max((close - (lo5 - 3 * pipS)) / pipS, 10)
+    float rpS = math.max(((hi5 + 3 * pipS) - close) / pipS, 10)
+    bool okL = ready and longOk and rpL <= 100 and 300 / rpL >= 3
+    bool okS = ready and shortOk and rpS <= 100 and 300 / rpS >= 3
+    if okL and not okS
+        lastSetL := i
+    if okS and not okL
+        lastSetS := i
+    // --- trend trigger: EMA 9/21 cross within 6 bars of a same-direction sweep setup ---
+    float e9 = ta.ema(close, 9)
+    float e21 = ta.ema(close, 21)
+    float atr = ta.atr(14)
+    bool xUp = ta.crossover(e9, e21)
+    bool xDn = ta.crossunder(e9, e21)
+    int sig = 0
+    if i >= 250 and not na(atr) and atr > 0
+        if xUp and lastSetL >= i - 6
+            sig := 1
+        else if xDn and lastSetS >= i - 6
+            sig := -1
+    float dist = 1.5 * atr
+    float sigSL = sig != 0 ? close - sig * dist : na
+    float sigTP = sig != 0 ? close + sig * 2.0 * dist : na
+    float sigRisk = sig != 0 ? (dist + (sig == 1 ? spr * pipS : 0.0)) / pipS : na
+    // --- scorecard: one position at a time, net of spread and swap ---
+    var int tDir = 0
+    var float tEntry = na
+    var float tSL = na
+    var float tTP = na
+    var float tRisk = na
+    var int tNights = 0
+    var int nT = 0
+    var int nW = 0
+    var float sumR = 0.0
+    float s = spr * pipS
+    if tDir != 0
+        tNights += f_roll(time[1], time)
+        float px = na
+        if tDir == 1
+            if low <= tSL
+                px := math.min(open, tSL)
+            else if high >= tTP
+                px := tTP
+        else
+            if high + s >= tSL
+                px := math.max(open + s, tSL)
+            else if low + s <= tTP
+                px := tTP
+        if not na(px)
+            float pips = tDir * (px - tEntry) / pipS - swp * tNights
+            nT += 1
+            nW += pips > 0 ? 1 : 0
+            sumR += pips / (tRisk / pipS)
+            tDir := 0
+    if tDir == 0 and sig != 0
+        tDir := sig
+        tEntry := sig == 1 ? close + s : close
+        tSL := sigSL
+        tTP := sigTP
+        tRisk := math.abs(tEntry - tSL)
+        tNights := 0
+    [sig[1], close[1], sigSL[1], sigTP[1], sigRisk[1], time[1], nT[1], nW[1], sumR[1]]
+
+// ─── Per-symbol constants ────────────────────────────────────────────────────
+tk01 = f_tk(s01)
+tk02 = f_tk(s02)
+tk03 = f_tk(s03)
+tk04 = f_tk(s04)
+tk05 = f_tk(s05)
+tk06 = f_tk(s06)
+tk07 = f_tk(s07)
+tk08 = f_tk(s08)
+tk09 = f_tk(s09)
+tk10 = f_tk(s10)
+tk11 = f_tk(s11)
+pp01 = f_pip(tk01)
+pp02 = f_pip(tk02)
+pp03 = f_pip(tk03)
+pp04 = f_pip(tk04)
+pp05 = f_pip(tk05)
+pp06 = f_pip(tk06)
+pp07 = f_pip(tk07)
+pp08 = f_pip(tk08)
+pp09 = f_pip(tk09)
+pp10 = f_pip(tk10)
+pp11 = f_pip(tk11)
+
+// ─── Scanner: one request per symbol (H4, last closed bar) ───────────────────
+[d01, c01, sl01, tp01, rk01, t01, n01, w01, r01] = request.security(s01, "240", f_engine(pp01, p01, swapNight), lookahead = barmerge.lookahead_on)
+[d02, c02, sl02, tp02, rk02, t02, n02, w02, r02] = request.security(s02, "240", f_engine(pp02, p02, swapNight), lookahead = barmerge.lookahead_on)
+[d03, c03, sl03, tp03, rk03, t03, n03, w03, r03] = request.security(s03, "240", f_engine(pp03, p03, swapNight), lookahead = barmerge.lookahead_on)
+[d04, c04, sl04, tp04, rk04, t04, n04, w04, r04] = request.security(s04, "240", f_engine(pp04, p04, swapNight), lookahead = barmerge.lookahead_on)
+[d05, c05, sl05, tp05, rk05, t05, n05, w05, r05] = request.security(s05, "240", f_engine(pp05, p05, swapNight), lookahead = barmerge.lookahead_on)
+[d06, c06, sl06, tp06, rk06, t06, n06, w06, r06] = request.security(s06, "240", f_engine(pp06, p06, swapNight), lookahead = barmerge.lookahead_on)
+[d07, c07, sl07, tp07, rk07, t07, n07, w07, r07] = request.security(s07, "240", f_engine(pp07, p07, swapNight), lookahead = barmerge.lookahead_on)
+[d08, c08, sl08, tp08, rk08, t08, n08, w08, r08] = request.security(s08, "240", f_engine(pp08, p08, swapNight), lookahead = barmerge.lookahead_on)
+[d09, c09, sl09, tp09, rk09, t09, n09, w09, r09] = request.security(s09, "240", f_engine(pp09, p09, swapNight), lookahead = barmerge.lookahead_on)
+[d10, c10, sl10, tp10, rk10, t10, n10, w10, r10] = request.security(s10, "240", f_engine(pp10, p10, swapNight), lookahead = barmerge.lookahead_on)
+[d11, c11, sl11, tp11, rk11, t11, n11, w11, r11] = request.security(s11, "240", f_engine(pp11, p11, swapNight), lookahead = barmerge.lookahead_on)
+
+// Quote-currency → USD conversion for pip values and margin.
+fx01 = request.currency_rate(f_quote(tk01), "USD", ignore_invalid_currency = true)
+fx02 = request.currency_rate(f_quote(tk02), "USD", ignore_invalid_currency = true)
+fx03 = request.currency_rate(f_quote(tk03), "USD", ignore_invalid_currency = true)
+fx04 = request.currency_rate(f_quote(tk04), "USD", ignore_invalid_currency = true)
+fx05 = request.currency_rate(f_quote(tk05), "USD", ignore_invalid_currency = true)
+fx06 = request.currency_rate(f_quote(tk06), "USD", ignore_invalid_currency = true)
+fx07 = request.currency_rate(f_quote(tk07), "USD", ignore_invalid_currency = true)
+fx08 = request.currency_rate(f_quote(tk08), "USD", ignore_invalid_currency = true)
+fx09 = request.currency_rate(f_quote(tk09), "USD", ignore_invalid_currency = true)
+fx10 = request.currency_rate(f_quote(tk10), "USD", ignore_invalid_currency = true)
+fx11 = request.currency_rate(f_quote(tk11), "USD", ignore_invalid_currency = true)
+
+// ─── Plan state ──────────────────────────────────────────────────────────────
+f_tradingDaysLeft(int fromT, int toT) =>
+    int n = 0
+    for k = 0 to 70
+        int d = fromT + k * 86400000
+        if d >= toT
+            break
+        // a trading day runs 17:00-17:00 New York and is named after the date it ends on
+        int dw = dayofweek(d + 7 * 3600000, "America/New_York")
+        if dw != dayofweek.saturday and dw != dayofweek.sunday
+            n += 1
+    n
+
+nowT      = math.max(timenow, planStart)
+daysLeft  = timenow >= planEnd ? 0 : f_tradingDaysLeft(nowT, planEnd)
+daysTotal = f_tradingDaysLeft(planStart, planEnd)
+tradesLeft = daysLeft <= 0 ? 0 : math.max(1, math.min(TAB_N, int(math.round(daysLeft * tradesDay))))
+
+// Milestones: the ladder below the goal, then the goal.
+f_nextMilestone(float bal, float g) =>
+    float m = g
+    if bal < 60 and 60 < g
+        m := 60
+    else if bal < 150 and 150 < g
+        m := 150
+    else if bal < 500 and 500 < g
+        m := 500
+    else if bal < 1500 and 1500 < g
+        m := 1500
+    m
+
+pGoal  = f_prob(balance, goal, tradesLeft)
+fGoal  = f_frac(balance, goal, tradesLeft)
+nextM  = f_nextMilestone(balance, goal)
+pNext  = f_prob(balance, nextM, tradesLeft)
+// When the goal cannot be reached with the trades left (optimal risk 0), size for the next milestone instead.
+useM   = balance < goal and nextM < goal and (aimMode == "Next milestone" or fGoal <= 0)
+fUse   = useM ? f_frac(balance, nextM, tradesLeft) : fGoal
+aimTxt = useM ? "next milestone $" + str.tostring(nextM, "#") : "goal $" + str.tostring(goal, "#")
+
+// Lots for a signal: risk fUse × balance, capped so the stop fills before stop-out.
+f_lots(float riskPips, float pipVal, float marginLot) =>
+    float riskUsd = fUse * balance
+    float perLot = riskPips * pipVal + stopOut / 100 * marginLot
+    float capL = perLot > 0 ? math.floor(balance / perLot / lotStep + 1e-9) * lotStep : 0.0
+    float want = riskPips * pipVal > 0 ? math.floor(riskUsd / (riskPips * pipVal) / lotStep + 1e-9) * lotStep : 0.0
+    float lots = math.min(want, capL)
+    if lots < lotStep and fUse > 0 and capL >= lotStep
+        lots := lotStep
+    lots < lotStep - 1e-9 ? 0.0 : lots
+
+f_px(float p, float pip) =>
+    str.tostring(p, pip >= 0.01 ? "0.000" : "0.00000")
+
+// Compose the MT5 ticket for one symbol's new signal ("" when none).
+f_ticket(bool on, string tk, int d, float c, float sl, float tp, float rk, int t, float pip, simple float contract, float fx) =>
+    string out = ""
+    if on and d != 0 and t != t[1] and not na(fx) and fx > 0
+        float pipVal = contract * pip * fx
+        float marginLot = contract * c * fx / leverage * safety
+        float lots = f_lots(rk, pipVal, marginLot)
+        float riskUsd = lots * rk * pipVal
+        float winUsd = lots * (math.abs(tp - c) / pip) * pipVal
+        out := (d == 1 ? "BUY " : "SELL ") + tk + " @≈" + f_px(c, pip) + " | SL " + f_px(sl, pip) + " (" + str.tostring(math.abs(c - sl) / pip, "0.0") + "p) | TP " + f_px(tp, pip) + " (" + str.tostring(math.abs(tp - c) / pip, "0.0") + "p) | " + (lots > 0 ? str.tostring(lots, "0.00") + " lots, risk $" + str.tostring(riskUsd, "0.00") + ", win ≈ $" + str.tostring(winUsd, "0.00") : "lots: below minimum")
+    out
+
+tx01 = f_ticket(o01, tk01, d01, c01, sl01, tp01, rk01, t01, pp01, f_contract(tk01), fx01)
+tx02 = f_ticket(o02, tk02, d02, c02, sl02, tp02, rk02, t02, pp02, f_contract(tk02), fx02)
+tx03 = f_ticket(o03, tk03, d03, c03, sl03, tp03, rk03, t03, pp03, f_contract(tk03), fx03)
+tx04 = f_ticket(o04, tk04, d04, c04, sl04, tp04, rk04, t04, pp04, f_contract(tk04), fx04)
+tx05 = f_ticket(o05, tk05, d05, c05, sl05, tp05, rk05, t05, pp05, f_contract(tk05), fx05)
+tx06 = f_ticket(o06, tk06, d06, c06, sl06, tp06, rk06, t06, pp06, f_contract(tk06), fx06)
+tx07 = f_ticket(o07, tk07, d07, c07, sl07, tp07, rk07, t07, pp07, f_contract(tk07), fx07)
+tx08 = f_ticket(o08, tk08, d08, c08, sl08, tp08, rk08, t08, pp08, f_contract(tk08), fx08)
+tx09 = f_ticket(o09, tk09, d09, c09, sl09, tp09, rk09, t09, pp09, f_contract(tk09), fx09)
+tx10 = f_ticket(o10, tk10, d10, c10, sl10, tp10, rk10, t10, pp10, f_contract(tk10), fx10)
+tx11 = f_ticket(o11, tk11, d11, c11, sl11, tp11, rk11, t11, pp11, f_contract(tk11), fx11)
+
+f_add(string a, string b) =>
+    b == "" ? a : a == "" ? b : a + "\n" + b
+
+string tickets = ""
+tickets := f_add(tickets, tx01)
+tickets := f_add(tickets, tx02)
+tickets := f_add(tickets, tx03)
+tickets := f_add(tickets, tx04)
+tickets := f_add(tickets, tx05)
+tickets := f_add(tickets, tx06)
+tickets := f_add(tickets, tx07)
+tickets := f_add(tickets, tx08)
+tickets := f_add(tickets, tx09)
+tickets := f_add(tickets, tx10)
+tickets := f_add(tickets, tx11)
+
+// ─── Alert: one message for every new signal on this H4 close ───────────────
+if tickets != ""
+    alert("Falcon V20 · risk " + str.tostring(fUse * 100, "0") + "% toward " + aimTxt + " · P(goal) " + str.tostring(pGoal * 100, "0.00") + "%\n" + tickets + "\nOne position at a time. Type SL and TP in MT5 as prices or by the pip distances shown.", alert.freq_once_per_bar)
+
+// Remember the most recent signals for the panel.
+var array<string> recent = array.new<string>()
+if tickets != ""
+    array.unshift(recent, str.format("{0,date,dd MMM HH:mm}", timenow) + " · " + tickets)
+    while array.size(recent) > 3
+        array.pop(recent)
+
+// ─── Chart markers for the chart's own symbol (keep the chart on H4) ─────────
+pipC = f_pip(syminfo.ticker)
+[dC, cC, slC, tpC, rkC, tC, nC, wC, rC] = request.security(syminfo.tickerid, "240", f_engine(pipC, 1.5, swapNight), lookahead = barmerge.lookahead_on)
+newC = dC != 0 and tC != tC[1] and timeframe.period == "240"
+plotshape(newC and dC == 1, "Buy", shape.labelup, location.belowbar, color.new(#00C853, 0), offset = -1, text = "BUY", textcolor = color.white, size = size.small)
+plotshape(newC and dC == -1, "Sell", shape.labeldown, location.abovebar, color.new(#FF1744, 0), offset = -1, text = "SELL", textcolor = color.white, size = size.small)
+if newC
+    line.new(bar_index - 1, slC, bar_index + 6, slC, color = color.new(#FF1744, 20), style = line.style_dashed)
+    line.new(bar_index - 1, tpC, bar_index + 6, tpC, color = color.new(#00C853, 20), style = line.style_dashed)
+
+// ─── Panel ───────────────────────────────────────────────────────────────────
+f_on(bool o, int v) =>
+    o ? nz(v) : 0
+f_onf(bool o, float v) =>
+    o ? nz(v) : 0.0
+totN = f_on(o01, n01) + f_on(o02, n02) + f_on(o03, n03) + f_on(o04, n04) + f_on(o05, n05) + f_on(o06, n06) + f_on(o07, n07) + f_on(o08, n08) + f_on(o09, n09) + f_on(o10, n10) + f_on(o11, n11)
+totW = f_on(o01, w01) + f_on(o02, w02) + f_on(o03, w03) + f_on(o04, w04) + f_on(o05, w05) + f_on(o06, w06) + f_on(o07, w07) + f_on(o08, w08) + f_on(o09, w09) + f_on(o10, w10) + f_on(o11, w11)
+totR = f_onf(o01, r01) + f_onf(o02, r02) + f_onf(o03, r03) + f_onf(o04, r04) + f_onf(o05, r05) + f_onf(o06, r06) + f_onf(o07, r07) + f_onf(o08, r08) + f_onf(o09, r09) + f_onf(o10, r10) + f_onf(o11, r11)
+
+var table dash = na
+if barstate.isfirst
+    string pos = dashPos == "Top Left" ? position.top_left : dashPos == "Bottom Right" ? position.bottom_right : dashPos == "Bottom Left" ? position.bottom_left : position.top_right
+    dash := table.new(pos, 2, 12, bgcolor = #0D1117F2, frame_color = #30363D, frame_width = 1, border_color = #30363D, border_width = 1)
+    table.merge_cells(dash, 0, 0, 1, 0)
+    table.merge_cells(dash, 0, 9, 1, 9)
+    table.merge_cells(dash, 0, 10, 1, 10)
+    table.merge_cells(dash, 0, 11, 1, 11)
+
+f_row(int r, string k, string v, color c, string sz) =>
+    table.cell(dash, 0, r, k, text_color = #C9D1D9, text_halign = text.align_left, text_size = sz)
+    table.cell(dash, 1, r, v, text_color = c, text_halign = text.align_right, text_size = sz)
+
+if barstate.islast
+    string sz = dashSize == "Tiny" ? size.tiny : dashSize == "Normal" ? size.normal : size.small
+    int dayNo = timenow < planStart ? 0 : daysTotal - daysLeft + 1
+    string phase = timenow < planStart ? "starts " + str.format("{0,date,dd MMM}", planStart) : timenow >= planEnd ? "deadline passed" : "day " + str.tostring(dayNo) + " of " + str.tostring(daysTotal)
+    table.cell(dash, 0, 0, "FALCON V20 · TREND-SWEEP", text_color = color.white, bgcolor = #1F6FEB, text_size = sz)
+    f_row(1, "Plan", phase + " · " + str.tostring(daysLeft) + " days left", #C9D1D9, sz)
+    f_row(2, "Balance → goal", "$" + str.tostring(balance, "0.00") + " → $" + str.tostring(goal, "#"), #C9D1D9, sz)
+    f_row(3, "P(goal by deadline)", str.tostring(pGoal * 100, "0.00") + "%", pGoal >= 0.5 ? #00C853 : #FFB300, sz)
+    f_row(4, "P(next $" + str.tostring(nextM, "#") + ")", str.tostring(pNext * 100, "0.0") + "%", pNext >= 0.5 ? #00C853 : #FFB300, sz)
+    f_row(5, "Next trade risk", str.tostring(fUse * 100, "0") + "% = $" + str.tostring(fUse * balance, "0.00") + " (" + aimTxt + ")", #58A6FF, sz)
+    f_row(6, "Trades left (est.)", str.tostring(tradesLeft), #C9D1D9, sz)
+    f_row(7, "Scanner history", str.tostring(totN) + " trades · win " + (totN > 0 ? str.tostring(100.0 * totW / totN, "0.0") : "—") + "% · " + (totN > 0 ? str.tostring(totR / totN, "+0.000;-0.000") : "—") + "R/trade", totR >= 0 ? #00C853 : #FF1744, sz)
+    f_row(8, "Chart", timeframe.period == "240" ? "H4 ✓" : "switch to H4 for markers", timeframe.period == "240" ? #00C853 : #FFB300, sz)
+    table.cell(dash, 0, 9, array.size(recent) > 0 ? "Last: " + array.get(recent, 0) : "No new signal since the chart loaded", text_color = #C9D1D9, text_halign = text.align_left, text_size = size.tiny)
+    table.cell(dash, 0, 10, "Rules: one position at a time · SL and TP set when you open · update balance after every close", text_color = #9E9E9E, text_size = size.tiny)
+    table.cell(dash, 0, 11, "Scorecard net of spread + swap · probabilities from 2.7 years of research", text_color = #9E9E9E, text_size = size.tiny)

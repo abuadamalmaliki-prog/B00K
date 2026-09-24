@@ -1,0 +1,10 @@
+Best non-passing strategy (agentA, RSI2 family, chosen on SEEN by pre-registered rule). DOES NOT PASS (avg R < 0 net in every cell).
+Timeframe: H1 (bars from common.bars(sym, 3600)); prices = BID; costs per sim15 (SPREAD per symbol, 0.5 pip swap/night, Wed x3).
+Indicators at signal bar i (close-only info): RSI(2) Wilder; EMA(200) of close (seeded from first value, valid from bar 199); ATR(14) Wilder.
+Skip first 250 bars (warm-up).
+Long : RSI2[i] < 10 and close[i] > EMA200[i]. Short: RSI2[i] > 90 and close[i] < EMA200[i].
+Entry at close of bar i (long at ask = close + spread). Stop = close[i] -/+ 2.5*ATR14[i]. Target = close[i] +/- 0.5*ATR14[i].
+Time exit at close of bar i+10. One position at a time per symbol (sim15.run_sequential, cooldown 0).
+Setup tuple: (i, dir, sl_price, tp_price, 10).
+Regenerate: from agentA.mr import g_rsi2; gen = g_rsi2(10, 2.5, ('atr', 0.5, 10)); setups = gen(sym, 3600)
+Pickle: agentA/rsi2_thr10_sl2.5_tp0.5_10b.pkl = list of 8638 sim15 trade dicts, each with 'sym' and 'setup'.

@@ -1,0 +1,25 @@
+F1_ma_cross  chosen config: tf=H4,fast=9,slow=21,tgt=2.0
+
+RULES
+Timeframe H4. EMA(9) and EMA(21) of close. Long when EMA9 crosses above EMA21 at bar i (EMA9[i]>EMA21[i] and EMA9[i-1]<=EMA21[i-1]); short on the opposite cross. Stop = 1.5*ATR(14). Target = 2R (2 x stop distance). No time exit.
+
+Common: entry at the CLOSE of signal bar i (long at ask = close+spread, short at bid). One position per instrument
+(sim15-style sequential; a new setup is taken once flat, including on the exit bar). Stop/target prices are anchored on the
+signal-bar close: long SL = close - dist, TP = close + m*dist (short mirrored). ATR = Wilder ATR(14) of the same timeframe.
+Signals only from bar index >= 250 (warm-up). Costs: sim15 SPREAD per symbol + 0.5 pip swap per 17:00 NY rollover (Wed x3).
+Setup tuple in pickle: (i, dir, sl_price, tp_price[, max_bars]) on the stated timeframe (H1 = bars(sym,3600), H4 = bars(sym,14400)).
+Selection (pre-registered): max over grid of min(SEEN half-1 net avgR, SEEN half-2 net avgR), n>=30 per half; UNSEEN untouched.
+Code: agentC/trend.py ; full grid in agentC/grid_log.txt
+
+RESULTS (net)
+  ALL        n=1407 win=35.7% netR=+0.018+-0.037
+  SEEN       n=643 win=36.1% netR=+0.030+-0.056
+  SEEN h1    n=290 win=36.6% netR=+0.049+-0.084
+  SEEN h2    n=353 win=35.7% netR=+0.014+-0.075
+  UNSEEN     n=764 win=35.3% netR=+0.008+-0.050
+  UNSEEN h1  n=369 win=36.0% netR=+0.027+-0.073
+  UNSEEN h2  n=395 win=34.7% netR=-0.010+-0.070
+  GROSS (no spread/swap) ALL avgR=+0.087+-0.039
+  trades/week (11 syms)=9.9  avg hold=69.9h
+  random-entry control (5 seeds, same geometry, net): win=32.3% avgR=-0.082+-0.017
+  PASS (UNSEEN avgR>0 both halves): False

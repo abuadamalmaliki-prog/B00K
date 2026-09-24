@@ -1,0 +1,32 @@
+F1_FVG  chosen config: FVG H4 tp=1R   (agentD)
+Pickle: agentD/F1_FVG.pkl = list of 3646 NET sim15 trade dicts (all 11 instruments), each with 'sym' and 'setup'.
+
+Fair Value Gap first retest.
+- Bullish FVG at bar k: L[k] > H[k-2] and L[k]-H[k-2] >= 0.25 ATR[k]; zone [H[k-2], L[k]] (bearish mirror: H[k] < L[k-2]).
+- Armed for 48 bars after k. Signal = FIRST later bar j whose low <= L[k] (bull) / high >= H[k] (bear): enter at close of j,
+  in the gap's direction. Structure for the stop = gap far edge (H[k-2] bull / L[k-2] bear). Target per config
+  (1R, 2R, or 'swing' = impulse extreme: highest high from bar k-1 to j-1 for longs).
+
+COMMON RULES (all agentD families)
+- Data: sim15 bars (BID), bar time = bar open (UTC); New York time via sim.ny(). H4 = common.resample(H1, 14400).
+- ATR = Wilder ATR(14) of the signal-bar timeframe, value at the signal bar (uses bars <= i only).
+- Entry at the CLOSE of signal bar i (long at ask = close + spread, short at bid). Zone/level "touch" entries are
+  therefore entered at the close of the first touching bar, not at the level (sim15 has no limit fills).
+- Stop: structure price named below +/- 0.10 x ATR buffer; widened if needed so it is >= 0.50 x ATR from the close.
+  Setup discarded if the close is already beyond the structure.
+- R-multiple targets: tp = fill + dir * k * (fill-to-stop distance), fill includes spread.
+- Time exit: close of the 72nd H1 bar / 18th H4 bar after entry (72 hours), if neither stop nor target hit.
+- One position at a time per instrument (sim15 run_sequential semantics, cooldown 0).
+- Costs (net): sim15 SPREAD per symbol, swap 0.5 pip per 17:00 NY rollover (Wed x3). Gross = same setups, spread 0, swap 0.
+- Setup tuple (i, dir, sl_price, tp_price, max_bars). Regenerate: cd v15 && python3 -c "import sys; sys.path.insert(0,'agentD');
+  import fam; name,gen,tf=[g for g in fam.GRIDS['F1_FVG'] if g[0]=='FVG H4 tp=1R'][0]; print(gen('EURUSD',tf)[:5])"
+- Selection: best of the family grid by min(SEEN half-1 avg R, SEEN half-2 avg R) net, n>=30 per half; UNSEEN untouched.
+
+RESULTS (net unless stated)
+  ALL    win 45.9%  avgR -0.099 +/- 0.016  (n=3646)
+  SEEN   win 46.0%  avgR -0.098 +/- 0.023  (n=1767)   halves: win 45.5%  avgR -0.105 +/- 0.033  (n=874) | win 46.4%  avgR -0.091 +/- 0.033  (n=893)
+  UNSEEN win 45.9%  avgR -0.100 +/- 0.023  (n=1879)   halves: win 44.4%  avgR -0.127 +/- 0.032  (n=898) | win 47.3%  avgR -0.076 +/- 0.032  (n=981)
+  GROSS avg R: ALL -0.016  SEEN -0.019  UNSEEN -0.014
+  trades/week (11 instruments) 25.7; average hold 23.9 h
+  Random-entry control (random bar & direction, same ATR-scaled stop/target, same time exit, 10 seeds): win 44.9%  avgR -0.121 +/- 0.005  (n=32734)
+  PASS (UNSEEN avg R > 0 in both halves): False    win>=60%: False

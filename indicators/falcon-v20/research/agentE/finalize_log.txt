@@ -1,0 +1,56 @@
+F1_time_of_day: F1 open08 N3 sellOpening
+   ALL    n=4811 w= 47.9% R=-0.013±0.011
+   SEEN   n=3487 w= 49.1% R=+0.005±0.013
+   UNSEEN n=1324 w= 44.9% R=-0.060±0.019
+   halves s1 -0.017 s2 +0.027 u1 -0.097 u2 -0.022 | PASS=False win>=60=False
+   GROSS R all +0.038 (win 50.3%) seen +0.046 unseen +0.019 | 34.3 tr/wk | hold 2.9h
+   CONTROL (random bar+dir, same geometry, 5 seeds) n=22171 w= 43.5% R=-0.051±0.003 (n/seed 4434)
+   per-sym EURUSD:+0.02(721) GBPUSD:+0.02(721) AUDUSD:-0.02(727) USDJPY:+0.00(721) XAUUSD:-0.00(597) NZDUSD:-0.04(727) USDCAD:+0.00(0) GBPAUD:+0.00(0) EURJPY:+0.00(0) GBPJPY:+0.00(0) XAGUSD:-0.08(597)
+F2_day_of_week: F2 fri10 fade
+   ALL    n=1473 w= 48.3% R=-0.014±0.013
+   SEEN   n= 666 w= 49.7% R=+0.010±0.021
+   UNSEEN n= 807 w= 47.1% R=-0.034±0.017
+   halves s1 -0.000 s2 +0.019 u1 -0.067 u2 -0.002 | PASS=False win>=60=False
+   GROSS R all +0.016 (win 50.8%) seen +0.035 unseen +0.001 | 10.3 tr/wk | hold 6.8h
+   CONTROL (random bar+dir, same geometry, 5 seeds) n=6988 w= 45.2% R=-0.046±0.006 (n/seed 1398)
+   per-sym EURUSD:-0.01(139) GBPUSD:+0.00(139) AUDUSD:-0.03(140) USDJPY:+0.04(139) XAUUSD:+0.06(109) NZDUSD:-0.09(140) USDCAD:-0.02(140) GBPAUD:-0.00(140) EURJPY:-0.06(139) GBPJPY:-0.04(139) XAGUSD:+0.02(109)
+F3_weekend_gap: F3 thr0.2 stop2xgap tp1
+   ALL    n= 373 w= 65.7% R=-0.026±0.035
+   SEEN   n= 179 w= 64.8% R=-0.009±0.052
+   UNSEEN n= 194 w= 66.5% R=-0.041±0.047
+   halves s1 -0.031 s2 +0.002 u1 -0.099 u2 -0.007 | PASS=False win>=60=True
+   GROSS R all +0.011 (win 67.0%) seen +0.026 unseen -0.002 | 2.6 tr/wk | hold 16.1h
+   CONTROL (random bar+dir, same geometry, 5 seeds) n=1808 w= 64.1% R=-0.023±0.017 (n/seed 362)
+   per-sym EURUSD:-0.00(40) GBPUSD:+0.16(29) AUDUSD:+0.06(34) USDJPY:-0.07(42) XAUUSD:-0.16(34) NZDUSD:-0.08(36) USDCAD:+0.13(26) GBPAUD:-0.06(26) EURJPY:-0.07(37) GBPJPY:-0.07(36) XAGUSD:-0.05(33)
+F4_month_week_end_fix: F4 WE pre_fade
+   ALL    n=1545 w= 45.1% R=-0.016±0.022
+   SEEN   n= 700 w= 48.9% R=+0.040±0.036
+   UNSEEN n= 845 w= 42.0% R=-0.062±0.027
+   halves s1 +0.039 s2 +0.041 u1 -0.081 u2 -0.043 | PASS=False win>=60=False
+   GROSS R all +0.067 (win 49.4%) seen +0.113 unseen +0.029 | 10.9 tr/wk | hold 1.0h
+   CONTROL (random bar+dir, same geometry, 5 seeds) n=7725 w= 39.5% R=-0.084±0.005 (n/seed 1545)
+   per-sym EURUSD:-0.00(145) GBPUSD:+0.11(145) AUDUSD:-0.04(145) USDJPY:+0.05(145) XAUUSD:+0.10(120) NZDUSD:-0.10(145) USDCAD:-0.09(145) GBPAUD:-0.05(145) EURJPY:-0.11(145) GBPJPY:-0.04(145) XAGUSD:+0.03(120)
+F5_vol_regime: F5 thr1.5 fade atr
+   ALL    n= 864 w= 52.0% R=+0.005±0.015
+   SEEN   n= 392 w= 53.3% R=+0.008±0.024
+   UNSEEN n= 472 w= 50.8% R=+0.003±0.019
+   halves s1 -0.001 s2 +0.017 u1 +0.021 u2 -0.016 | PASS=False win>=60=False
+   GROSS R all +0.024 (win 54.3%) seen +0.024 unseen +0.023 | 6.1 tr/wk | hold 38.2h
+   CONTROL (random bar+dir, same geometry, 5 seeds) n=3890 w= 47.1% R=-0.025±0.008 (n/seed 778)
+   per-sym EURUSD:-0.03(82) GBPUSD:-0.01(80) AUDUSD:+0.06(79) USDJPY:+0.04(88) XAUUSD:-0.03(63) NZDUSD:-0.02(82) USDCAD:+0.00(78) GBPAUD:+0.04(83) EURJPY:+0.03(87) GBPJPY:+0.01(77) XAGUSD:-0.04(65)
+F6_ny_orb: F6 tp0.5W stopopp sig<= 12
+   ALL    n=6590 w= 60.1% R=-0.077±0.007
+   SEEN   n=2986 w= 61.5% R=-0.070±0.010
+   UNSEEN n=3604 w= 58.9% R=-0.082±0.009
+   halves s1 -0.065 s2 -0.076 u1 -0.068 u2 -0.096 | PASS=False win>=60=True
+   GROSS R all -0.009 (win 63.6%) seen -0.019 unseen -0.001 | 46.3 tr/wk | hold 2.7h
+   CONTROL (random bar+dir, same geometry, 5 seeds) n=30510 w= 59.3% R=-0.082±0.003 (n/seed 6102)
+   per-sym EURUSD:-0.09(628) GBPUSD:-0.07(628) AUDUSD:-0.13(630) USDJPY:-0.03(596) XAUUSD:-0.04(504) NZDUSD:-0.16(645) USDCAD:-0.03(585) GBPAUD:-0.07(621) EURJPY:-0.06(619) GBPJPY:-0.09(628) XAGUSD:-0.07(506)
+F7_carry_mom: F7 hold1d stop2.0xADR mom20
+   ALL    n=2549 w= 48.3% R=-0.012±0.007
+   SEEN   n= 887 w= 50.2% R=-0.003±0.013
+   UNSEEN n=1662 w= 47.4% R=-0.016±0.008
+   halves s1 -0.004 s2 -0.002 u1 -0.020 u2 -0.013 | PASS=False win>=60=False
+   GROSS R all -0.005 (win 49.2%) seen +0.001 unseen -0.008 | 17.7 tr/wk | hold 37.0h
+   CONTROL (random bar+dir, same geometry, 5 seeds) n=9275 w= 47.8% R=-0.013±0.004 (n/seed 1855)
+   per-sym EURUSD:+0.02(253) GBPUSD:+0.00(0) AUDUSD:-0.02(222) USDJPY:+0.00(316) XAUUSD:-0.04(96) NZDUSD:-0.01(298) USDCAD:-0.01(307) GBPAUD:-0.03(249) EURJPY:-0.01(346) GBPJPY:-0.03(353) XAGUSD:-0.02(109)

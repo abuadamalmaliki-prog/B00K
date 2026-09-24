@@ -1,0 +1,7 @@
+F5 volatility regime fade. FX day (17:00-17:00 NY) whose high-low range > 1.5x the average range of the previous 20 FX days.
+Enter at that day's close (close of its last H1 bar = 17:00 NY), direction opposite the day's close-open sign. Hold 24 bars. ATR24 = simple mean of the last 24 H1 true ranges incl. the signal bar. Stop distance = 1.5*sqrt(hold_hours)*ATR24 from entry (long entry = ask). Target = 50x risk (i.e. none: stop or time exit).
+
+Costs (sim15): spread EURUSD1.2 GBPUSD1.5 AUDUSD1.5 NZDUSD2 USDCAD2 GBPAUD3.5 USDJPY1.5 EURJPY2 GBPJPY3 XAU3 XAG3 pips; swap 0.5 pip/night cost (Wed x3); stop-first; gapped stops at open; one position per instrument (sim15.run_sequential, cooldown 0).
+H1 bars, BID prices, bar time = bar open; New York time = sim.ny().
+Selected on SEEN only by max(min(SEEN-half avg R)). Pickle: 864 NET sim15 trade dicts (all 11 instruments) with 'sym','setup'.
+Result: UNSEEN h1 +0.021 h2 -0.016 -> FAIL.

@@ -1,0 +1,8 @@
+F6 New York opening-range breakout, small target. OR = H1 bar opening 08:00 NY (hi, lo, W=hi-lo), Mon-Fri.
+First bar opening 09:00..12:00 NY whose close > hi (long) or < lo (short) -> enter at its close (one signal/day).
+Stop = opposite side of the OR. Target = entry +- 0.5*W. Time exit at the close of the bar opening 15:00 NY (16:00 NY).
+
+Costs (sim15): spread EURUSD1.2 GBPUSD1.5 AUDUSD1.5 NZDUSD2 USDCAD2 GBPAUD3.5 USDJPY1.5 EURJPY2 GBPJPY3 XAU3 XAG3 pips; swap 0.5 pip/night cost (Wed x3); stop-first; gapped stops at open; one position per instrument (sim15.run_sequential, cooldown 0).
+H1 bars, BID prices, bar time = bar open; New York time = sim.ny().
+Selected on SEEN only by max(min(SEEN-half avg R)). Pickle: 6590 NET sim15 trade dicts (all 11 instruments) with 'sym','setup'.
+Result: UNSEEN h1 -0.068 h2 -0.096 -> FAIL.

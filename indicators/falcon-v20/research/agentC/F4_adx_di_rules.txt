@@ -1,0 +1,25 @@
+F4_adx_di  chosen config: tf=H4,tgt=opp
+
+RULES
+Timeframe H4. Wilder DMI/ADX(14). Long when +DI crosses above -DI and ADX > 25 at bar i; short when -DI crosses above +DI and ADX > 25. Stop = 1.5*ATR(14). Exit on the close of the next opposite DI cross (max_bars encoding, target 100R = none); stop always active.
+
+Common: entry at the CLOSE of signal bar i (long at ask = close+spread, short at bid). One position per instrument
+(sim15-style sequential; a new setup is taken once flat, including on the exit bar). Stop/target prices are anchored on the
+signal-bar close: long SL = close - dist, TP = close + m*dist (short mirrored). ATR = Wilder ATR(14) of the same timeframe.
+Signals only from bar index >= 250 (warm-up). Costs: sim15 SPREAD per symbol + 0.5 pip swap per 17:00 NY rollover (Wed x3).
+Setup tuple in pickle: (i, dir, sl_price, tp_price[, max_bars]) on the stated timeframe (H1 = bars(sym,3600), H4 = bars(sym,14400)).
+Selection (pre-registered): max over grid of min(SEEN half-1 net avgR, SEEN half-2 net avgR), n>=30 per half; UNSEEN untouched.
+Code: agentC/trend.py ; full grid in agentC/grid_log.txt
+
+RESULTS (net)
+  ALL        n=752 win=25.1% netR=-0.111+-0.047
+  SEEN       n=351 win=28.8% netR=-0.002+-0.079
+  SEEN h1    n=173 win=31.8% netR=+0.019+-0.106
+  SEEN h2    n=178 win=25.8% netR=-0.021+-0.117
+  UNSEEN     n=401 win=21.9% netR=-0.206+-0.055
+  UNSEEN h1  n=185 win=20.0% netR=-0.299+-0.073
+  UNSEEN h2  n=216 win=23.6% netR=-0.127+-0.080
+  GROSS (no spread/swap) ALL avgR=-0.050+-0.049
+  trades/week (11 syms)=5.3  avg hold=59.2h
+  random-entry control (5 seeds, same geometry, net): win=39.5% avgR=-0.077+-0.020
+  PASS (UNSEEN avgR>0 both halves): False

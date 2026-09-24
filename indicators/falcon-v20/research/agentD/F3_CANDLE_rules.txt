@@ -1,0 +1,35 @@
+F3_CANDLE  chosen config: pin H4 tp=2R   (agentD)
+Pickle: agentD/F3_CANDLE.pkl = list of 1035 NET sim15 trade dicts (all 11 instruments), each with 'sym' and 'setup'.
+
+Candlestick patterns at swing extremes (N = 20 bars).
+- engulf: prev bar bearish, current bullish, O<=prev C, C>=prev O, body larger; min(L[i],L[i-1]) = lowest low of last 20 bars.
+  Stop structure = pattern low. Bearish mirror at 20-bar highest high.
+- pin: range >= 0.5 ATR; hammer: lower wick >= 2x body and >= 60% of range, upper wick <= 25% of range, L[i] = 20-bar low;
+  stop structure = pin low. Shooting star mirror at 20-bar high.
+- inside: mother bar m at 20-bar low (high), bar m+1 inside it; first close above mother high (below mother low) within
+  3 bars -> long (short); cancelled if a close breaks the other side first. Stop structure = mother low (high).
+- Entry at the pattern / breakout bar close. Target per config (1R or 2R).
+
+COMMON RULES (all agentD families)
+- Data: sim15 bars (BID), bar time = bar open (UTC); New York time via sim.ny(). H4 = common.resample(H1, 14400).
+- ATR = Wilder ATR(14) of the signal-bar timeframe, value at the signal bar (uses bars <= i only).
+- Entry at the CLOSE of signal bar i (long at ask = close + spread, short at bid). Zone/level "touch" entries are
+  therefore entered at the close of the first touching bar, not at the level (sim15 has no limit fills).
+- Stop: structure price named below +/- 0.10 x ATR buffer; widened if needed so it is >= 0.50 x ATR from the close.
+  Setup discarded if the close is already beyond the structure.
+- R-multiple targets: tp = fill + dir * k * (fill-to-stop distance), fill includes spread.
+- Time exit: close of the 72nd H1 bar / 18th H4 bar after entry (72 hours), if neither stop nor target hit.
+- One position at a time per instrument (sim15 run_sequential semantics, cooldown 0).
+- Costs (net): sim15 SPREAD per symbol, swap 0.5 pip per 17:00 NY rollover (Wed x3). Gross = same setups, spread 0, swap 0.
+- Setup tuple (i, dir, sl_price, tp_price, max_bars). Regenerate: cd v15 && python3 -c "import sys; sys.path.insert(0,'agentD');
+  import fam; name,gen,tf=[g for g in fam.GRIDS['F3_CANDLE'] if g[0]=='pin H4 tp=2R'][0]; print(gen('EURUSD',tf)[:5])"
+- Selection: best of the family grid by min(SEEN half-1 avg R, SEEN half-2 avg R) net, n>=30 per half; UNSEEN untouched.
+
+RESULTS (net unless stated)
+  ALL    win 34.7%  avgR -0.060 +/- 0.042  (n=1035)
+  SEEN   win 35.3%  avgR -0.025 +/- 0.063  (n=467)   halves: win 36.0%  avgR +0.020 +/- 0.089  (n=239) | win 34.6%  avgR -0.072 +/- 0.089  (n=228)
+  UNSEEN win 34.2%  avgR -0.089 +/- 0.056  (n=568)   halves: win 36.7%  avgR -0.026 +/- 0.082  (n=267) | win 31.9%  avgR -0.144 +/- 0.077  (n=301)
+  GROSS avg R: ALL +0.027  SEEN +0.068  UNSEEN -0.006
+  trades/week (11 instruments) 7.3; average hold 32.6 h
+  Random-entry control (random bar & direction, same ATR-scaled stop/target, same time exit, 10 seeds): win 33.9%  avgR -0.067 +/- 0.014  (n=9531)
+  PASS (UNSEEN avg R > 0 in both halves): False    win>=60%: False

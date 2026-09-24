@@ -1,0 +1,8 @@
+F4 week-end London 16:00 fix, pre-fix fade. Every Friday: P = H1 bar opening 15:00 London (fix at its close, 16:00 London).
+Enter at the close of the bar before P (15:00 London ~ 10:00 NY). Week-to-date move = entry close - open of the first bar after the weekend break.
+Direction = against the week-to-date move. Exit at the fix (1-bar time exit). ATR24 = simple mean of the last 24 H1 true ranges incl. the signal bar. Stop distance = 1.5*sqrt(hold_hours)*ATR24 from entry (long entry = ask). Target = 50x risk (i.e. none: stop or time exit).
+
+Costs (sim15): spread EURUSD1.2 GBPUSD1.5 AUDUSD1.5 NZDUSD2 USDCAD2 GBPAUD3.5 USDJPY1.5 EURJPY2 GBPJPY3 XAU3 XAG3 pips; swap 0.5 pip/night cost (Wed x3); stop-first; gapped stops at open; one position per instrument (sim15.run_sequential, cooldown 0).
+H1 bars, BID prices, bar time = bar open; New York time = sim.ny().
+Selected on SEEN only by max(min(SEEN-half avg R)). Pickle: 1545 NET sim15 trade dicts (all 11 instruments) with 'sym','setup'.
+Result: UNSEEN h1 -0.081 h2 -0.043 -> FAIL.

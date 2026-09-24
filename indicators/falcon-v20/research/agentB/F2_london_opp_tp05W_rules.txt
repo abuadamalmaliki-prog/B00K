@@ -1,0 +1,20 @@
+F2 London-open breakout, stop = opposite side of Asian range, target = 0.5 x range width, no time exit.
+(Best non-passing strategy of agentB; FAILS validation: UNSEEN avg R < 0 in both halves.)
+
+Regenerate setups exactly:  cd v15 && python3 -c "import sys; sys.path.insert(0,'agentB'); import fam; gen,tf=fam.f2('opp',0.5,None); print(gen('EURUSD',3600)[:5])"
+Trades: fam.evaluate(gen, 3600) (identical to sim15.evaluate/run_sequential, adds 'setup' key).
+
+Data: H1 bars, bid prices, bar time = bar open, New York time via sim.ny().
+1. Asian range: starts with the H1 bar opening 19:00 NY (hi/lo reset); include every bar opening
+   19:00-01:59 NY (19,20,21,22,23,00,01) -> hi = max high, lo = min low, W = hi - lo. Require >= 6 bars and W > 0.
+2. Signal window: bars opening 02:00, 03:00, 04:00, 05:00 NY. The FIRST bar whose close > hi -> long,
+   close < lo -> short. Only one signal per session (first close beyond the range; later bars ignored).
+3. Entry at that bar's close: long at ask (close + spread), short at bid (close).
+4. Stop: long -> lo, short -> hi (exact opposite side of the Asian range, no buffer). Long stop judged on bid,
+   short stop on ask.
+5. Target: entry + dir * 0.5 * W (long judged on bid, short on ask). No time exit.
+6. One position at a time per instrument (setups arriving while a trade is open are skipped).
+Setup tuple: (i, dir, sl_price=lo|hi, tp_price=entry+dir*0.5*W).
+Costs (sim15): spreads EURUSD1.2 GBPUSD1.5 AUDUSD1.5 NZDUSD2 USDCAD2 GBPAUD3.5 USDJPY1.5 EURJPY2 GBPJPY3 XAU3 XAG3 pips;
+swap 0.5 pip/night (Wed x3); stop-first on bars touching both; gapped stops at open.
+Pickle agentB/F2_london_opp_tp05W.pkl: list of 4443 sim15 trade dicts (all 11 instruments) + 'sym' + 'setup'.
