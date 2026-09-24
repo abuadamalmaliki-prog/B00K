@@ -1,0 +1,919 @@
+//@version=6
+// ═════════════════════════════════════════════════════════════════════════════
+//  FALCON SNIPER V3
+//  Liquidity-sweep sniper entries held for a 300-pip target, with position
+//  sizing, a $-goal challenge planner and a live timeframe fit check.
+//
+//  What changed from V2 (each change came from testing on 2 years of H1/H4
+//  data across 11 FX pairs and metals, incl. 6 instruments V2 never saw):
+//    • Opposite signals no longer close the open trade. In V2 they cut 45-54%
+//      of trades short, so only ~2% ever reached 300 pips (now ~14% on H4).
+//    • Default exit is the full position held for TP3, stop to breakeven at
+//      +150 pips. Breakeven at +50 was stopping out most 300-pip runners.
+//    • Stop-fit check: shows the typical sniper stop on this chart and whether
+//      it fits the target. A fixed pip cap silently goes stale when volatility
+//      changes (gold H4 printed no V2 signals after July 2025).
+//    • Money panel: lot size, $ risk and $ reward per signal from balance,
+//      pip value (auto currency conversion), leverage and margin stop-out.
+//    • Challenge planner ("turn $X into $Y in N trades"): bold-play sizing and
+//      the historical success rate of that exact plan on this chart.
+//
+//  Technique stack: liquidity (swings, previous-day H/L, sweeps), structure
+//  (BOS/CHoCH), zones (FVG, OB, premium/discount, OTE), timing (London/NY
+//  kill zones), triggers (pin bar, MSS, engulfing), context (HTF EMA bias,
+//  EMA trend, RSI, MACD, volume, displacement), risk (sweep stop, R:R gate).
+//
+//  Non-repainting: signals on closed bars only; HTF / previous-day data from
+//  closed bars only; swings used once confirmed. Outcomes are judged from the
+//  bar after entry, stop-first when a bar touches stop and target, gapped
+//  stops filled at the open.
+// ═════════════════════════════════════════════════════════════════════════════
+indicator("Falcon Sniper V3", shorttitle = "Falcon Sniper V3", overlay = true, max_lines_count = 500, max_labels_count = 500, max_boxes_count = 500, max_bars_back = 500)
+
+// ─── Input groups ────────────────────────────────────────────────────────────
+const string G_TGT  = "① Pips, targets & exits"
+const string G_SNP  = "② Sniper setup"
+const string G_CTX  = "③ Zones & confluence"
+const string G_HTF  = "④ Higher-timeframe bias"
+const string G_VIS  = "⑤ Visuals"
+const string G_DASH = "⑥ Dashboard"
+const string G_MNY  = "⑦ Money & challenge"
+
+// ─── ① Pips & targets ────────────────────────────────────────────────────────
+pipMode    = input.string("Auto", "Pip size", options = ["Auto", "Manual"], group = G_TGT, inline = "pip", tooltip = "Auto: forex 0.0001 (JPY-quoted 0.01), gold 0.10, silver 0.01, anything else one tick. Use Manual for indices, crypto or stocks.")
+pipManual  = input.float(0.0001, "", minval = 0.0000001, step = 0.0001, group = G_TGT, inline = "pip")
+tgtMode    = input.string("Pips", "Target mode", options = ["Pips", "R multiple"], group = G_TGT)
+tp1Pips    = input.float(150, "TP1 pips", minval = 1, group = G_TGT, inline = "tpp")
+tp2Pips    = input.float(200, "TP2", minval = 1, group = G_TGT, inline = "tpp")
+tp3Pips    = input.float(300, "TP3", minval = 1, group = G_TGT, inline = "tpp", tooltip = "Pip distances from entry. TP3 is the full target. With the default all-in exit, TP1 is the breakeven trigger and TP2 is a reference level.")
+rr1        = input.float(2.0, "TP1 R", minval = 0.1, step = 0.1, group = G_TGT, inline = "tpr")
+rr2        = input.float(4.0, "TP2", minval = 0.1, step = 0.1, group = G_TGT, inline = "tpr")
+rr3        = input.float(6.0, "TP3", minval = 0.1, step = 0.1, group = G_TGT, inline = "tpr", tooltip = "Used when target mode is R multiple.")
+slLookback = input.int(5, "Stop beyond extreme of last N bars", minval = 1, maxval = 50, group = G_TGT, tooltip = "The stop goes beyond the lowest low (longs) or highest high (shorts) of the last N bars — i.e. beyond the sweep wick — plus the buffer.")
+slBufPips  = input.float(3, "Stop buffer (pips)", minval = 0, group = G_TGT)
+minSlPips  = input.float(10, "Stop min (pips)", minval = 0.1, group = G_TGT, inline = "sl")
+maxSlPips  = input.float(100, "max", minval = 0.1, group = G_TGT, inline = "sl", tooltip = "A stop tighter than min is widened to min. A setup that needs more than max is skipped — a sniper only takes tight setups.")
+minRR      = input.float(3.0, "Min reward:risk to final target", minval = 0.5, step = 0.5, group = G_TGT)
+exitStyle  = input.string("All-in to TP3", "Exit style", options = ["All-in to TP3", "Thirds at TP1 / TP2 / TP3"], group = G_TGT, tooltip = "All-in (default): the whole position is held for TP3; TP1/TP2 only move the stop. Tested better for a 300-pip target than scaling out.")
+partials   = exitStyle != "All-in to TP3"
+beAfterTp1 = input.bool(true, "Stop to breakeven after TP1", group = G_TGT)
+reverseExit = input.bool(false, "Opposite signal closes the trade", group = G_TGT, tooltip = "Off (default): an open trade is only closed by its stop or TP3, and new signals wait until it is closed. In V2 this was on and cut about half of all trades short before they could reach 300 pips.")
+trailTp2   = input.bool(false, "Stop to TP1 after TP2", group = G_TGT)
+
+// ─── ② Sniper setup ──────────────────────────────────────────────────────────
+poiMode     = input.string("Liquidity sweep", "Setup location", options = ["Liquidity sweep", "Any POI"], group = G_SNP, tooltip = "Liquidity sweep (recommended): price must have swept a swing high/low or the previous day's high/low within the sweep window. Any POI: a sweep, an FVG/OB touch or an OTE retracement all qualify.")
+trigMode    = input.string("Pin bar + MSS", "Entry trigger", options = ["Pin bar + MSS", "Pin bar only", "Pin + MSS + Engulfing"], group = G_SNP, tooltip = "Pin bar: long rejection wick (≥ 2× body, ≥ half the bar) with the close in the far third. MSS: close beyond the extreme of the previous bars in the trade direction. Engulfing tested weakest.")
+sweepWindow = input.int(5, "Sweep window (bars)", minval = 0, group = G_SNP)
+usePd       = input.bool(true, "Previous-day high/low are liquidity", group = G_SNP)
+swLeft      = input.int(5, "Swing left", minval = 1, group = G_SNP, inline = "sw")
+swRight     = input.int(3, "right", minval = 1, group = G_SNP, inline = "sw", tooltip = "Pivot strength. A swing is confirmed `right` bars after it prints.")
+mssLen      = input.int(3, "MSS lookback (bars)", minval = 1, group = G_SNP)
+useKz       = input.bool(true, "Kill zones", group = G_SNP, inline = "kz")
+kzGate      = input.bool(true, "Trade only inside", group = G_SNP, inline = "kz", tooltip = "Applies to charts below 4H. Kill zones are in New York time and follow daylight saving.")
+kz1         = input.session("0200-0500", "London kill zone", group = G_SNP)
+kz2         = input.session("0700-1000", "New York kill zone", group = G_SNP)
+cooldown    = input.int(3, "Cooldown bars between signals", minval = 0, group = G_SNP)
+rsiOB       = input.float(70, "No longs above RSI", minval = 50, maxval = 100, group = G_SNP, inline = "ex")
+rsiOS       = input.float(30, "no shorts below", minval = 0, maxval = 50, group = G_SNP, inline = "ex")
+
+// ─── ③ Zones & confluence ────────────────────────────────────────────────────
+minScore    = input.int(0, "Minimum confluence (of 13)", minval = 0, maxval = 13, group = G_CTX, tooltip = "0 = off (recommended). In calibration, setups with the most confluence did worse than mid-scoring ones, so the score is shown for context rather than used as a filter.")
+useFvg      = input.bool(true, "Fair Value Gaps", group = G_CTX, inline = "fvg")
+fvgMinAtr   = input.float(0.25, "min size × ATR", minval = 0, step = 0.05, group = G_CTX, inline = "fvg")
+useOb       = input.bool(true, "Order Blocks", group = G_CTX, inline = "ob")
+obLookback  = input.int(20, "lookback", minval = 1, maxval = 100, group = G_CTX, inline = "ob")
+obMaxAtr    = input.float(1.5, "max height × ATR", minval = 0.1, step = 0.1, group = G_CTX, inline = "ob")
+zoneMaxAge  = input.int(150, "Zone max age (bars)", minval = 1, group = G_CTX, inline = "za")
+maxZones    = input.int(8, "max per side", minval = 1, maxval = 50, group = G_CTX, inline = "za")
+poiWindow   = input.int(3, "Zone-touch window (bars)", minval = 0, group = G_CTX)
+chochWindow = input.int(20, "Fresh CHoCH window (bars)", minval = 0, group = G_CTX)
+dispAtr     = input.float(0.5, "Displacement body ≥ ATR ×", minval = 0, step = 0.1, group = G_CTX)
+emaFastLen  = input.int(50, "Trend EMA fast", minval = 1, group = G_CTX, inline = "ema")
+emaSlowLen  = input.int(200, "slow", minval = 2, group = G_CTX, inline = "ema")
+rsiLen      = input.int(14, "RSI length", minval = 2, group = G_CTX)
+volMult     = input.float(1.2, "Volume ≥ 20-bar average ×", minval = 0, step = 0.1, group = G_CTX)
+
+// ─── ④ Higher-timeframe bias ─────────────────────────────────────────────────
+htfGate   = input.string("Off", "HTF gate", options = ["Off", "Loose", "Strict"], group = G_HTF, tooltip = "Off (default): HTF bias is shown and scored, not required — sweeps against the HTF trend tested as well as with it. Loose: block trades against the HTF bias. Strict: require the HTF bias to agree.")
+htfMode   = input.string("Auto", "HTF", options = ["Auto", "Manual"], group = G_HTF, inline = "htf", tooltip = "Auto: ≤5m→1H, ≤1H→4H, ≤4H→D, D→W, above→M.")
+htfManual = input.timeframe("D", "", group = G_HTF, inline = "htf")
+htfFast   = input.int(50, "HTF EMA fast", minval = 1, group = G_HTF, inline = "hema")
+htfSlow   = input.int(200, "slow", minval = 2, group = G_HTF, inline = "hema")
+
+// ─── ⑤ Visuals ───────────────────────────────────────────────────────────────
+showSig    = input.bool(true, "Signals", group = G_VIS, inline = "v1")
+showLevels = input.bool(true, "Trade levels", group = G_VIS, inline = "v1")
+keepHist   = input.bool(true, "Keep closed trades", group = G_VIS, inline = "v1")
+showZones  = input.bool(true, "FVG / OB zones", group = G_VIS, inline = "v2")
+showStruct = input.bool(true, "BOS / CHoCH", group = G_VIS, inline = "v2")
+showSweeps = input.bool(true, "Sweeps", group = G_VIS, inline = "v2")
+showPd     = input.bool(true, "Previous-day H/L", group = G_VIS, inline = "v3")
+showKz     = input.bool(true, "Kill-zone shading", group = G_VIS, inline = "v3")
+bullCol    = input.color(#00C853, "Bull", group = G_VIS, inline = "col")
+bearCol    = input.color(#FF1744, "Bear", group = G_VIS, inline = "col")
+neutCol    = input.color(#9E9E9E, "Neutral", group = G_VIS, inline = "col")
+
+// ─── ⑥ Dashboard ─────────────────────────────────────────────────────────────
+showDash   = input.bool(true, "Show dashboard", group = G_DASH)
+dashPosIn  = input.string("Top Right", "Position", options = ["Top Right", "Top Left", "Middle Right", "Bottom Right", "Bottom Left"], group = G_DASH)
+dashSizeIn = input.string("Small", "Text size", options = ["Tiny", "Small", "Normal"], group = G_DASH)
+
+// ─── ⑦ Money & challenge ─────────────────────────────────────────────────────
+acctBal     = input.float(30, "Account balance (USD)", minval = 0.01, group = G_MNY, tooltip = "Update this after every closed trade. All lot sizes are computed from it.")
+sizeMode    = input.string("Challenge (optimal)", "Position sizing", options = ["Challenge (optimal)", "Fixed risk %"], group = G_MNY, tooltip = "Challenge (optimal): sizing that maximises the chance of reaching the goal within the remaining trades (matches an exact dynamic-programming solution). Once one win can reach the goal, it sizes for exactly that; below that level it sizes for a win to double the launch pad. It also has a high chance of wiping out the account. Fixed risk %: normal risk management.")
+riskPct     = input.float(1.0, "Fixed risk per trade %", minval = 0.01, maxval = 100, step = 0.25, group = G_MNY)
+goalBal     = input.float(500, "Challenge goal (USD)", minval = 0.01, group = G_MNY, inline = "goal")
+chTrades    = input.int(3, "in trades", minval = 1, maxval = 20, group = G_MNY, inline = "goal", tooltip = "Trades remaining. After each closed trade, update the balance above and lower this count by one.")
+leverage    = input.int(1000, "Leverage 1:", minval = 1, group = G_MNY, inline = "lev")
+stopOutPct  = input.float(50, "stop-out %", minval = 0, maxval = 100, group = G_MNY, inline = "lev", tooltip = "Lots are capped so the stop is reached before the broker's margin stop-out level.")
+contractIn  = input.float(0, "Contract size per lot (0 = auto)", minval = 0, group = G_MNY, tooltip = "Auto: forex 100,000 units, gold 100 oz, silver 5,000 oz, anything else 1. Check your broker's contract specification.")
+lotStep     = input.float(0.01, "Lot step / minimum", minval = 0.001, step = 0.01, group = G_MNY)
+
+// ─── Input validation ────────────────────────────────────────────────────────
+if tgtMode == "Pips" and (tp1Pips >= tp2Pips or tp2Pips >= tp3Pips)
+    runtime.error("Falcon Sniper V3: pip targets must increase — TP1 < TP2 < TP3.")
+if tgtMode == "R multiple" and (rr1 >= rr2 or rr2 >= rr3)
+    runtime.error("Falcon Sniper V3: R targets must increase — TP1 < TP2 < TP3.")
+if minSlPips >= maxSlPips
+    runtime.error("Falcon Sniper V3: stop min must be below stop max.")
+if emaFastLen >= emaSlowLen or htfFast >= htfSlow
+    runtime.error("Falcon Sniper V3: EMA fast length must be below slow length.")
+
+// ─── Constants ───────────────────────────────────────────────────────────────
+const float PART       = 1.0 / 3.0
+const int   LVL_OFFSET = 4
+const int   N_FACTORS  = 13
+const color PANEL_BG   = #0D1117F2
+const color PANEL_EDGE = #30363D
+const color HEAD_BG    = #B8860B
+const color KEY_COL    = #C9D1D9
+const color ACCENT     = #58A6FF
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+// One managed position. Drawing slots: 0 entry, 1 stop, 2 TP1, 3 TP2, 4 TP3;
+// superseded stop segments are appended after slot 4. `slSlot` is the slot the
+// stop currently sits on (1 = its own level, 0 = breakeven, 2 = TP1).
+type Trade
+    int dir = 0
+    int entryBar
+    float entry
+    float risk
+    float sl
+    float tp1
+    float tp2
+    float tp3
+    bool hit1 = false
+    bool hit2 = false
+    bool hit3 = false
+    float rem = 0.0
+    float r = 0.0
+    float pips = 0.0
+    int slSlot = 1
+    array<line> lines
+    array<label> labels
+
+// Running scorecard of closed trades.
+type Perf
+    int trades = 0
+    int wins = 0
+    int losses = 0
+    int tp1 = 0
+    int tp2 = 0
+    int tp3 = 0
+    int stops = 0
+    int reversals = 0
+    float grossWin = 0.0
+    float grossLoss = 0.0
+    float netR = 0.0
+    float netPips = 0.0
+    float peakR = 0.0
+    float maxDD = 0.0
+
+// A Fair Value Gap (kind 0) or Order Block (kind 1). `born` is the bar it was
+// confirmed on; it can only be touched on later bars.
+type Zone
+    int dir
+    int kind
+    float top
+    float bottom
+    int born
+    box bx
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+f_px(float p) =>
+    str.tostring(p, format.mintick)
+
+f_r(float r) =>
+    (r > 0 ? "+" : "") + str.tostring(r, "0.00") + "R"
+
+f_p(float p) =>
+    (p > 0 ? "+" : "") + str.tostring(p, "0.0") + "p"
+
+f_pct(int n, int d) =>
+    d > 0 ? str.tostring(100.0 * n / d, "0.0") + "%" : "—"
+
+f_join(string a, string b) =>
+    a == "" ? b : b == "" ? a : a + " | " + b
+
+f_dirTxt(int d) =>
+    d == 1 ? "Bullish" : d == -1 ? "Bearish" : "Neutral"
+
+f_dirCol(int d) =>
+    d == 1 ? bullCol : d == -1 ? bearCol : neutCol
+
+f_ck(bool b, string name) =>
+    (b ? "✓ " : "✗ ") + name
+
+f_pos(string p) =>
+    switch p
+        "Top Left"     => position.top_left
+        "Middle Right" => position.middle_right
+        "Bottom Right" => position.bottom_right
+        "Bottom Left"  => position.bottom_left
+        => position.top_right
+
+f_size(string s) =>
+    s == "Tiny" ? size.tiny : s == "Normal" ? size.normal : size.small
+
+f_tfText(simple string tf) =>
+    int secs = timeframe.in_seconds(tf)
+    string out = tf
+    if secs < 60
+        out := str.tostring(secs) + "s"
+    else if secs < 86400 and secs % 3600 == 0
+        out := str.tostring(math.round(secs / 3600.0)) + "H"
+    else if secs < 86400
+        out := str.tostring(math.round(secs / 60.0)) + "m"
+    out
+
+f_row(table t, int row, string k, string v, color c, string sz) =>
+    table.cell(t, 0, row, k, text_color = KEY_COL, text_halign = text.align_left, text_size = sz)
+    table.cell(t, 1, row, v, text_color = c, text_halign = text.align_right, text_size = sz)
+
+f_autoPip() =>
+    string tk = str.upper(syminfo.ticker)
+    float p = syminfo.mintick
+    if str.contains(tk, "XAU") or str.contains(tk, "GOLD")
+        p := 0.1
+    else if str.contains(tk, "XAG") or str.contains(tk, "SILVER")
+        p := 0.01
+    else if syminfo.type == "forex"
+        p := syminfo.currency == "JPY" ? 0.01 : 0.0001
+    p
+
+f_autoContract() =>
+    string tk = str.upper(syminfo.ticker)
+    float c = 1.0
+    if str.contains(tk, "XAU") or str.contains(tk, "GOLD")
+        c := 100.0
+    else if str.contains(tk, "XAG") or str.contains(tk, "SILVER")
+        c := 5000.0
+    else if syminfo.type == "forex"
+        c := 100000.0
+    c
+
+f_usd(float x) =>
+    "$" + str.tostring(x, "0.00")
+
+// HTF EMA bias, evaluated in the HTF context and shifted one HTF bar back so
+// only closed HTF bars are used.
+f_htfBias(simple int fl, simple int sl) =>
+    float ef = ta.ema(close, fl)
+    float es = ta.ema(close, sl)
+    int b = na(es) ? 0 : close > ef and ef > es ? 1 : close < ef and ef < es ? -1 : 0
+    b[1]
+
+// ─── Core calculations (every ta.* call on every bar) ───────────────────────
+pip      = pipMode == "Manual" ? pipManual : f_autoPip()
+chartSec = timeframe.in_seconds()
+
+// Money: pip value and margin per 1.00 lot in USD
+contract  = contractIn > 0 ? contractIn : f_autoContract()
+rateRaw   = request.currency_rate(syminfo.currency, "USD", ignore_invalid_currency = true)
+usdRate   = syminfo.currency == "USD" ? 1.0 : nz(rateRaw, 1.0)
+pipValLot = contract * pip * usdRate
+marginLot = contract * close * usdRate / leverage
+
+// Lots for a trade with stop `s` pips whose win pays `winPips` pips, from
+// balance `bal`. Returns 0 when not even the minimum lot fits.
+// Challenge sizing ("launch pad"): `pad` is the balance from which one
+// maximum-size win reaches the goal. At or above it, size so that a win lands
+// exactly on the goal; below it, size so that a win lands on twice the pad.
+// This matched an exact dynamic-programming optimum in every tested case.
+f_lots(float bal, float s, float winPips) =>
+    float perLot = s * pipValLot + stopOutPct / 100 * marginLot
+    float maxL   = bal / perLot
+    float maxQ   = math.floor(maxL / lotStep + 1e-9) * lotStep
+    float pad    = goalBal / (1 + winPips * pipValLot / perLot)
+    float aim    = bal >= pad ? goalBal : math.min(2 * pad, goalBal)
+    float bold   = math.max(math.ceil((aim - bal) / (winPips * pipValLot) / lotStep - 1e-9) * lotStep, lotStep)
+    float fixed  = math.floor(bal * riskPct / 100 / (s * pipValLot) / lotStep + 1e-9) * lotStep
+    float want   = sizeMode == "Fixed risk %" ? fixed : bal >= goalBal ? 0.0 : bold
+    float lots   = math.min(want, maxQ)
+    lots >= lotStep - 1e-9 ? lots : 0.0
+
+emaF = ta.ema(close, emaFastLen)
+emaS = ta.ema(close, emaSlowLen)
+rsi  = ta.rsi(close, rsiLen)
+[macdLine, macdSignal, macdHist] = ta.macd(close, 12, 26, 9)
+atr  = ta.atr(14)
+
+volAvg = ta.sma(volume, 20)
+hasVol = not na(volume) and nz(volAvg) > 0
+relVol = hasVol ? volume / volAvg : na
+
+rsiLow5  = ta.lowest(rsi, 5)
+rsiHigh5 = ta.highest(rsi, 5)
+hhPrev   = ta.highest(high, mssLen)[1]
+llPrev   = ta.lowest(low, mssLen)[1]
+slLow    = ta.lowest(low, slLookback)
+slHigh   = ta.highest(high, slLookback)
+ph       = ta.pivothigh(high, swLeft, swRight)
+pl       = ta.pivotlow(low, swLeft, swRight)
+
+// Higher timeframe bias
+autoHtf  = chartSec <= 300 ? "60" : chartSec <= 3600 ? "240" : chartSec <= 14400 ? "D" : chartSec <= 86400 ? "W" : "M"
+manualOk = timeframe.in_seconds(htfManual) >= chartSec
+htfTf    = htfMode == "Auto" ? autoHtf : manualOk ? htfManual : timeframe.period
+htfRaw   = request.security(syminfo.tickerid, htfTf, f_htfBias(htfFast, htfSlow), lookahead = barmerge.lookahead_on)
+htfBias  = nz(htfRaw)
+
+// Previous-day high/low and daily ATR (closed daily bars only)
+f_daily() =>
+    float a = ta.atr(14)
+    [high[1], low[1], a[1]]
+[pdh, pdl, dAtr] = request.security(syminfo.tickerid, "D", f_daily(), lookahead = barmerge.lookahead_on)
+usePdEff = usePd and chartSec < 86400
+pdhE     = usePdEff ? pdh : na
+pdlE     = usePdEff ? pdl : na
+
+// Kill zones (New York time)
+inKz1 = not na(time(timeframe.period, kz1, "America/New_York"))
+inKz2 = not na(time(timeframe.period, kz2, "America/New_York"))
+kzNA  = chartSec >= 14400
+kzOk  = not useKz or kzNA or inKz1 or inKz2
+
+// ─── Trade objects ───────────────────────────────────────────────────────────
+// Rewrite every level label from the trade's state.
+method refresh(Trade t) =>
+    if array.size(t.labels) >= 5
+        label lbSl = array.get(t.labels, 1)
+        float dp1 = math.abs(t.tp1 - t.entry) / pip
+        float dp2 = math.abs(t.tp2 - t.entry) / pip
+        float dp3 = math.abs(t.tp3 - t.entry) / pip
+        label.set_text(array.get(t.labels, 0), (t.dir == 1 ? "LONG " : "SHORT ") + f_px(t.entry) + (t.slSlot == 0 ? " · SL" : ""))
+        label.set_y(lbSl, t.sl)
+        label.set_text(lbSl, t.slSlot == 1 ? "SL " + f_px(t.sl) + " (-" + str.tostring(t.risk / pip, "0.0") + "p)" : "")
+        label.set_color(lbSl, t.slSlot == 1 ? bearCol : color.new(bearCol, 100))
+        label.set_text(array.get(t.labels, 2), (t.hit1 ? "✓ " : "") + (partials ? "TP1 " : beAfterTp1 ? "BE trigger " : "TP1 ref ") + f_px(t.tp1) + " (+" + str.tostring(dp1, "0") + "p)" + (t.slSlot == 2 ? " · SL" : ""))
+        label.set_text(array.get(t.labels, 3), (t.hit2 ? "✓ " : "") + (partials ? "TP2 " : trailTp2 ? "Lock step " : "TP2 ref ") + f_px(t.tp2) + " (+" + str.tostring(dp2, "0") + "p)")
+        label.set_text(array.get(t.labels, 4), (t.hit3 ? "✓ " : "") + "TP3 " + f_px(t.tp3) + " (+" + str.tostring(dp3, "0") + "p)")
+    t.dir
+
+f_newTrade(int d, float entry, float riskPips, float d1, float d2, float d3) =>
+    float risk = riskPips * pip
+    Trade t = Trade.new(dir = d, entryBar = bar_index, entry = entry, risk = risk, sl = entry - d * risk, tp1 = entry + d * d1 * pip, tp2 = entry + d * d2 * pip, tp3 = entry + d * d3 * pip, rem = 1.0, r = 0.0, pips = 0.0, slSlot = 1, lines = array.new<line>(), labels = array.new<label>())
+    if showLevels
+        int x2 = bar_index + LVL_OFFSET
+        array.push(t.lines, line.new(bar_index, t.entry, x2, t.entry, color = neutCol, width = 2))
+        array.push(t.lines, line.new(bar_index, t.sl, x2, t.sl, color = bearCol, width = 2))
+        array.push(t.lines, line.new(bar_index, t.tp1, x2, t.tp1, color = bullCol, style = line.style_dashed))
+        array.push(t.lines, line.new(bar_index, t.tp2, x2, t.tp2, color = bullCol, style = line.style_dashed))
+        array.push(t.lines, line.new(bar_index, t.tp3, x2, t.tp3, color = bullCol, style = line.style_dashed, width = 2))
+        array.push(t.labels, label.new(x2, t.entry, "", color = neutCol, textcolor = color.white, style = label.style_label_left, size = size.small))
+        array.push(t.labels, label.new(x2, t.sl, "", color = bearCol, textcolor = color.white, style = label.style_label_left, size = size.small))
+        array.push(t.labels, label.new(x2, t.tp1, "", color = bullCol, textcolor = color.white, style = label.style_label_left, size = size.small))
+        array.push(t.labels, label.new(x2, t.tp2, "", color = bullCol, textcolor = color.white, style = label.style_label_left, size = size.small))
+        array.push(t.labels, label.new(x2, t.tp3, "", color = bullCol, textcolor = color.white, style = label.style_label_left, size = size.small))
+        t.refresh()
+    t
+
+// Book a target: take the partial at its price and mark the level as filled.
+method bookTarget(Trade t, int slot, float tpPx) =>
+    float part = partials ? PART : 0.0
+    t.r := t.r + part * (tpPx - t.entry) / t.risk * t.dir
+    t.pips := t.pips + part * (tpPx - t.entry) * t.dir / pip
+    t.rem := t.rem - part
+    if array.size(t.lines) >= 5
+        line.set_style(array.get(t.lines, slot), line.style_solid)
+    t.refresh()
+    t.r
+
+// Move the stop onto another level: end the old stop segment here and start a
+// new one at the new price. Takes effect from the next bar.
+method moveStop(Trade t, float newSl, int onSlot) =>
+    t.sl := newSl
+    t.slSlot := onSlot
+    if array.size(t.lines) >= 5
+        line prev = array.get(t.lines, 1)
+        line.set_x2(prev, bar_index)
+        array.push(t.lines, prev)
+        array.set(t.lines, 1, line.new(bar_index, newSl, bar_index + LVL_OFFSET, newSl, color = bearCol, width = 2))
+    t.refresh()
+    t.sl
+
+// Realise whatever is still open at `px`, record the trade, retire drawings.
+// Only the five live slots are frozen here; superseded stop segments already
+// end where they were replaced.
+method closeOut(Trade t, Perf p, float px) =>
+    t.r := t.r + t.rem * (px - t.entry) / t.risk * t.dir
+    t.pips := t.pips + t.rem * (px - t.entry) * t.dir / pip
+    t.rem := 0.0
+    p.trades := p.trades + 1
+    p.netR := p.netR + t.r
+    p.netPips := p.netPips + t.pips
+    if t.r > 0
+        p.wins := p.wins + 1
+        p.grossWin := p.grossWin + t.r
+    else if t.r < 0
+        p.losses := p.losses + 1
+        p.grossLoss := p.grossLoss - t.r
+    p.tp1 := p.tp1 + (t.hit1 ? 1 : 0)
+    p.tp2 := p.tp2 + (t.hit2 ? 1 : 0)
+    p.tp3 := p.tp3 + (t.hit3 ? 1 : 0)
+    p.peakR := math.max(p.peakR, p.netR)
+    p.maxDD := math.max(p.maxDD, p.peakR - p.netR)
+    for [i, ln] in t.lines
+        if not keepHist
+            line.delete(ln)
+        else if i < 5
+            line.set_x2(ln, bar_index)
+    for lb in t.labels
+        label.delete(lb)
+    t.dir := 0
+    t.r
+
+// ─── Zone helpers ────────────────────────────────────────────────────────────
+f_newZone(int d, int kind, float top, float bottom, int left) =>
+    box bx = na
+    if showZones
+        color c = d == 1 ? bullCol : bearCol
+        bx := box.new(left, top, bar_index + 1, bottom, border_color = color.new(c, kind == 0 ? 60 : 30), border_style = kind == 0 ? line.style_dotted : line.style_solid, bgcolor = color.new(c, kind == 0 ? 88 : 82), text = kind == 0 ? "FVG" : "OB", text_color = color.new(c, 30), text_size = size.tiny, text_halign = text.align_right, text_valign = text.align_center)
+    Zone.new(d, kind, top, bottom, bar_index, bx)
+
+f_retireZone(Zone z) =>
+    if not na(z.bx)
+        box.delete(z.bx)
+    z.dir
+
+// Drop the oldest zones of one side beyond `maxN`.
+f_capZones(array<Zone> zs, int d, int maxN) =>
+    int cnt = 0
+    for z in zs
+        if z.dir == d
+            cnt += 1
+    int i = 0
+    while cnt > maxN and i < array.size(zs)
+        Zone z = array.get(zs, i)
+        if z.dir == d
+            f_retireZone(z)
+            array.remove(zs, i)
+            cnt -= 1
+        else
+            i += 1
+    cnt
+
+// ─── State ───────────────────────────────────────────────────────────────────
+var Trade trade = Trade.new()
+var Perf perf = Perf.new()
+var array<Zone> zones = array.new<Zone>()
+var int lastSigBar = na
+var array<float> hPips = array.new<float>()
+var array<float> hRisk = array.new<float>()
+var array<float> fitRisk = array.new<float>()
+
+var float shPrice = na
+var int shBar = na
+var bool shBroken = true
+var bool shSwept = false
+var float slPrice = na
+var int slBar = na
+var bool slBroken = true
+var bool slSwept = false
+var int structDir = 0
+var int lastStructBar = na
+var int lastBullChoch = na
+var int lastBearChoch = na
+var int lastBullSweep = na
+var int lastBearSweep = na
+var int lastBullFvgT = na
+var int lastBearFvgT = na
+var int lastBullObT = na
+var int lastBearObT = na
+
+// ─── 1. Manage the open trade with this bar's range ──────────────────────────
+string evt = ""
+if trade.dir != 0 and bar_index > trade.entryBar
+    int d = trade.dir
+    bool slHit = d == 1 ? low <= trade.sl : high >= trade.sl
+    if slHit
+        float slPx = d == 1 ? math.min(open, trade.sl) : math.max(open, trade.sl)
+        string what = trade.slSlot != 1 ? "Protected stop" : "Stop loss"
+        perf.stops := perf.stops + 1
+        trade.closeOut(perf, slPx)
+        array.push(hPips, trade.pips)
+        array.push(hRisk, trade.risk / pip)
+        evt := what + " hit, closed " + f_p(trade.pips) + " (" + f_r(trade.r) + ")"
+    else
+        if not trade.hit1 and (d == 1 ? high >= trade.tp1 : low <= trade.tp1)
+            trade.hit1 := true
+            trade.bookTarget(2, trade.tp1)
+            evt := f_join(evt, partials ? "TP1 hit" : beAfterTp1 ? "TP1 level reached, stop to breakeven" : "TP1 level reached")
+            if beAfterTp1
+                trade.moveStop(trade.entry, 0)
+        if not trade.hit2 and (d == 1 ? high >= trade.tp2 : low <= trade.tp2)
+            trade.hit2 := true
+            trade.bookTarget(3, trade.tp2)
+            evt := f_join(evt, partials ? "TP2 hit" : trailTp2 ? "TP2 level reached, stop to TP1" : "TP2 level reached")
+            if trailTp2
+                trade.moveStop(trade.tp1, 2)
+        if d == 1 ? high >= trade.tp3 : low <= trade.tp3
+            trade.hit3 := true
+            if array.size(trade.lines) >= 5
+                line.set_style(array.get(trade.lines, 4), line.style_solid)
+            trade.closeOut(perf, trade.tp3)
+            array.push(hPips, trade.pips)
+            array.push(hRisk, trade.risk / pip)
+            evt := f_join(evt, "TP3 hit, closed " + f_p(trade.pips) + " (" + f_r(trade.r) + ")")
+
+// ─── 2. Zone maintenance: touches, invalidation, expiry ──────────────────────
+bool tBF = false
+bool tBO = false
+bool tSF = false
+bool tSO = false
+if array.size(zones) > 0
+    for i = array.size(zones) - 1 to 0
+        Zone z = array.get(zones, i)
+        bool dead = bar_index - z.born > zoneMaxAge
+        if not dead
+            if z.dir == 1
+                if close < z.bottom
+                    dead := true
+                else if bar_index > z.born and low <= z.top
+                    if z.kind == 0
+                        tBF := true
+                    else
+                        tBO := true
+            else
+                if close > z.top
+                    dead := true
+                else if bar_index > z.born and high >= z.bottom
+                    if z.kind == 0
+                        tSF := true
+                    else
+                        tSO := true
+        if dead
+            f_retireZone(z)
+            array.remove(zones, i)
+        else if not na(z.bx)
+            box.set_right(z.bx, bar_index + 1)
+if tBF
+    lastBullFvgT := bar_index
+if tBO
+    lastBullObT := bar_index
+if tSF
+    lastBearFvgT := bar_index
+if tSO
+    lastBearObT := bar_index
+
+// ─── 3. Swings, structure, sweeps ────────────────────────────────────────────
+if not na(ph)
+    shPrice := ph
+    shBar := bar_index - swRight
+    shBroken := false
+    shSwept := false
+if not na(pl)
+    slPrice := pl
+    slBar := bar_index - swRight
+    slBroken := false
+    slSwept := false
+
+bullBreak = not na(shPrice) and not shBroken and close > shPrice
+bearBreak = not na(slPrice) and not slBroken and close < slPrice
+
+if bullBreak
+    bool choch = structDir == -1
+    if choch
+        lastBullChoch := bar_index
+    structDir := 1
+    shBroken := true
+    lastStructBar := bar_index
+    if showStruct
+        line.new(shBar, shPrice, bar_index, shPrice, color = color.new(bullCol, 20), style = line.style_dashed)
+        label.new(math.round((shBar + bar_index) / 2.0), shPrice, choch ? "CHoCH" : "BOS", color = color.new(bullCol, 100), textcolor = bullCol, style = label.style_label_down, size = size.tiny)
+    if useOb
+        int nb = math.max(1, math.min(na(slBar) ? 1 : bar_index - slBar, obLookback))
+        int idx = 1
+        float mn = low[1]
+        for k = 1 to nb
+            if low[k] < mn
+                mn := low[k]
+                idx := k
+        float obBot = low[idx]
+        float obTop = high[idx]
+        if obTop - obBot > obMaxAtr * atr
+            obTop := obBot + obMaxAtr * atr
+        array.push(zones, f_newZone(1, 1, obTop, obBot, bar_index - idx))
+
+if bearBreak
+    bool chochS = structDir == 1
+    if chochS
+        lastBearChoch := bar_index
+    structDir := -1
+    slBroken := true
+    lastStructBar := bar_index
+    if showStruct
+        line.new(slBar, slPrice, bar_index, slPrice, color = color.new(bearCol, 20), style = line.style_dashed)
+        label.new(math.round((slBar + bar_index) / 2.0), slPrice, chochS ? "CHoCH" : "BOS", color = color.new(bearCol, 100), textcolor = bearCol, style = label.style_label_up, size = size.tiny)
+    if useOb
+        int nbS = math.max(1, math.min(na(shBar) ? 1 : bar_index - shBar, obLookback))
+        int idxS = 1
+        float mx = high[1]
+        for k = 1 to nbS
+            if high[k] > mx
+                mx := high[k]
+                idxS := k
+        float obTopS = high[idxS]
+        float obBotS = low[idxS]
+        if obTopS - obBotS > obMaxAtr * atr
+            obBotS := obTopS - obMaxAtr * atr
+        array.push(zones, f_newZone(-1, 1, obTopS, obBotS, bar_index - idxS))
+
+sweptSwingL = not na(slPrice) and not slBroken and not slSwept and low < slPrice and close > slPrice
+sweptSwingH = not na(shPrice) and not shBroken and not shSwept and high > shPrice and close < shPrice
+if sweptSwingL
+    slSwept := true
+if sweptSwingH
+    shSwept := true
+sweptPdl  = not na(pdlE) and low < pdlE and close > pdlE
+sweptPdh  = not na(pdhE) and high > pdhE and close < pdhE
+bullSweep = sweptSwingL or sweptPdl
+bearSweep = sweptSwingH or sweptPdh
+if bullSweep
+    lastBullSweep := bar_index
+if bearSweep
+    lastBearSweep := bar_index
+
+// ─── 4. New Fair Value Gaps ──────────────────────────────────────────────────
+if useFvg and not na(atr)
+    if low > high[2] and low - high[2] >= fvgMinAtr * atr and close[1] > open[1]
+        array.push(zones, f_newZone(1, 0, low, high[2], bar_index - 2))
+    if high < low[2] and low[2] - high >= fvgMinAtr * atr and close[1] < open[1]
+        array.push(zones, f_newZone(-1, 0, low[2], high, bar_index - 2))
+f_capZones(zones, 1, maxZones)
+f_capZones(zones, -1, maxZones)
+
+// ─── 5. Triggers, confluence and gates ───────────────────────────────────────
+warmup = math.max(emaSlowLen, 35, 28) + 5
+ready  = bar_index >= warmup and not na(emaS) and not na(rsi) and not na(macdHist) and not na(atr) and atr > 0
+
+body  = math.abs(close - open)
+barR  = high - low
+lwick = math.min(open, close) - low
+uwick = high - math.max(open, close)
+engL  = close > open and close[1] < open[1] and close >= open[1] and open <= close[1]
+engS  = close < open and close[1] > open[1] and close <= open[1] and open >= close[1]
+pinL  = barR > 0 and lwick >= 2 * body and lwick >= 0.5 * barR and high - close <= barR / 3
+pinS  = barR > 0 and uwick >= 2 * body and uwick >= 0.5 * barR and close - low <= barR / 3
+mssL  = close > hhPrev and close > open
+mssS  = close < llPrev and close < open
+trigL = trigMode == "Pin bar only" ? pinL : trigMode == "Pin bar + MSS" ? pinL or mssL : pinL or mssL or engL
+trigS = trigMode == "Pin bar only" ? pinS : trigMode == "Pin bar + MSS" ? pinS or mssS : pinS or mssS or engS
+
+rngOk = not na(shPrice) and not na(slPrice) and shPrice > slPrice
+eqLvl = rngOk ? (shPrice + slPrice) / 2 : na
+rngSz = rngOk ? shPrice - slPrice : na
+oteL  = rngOk and low <= shPrice - 0.618 * rngSz
+oteS  = rngOk and high >= slPrice + 0.618 * rngSz
+
+sweepRecL = not na(lastBullSweep) and bar_index - lastBullSweep <= sweepWindow
+sweepRecS = not na(lastBearSweep) and bar_index - lastBearSweep <= sweepWindow
+fvgRecL   = not na(lastBullFvgT) and bar_index - lastBullFvgT <= poiWindow
+fvgRecS   = not na(lastBearFvgT) and bar_index - lastBearFvgT <= poiWindow
+obRecL    = not na(lastBullObT) and bar_index - lastBullObT <= poiWindow
+obRecS    = not na(lastBearObT) and bar_index - lastBearObT <= poiWindow
+poiL      = poiMode == "Liquidity sweep" ? sweepRecL : fvgRecL or obRecL or sweepRecL or oteL
+poiS      = poiMode == "Liquidity sweep" ? sweepRecS : fvgRecS or obRecS or sweepRecS or oteS
+
+volOk = not hasVol or relVol >= volMult
+
+// The 13 confluence factors (long side; the short side mirrors them).
+cL01 = htfBias == 1
+cL02 = structDir == 1 or (not na(lastBullChoch) and bar_index - lastBullChoch <= chochWindow)
+cL03 = rngOk and close < eqLvl
+cL04 = oteL
+cL05 = sweepRecL
+cL06 = fvgRecL
+cL07 = obRecL
+cL08 = body >= dispAtr * atr
+cL09 = rsiLow5 <= 40 and rsi > rsi[1]
+cL10 = macdHist > macdHist[1]
+cL11 = emaF > emaS
+cL12 = kzOk
+cL13 = volOk
+cS01 = htfBias == -1
+cS02 = structDir == -1 or (not na(lastBearChoch) and bar_index - lastBearChoch <= chochWindow)
+cS03 = rngOk and close > eqLvl
+cS04 = oteS
+cS05 = sweepRecS
+cS06 = fvgRecS
+cS07 = obRecS
+cS08 = cL08
+cS09 = rsiHigh5 >= 60 and rsi < rsi[1]
+cS10 = macdHist < macdHist[1]
+cS11 = emaF < emaS
+cS12 = kzOk
+cS13 = volOk
+
+f_b(bool b) =>
+    b ? 1 : 0
+int scoreL = f_b(cL01) + f_b(cL02) + f_b(cL03) + f_b(cL04) + f_b(cL05) + f_b(cL06) + f_b(cL07) + f_b(cL08) + f_b(cL09) + f_b(cL10) + f_b(cL11) + f_b(cL12) + f_b(cL13)
+int scoreS = f_b(cS01) + f_b(cS02) + f_b(cS03) + f_b(cS04) + f_b(cS05) + f_b(cS06) + f_b(cS07) + f_b(cS08) + f_b(cS09) + f_b(cS10) + f_b(cS11) + f_b(cS12) + f_b(cS13)
+
+htfOkL = htfGate == "Off" or (htfGate == "Strict" and htfBias == 1) or (htfGate == "Loose" and htfBias != -1)
+htfOkS = htfGate == "Off" or (htfGate == "Strict" and htfBias == -1) or (htfGate == "Loose" and htfBias != 1)
+kzGateOk = not kzGate or kzOk
+
+// Stop and targets for a would-be entry at this close.
+f_plan(int d) =>
+    float raw = d == 1 ? slLow - slBufPips * pip : slHigh + slBufPips * pip
+    float rp  = math.max(d == 1 ? (close - raw) / pip : (raw - close) / pip, minSlPips)
+    float t1  = tgtMode == "Pips" ? tp1Pips : rp * rr1
+    float t2  = tgtMode == "Pips" ? tp2Pips : rp * rr2
+    float t3  = tgtMode == "Pips" ? tp3Pips : rp * rr3
+    bool ok   = rp <= maxSlPips and t3 / rp >= minRR
+    [ok, rp, t1, t2, t3]
+
+[okL, rpL, l1, l2, l3] = f_plan(1)
+[okS, rpS, s1, s2, s3] = f_plan(-1)
+
+cdOk   = na(lastSigBar) or bar_index - lastSigBar >= cooldown
+baseOk = barstate.isconfirmed and ready and cdOk and kzGateOk
+slotL  = trade.dir == 0 or (reverseExit and trade.dir == -1)
+slotS  = trade.dir == 0 or (reverseExit and trade.dir == 1)
+setupL = baseOk and htfOkL and poiL and trigL and rsi < rsiOB and scoreL >= minScore and slotL and okL
+setupS = baseOk and htfOkS and poiS and trigS and rsi > rsiOS and scoreS >= minScore and slotS and okS
+
+// Stop-fit sample: the stop every qualifying setup would need, before the
+// stop-size gate, so the check keeps working when the gate blocks everything.
+if barstate.isconfirmed and ready and kzGateOk and ((poiL and trigL) or (poiS and trigS))
+    array.push(fitRisk, poiL and trigL ? rpL : rpS)
+    if array.size(fitRisk) > 30
+        array.shift(fitRisk)
+
+longSignal  = setupL and (not setupS or scoreL >= scoreS)
+shortSignal = setupS and not longSignal
+
+// ─── 6. Open the trade ───────────────────────────────────────────────────────
+string sigMsg = ""
+if longSignal or shortSignal
+    int nd = longSignal ? 1 : -1
+    if trade.dir == -nd
+        perf.reversals := perf.reversals + 1
+        trade.closeOut(perf, close)
+        array.push(hPips, trade.pips)
+        array.push(hRisk, trade.risk / pip)
+        evt := f_join(evt, "Reversal exit " + f_p(trade.pips) + " (" + f_r(trade.r) + ")")
+    if nd == 1
+        trade := f_newTrade(1, close, rpL, l1, l2, l3)
+    else
+        trade := f_newTrade(-1, close, rpS, s1, s2, s3)
+    lastSigBar := bar_index
+    int sc = nd == 1 ? scoreL : scoreS
+    string trig = nd == 1 ? (pinL ? "Pin bar" : mssL ? "MSS" : "Engulfing") : (pinS ? "Pin bar" : mssS ? "MSS" : "Engulfing")
+    string tip = nd == 1 ? f_ck(cL01, "HTF bias") + "\n" + f_ck(cL02, "Structure") + "\n" + f_ck(cL03, "Discount") + "\n" + f_ck(cL04, "OTE 61.8%") + "\n" + f_ck(cL05, "Liquidity sweep") + "\n" + f_ck(cL06, "FVG touch") + "\n" + f_ck(cL07, "OB touch") + "\n" + f_ck(cL08, "Displacement") + "\n" + f_ck(cL09, "RSI turn") + "\n" + f_ck(cL10, "MACD rising") + "\n" + f_ck(cL11, "EMA trend") + "\n" + f_ck(cL12, "Kill zone") + "\n" + f_ck(cL13, "Volume") : f_ck(cS01, "HTF bias") + "\n" + f_ck(cS02, "Structure") + "\n" + f_ck(cS03, "Premium") + "\n" + f_ck(cS04, "OTE 61.8%") + "\n" + f_ck(cS05, "Liquidity sweep") + "\n" + f_ck(cS06, "FVG touch") + "\n" + f_ck(cS07, "OB touch") + "\n" + f_ck(cS08, "Displacement") + "\n" + f_ck(cS09, "RSI turn") + "\n" + f_ck(cS10, "MACD falling") + "\n" + f_ck(cS11, "EMA trend") + "\n" + f_ck(cS12, "Kill zone") + "\n" + f_ck(cS13, "Volume")
+    if showSig
+        label.new(bar_index, nd == 1 ? low : high, "🎯 " + (nd == 1 ? "BUY" : "SELL") + " " + str.tostring(sc) + "/" + str.tostring(N_FACTORS), color = nd == 1 ? bullCol : bearCol, textcolor = color.white, style = nd == 1 ? label.style_label_up : label.style_label_down, size = size.small, tooltip = "Trigger: " + trig + " · SL " + str.tostring(trade.risk / pip, "0.0") + " pips\n" + tip)
+    float winP = partials ? (math.abs(trade.tp1 - trade.entry) + math.abs(trade.tp2 - trade.entry) + math.abs(trade.tp3 - trade.entry)) / 3 / pip : math.abs(trade.tp3 - trade.entry) / pip
+    float sigLots = f_lots(acctBal, trade.risk / pip, winP)
+    string lotTxt = sigLots > 0 ? " | Lots " + str.tostring(sigLots, "0.00") + " risk " + f_usd(sigLots * pipValLot * trade.risk / pip) : " | Lots: below minimum for this balance"
+    sigMsg := (nd == 1 ? "SNIPER BUY" : "SNIPER SELL") + " (" + trig + ", " + str.tostring(sc) + "/" + str.tostring(N_FACTORS) + ") | Entry " + f_px(trade.entry) + " | SL " + f_px(trade.sl) + " (-" + str.tostring(trade.risk / pip, "0.0") + "p) | TP1 " + f_px(trade.tp1) + " | TP2 " + f_px(trade.tp2) + " | TP3 " + f_px(trade.tp3) + lotTxt
+
+// ─── 7. Keep the live trade's levels projected to the right ──────────────────
+if trade.dir != 0 and not na(trade.lines) and array.size(trade.lines) >= 5
+    int xr = bar_index + LVL_OFFSET
+    for i = 0 to 4
+        line.set_x2(array.get(trade.lines, i), xr)
+        label.set_x(array.get(trade.labels, i), xr)
+
+// ─── Plots ───────────────────────────────────────────────────────────────────
+plot(showPd ? pdhE : na, "Previous-day high", color = color.new(bearCol, 40), style = plot.style_stepline, linewidth = 1)
+plot(showPd ? pdlE : na, "Previous-day low", color = color.new(bullCol, 40), style = plot.style_stepline, linewidth = 1)
+bgcolor(showKz and useKz and not kzNA and (inKz1 or inKz2) ? color.new(ACCENT, 94) : na, title = "Kill zone")
+plotshape(showSweeps and bullSweep, "Sell-side liquidity swept", shape.triangleup, location.belowbar, color.new(bullCol, 30), size = size.tiny)
+plotshape(showSweeps and bearSweep, "Buy-side liquidity swept", shape.triangledown, location.abovebar, color.new(bearCol, 30), size = size.tiny)
+plotshape(longSignal, "Sniper buy", shape.circle, location.belowbar, color.new(bullCol, 100), size = size.tiny, display = display.data_window)
+plotshape(shortSignal, "Sniper sell", shape.circle, location.abovebar, color.new(bearCol, 100), size = size.tiny, display = display.data_window)
+
+// ─── Alerts ──────────────────────────────────────────────────────────────────
+alertcondition(longSignal, "Falcon Sniper V3 · Buy", "Falcon Sniper BUY {{ticker}} [{{interval}}] @ {{close}}")
+alertcondition(shortSignal, "Falcon Sniper V3 · Sell", "Falcon Sniper SELL {{ticker}} [{{interval}}] @ {{close}}")
+alertcondition(longSignal or shortSignal, "Falcon Sniper V3 · Any signal", "Falcon Sniper signal {{ticker}} [{{interval}}] @ {{close}}")
+
+// One consolidated alert() per closed bar: exits first, then any new entry
+// with its full plan.
+alertText = f_join(evt, sigMsg)
+if alertText != ""
+    alert("Falcon Sniper V3 " + syminfo.ticker + " [" + f_tfText(timeframe.period) + "] | " + alertText, alert.freq_once_per_bar_close)
+
+// ─── Dashboard ───────────────────────────────────────────────────────────────
+// Pips a winning trade pays on the whole position (for sizing and replays).
+f_winPips(float rp) =>
+    tgtMode == "Pips" ? (partials ? (tp1Pips + tp2Pips + tp3Pips) / 3 : tp3Pips) : (partials ? rp * (rr1 + rr2 + rr3) / 3 : rp * rr3)
+
+const int ROWS = 23
+var table dash = na
+if showDash and barstate.isfirst
+    dash := table.new(f_pos(dashPosIn), 2, ROWS, bgcolor = PANEL_BG, frame_color = PANEL_EDGE, frame_width = 1, border_color = PANEL_EDGE, border_width = 1)
+    table.merge_cells(dash, 0, 0, 1, 0)
+    table.merge_cells(dash, 0, ROWS - 1, 1, ROWS - 1)
+
+if showDash and barstate.islast
+    string sz = f_size(dashSizeIn)
+    int fB = 0
+    int fS = 0
+    int oB = 0
+    int oS = 0
+    for z in zones
+        if z.kind == 0
+            fB += z.dir == 1 ? 1 : 0
+            fS += z.dir == -1 ? 1 : 0
+        else
+            oB += z.dir == 1 ? 1 : 0
+            oS += z.dir == -1 ? 1 : 0
+    bool bullLiq = sweepRecL and (not sweepRecS or lastBullSweep >= lastBearSweep)
+    string liq = bullLiq ? "Sell-side swept " + str.tostring(bar_index - lastBullSweep) + " bars ago" : sweepRecS ? "Buy-side swept " + str.tostring(bar_index - lastBearSweep) + " bars ago" : "No recent sweep"
+    string kzTxt = not useKz ? "off" : kzNA ? "n/a (4H+)" : inKz1 ? "London ✓" : inKz2 ? "New York ✓" : "Closed"
+    bool freshChoch = (structDir == 1 and not na(lastBullChoch) and bar_index - lastBullChoch <= chochWindow) or (structDir == -1 and not na(lastBearChoch) and bar_index - lastBearChoch <= chochWindow)
+    string zTxt = not rngOk ? "—" : close < eqLvl ? (close <= shPrice - 0.618 * rngSz ? "Discount · OTE" : "Discount") : (close >= slPrice + 0.618 * rngSz ? "Premium · OTE" : "Premium")
+
+    // Stop fit: typical stop of recent qualifying setups vs. the target.
+    float typ = array.size(fitRisk) > 0 ? array.median(fitRisk) : na
+    float typEff = na(typ) ? na : math.max(typ, minSlPips)
+    bool fits = not na(typ) and typ <= maxSlPips and f_winPips(typEff) / typEff >= minRR
+    string fitTxt = na(typ) ? "no setups yet" : str.tostring(typ, "0") + "p · " + (fits ? "✓ fits target" : typ > maxSlPips ? "✗ too wide → lower TF" : "✗ R:R too low")
+
+    // Money: the live trade, or a typical setup when flat.
+    float planRisk = trade.dir != 0 ? trade.risk / pip : typEff
+    float planLots = na(planRisk) ? 0.0 : f_lots(acctBal, planRisk, f_winPips(planRisk))
+    float riskUsd = planLots * pipValLot * nz(planRisk)
+    float winUsd = planLots * pipValLot * f_winPips(nz(planRisk))
+    bool goalHit = sizeMode != "Fixed risk %" and acctBal >= goalBal
+    string lotTxt = goalHit ? "goal reached → use Fixed risk %" : na(planRisk) ? "—" : planLots > 0 ? str.tostring(planLots, "0.00") + " lots · " + f_usd(riskUsd) + " (" + str.tostring(100 * riskUsd / acctBal, "0") + "%)" : "below min lot"
+    string winTxt = planLots > 0 ? "+" + f_usd(winUsd) + " → " + f_usd(acctBal + winUsd) : "—"
+
+    // Challenge replay: every run of consecutive closed trades on this chart,
+    // sized exactly as above, starting from the current balance.
+    int nT = array.size(hPips)
+    int win = 0
+    int bust = 0
+    int windows = 0
+    if nT >= chTrades
+        for s0 = 0 to nT - chTrades
+            float bal = acctBal
+            for j = 0 to chTrades - 1
+                float rp = array.get(hRisk, s0 + j)
+                float lots = f_lots(bal, rp, f_winPips(rp))
+                if lots <= 0
+                    break
+                bal += lots * pipValLot * array.get(hPips, s0 + j)
+                if bal >= goalBal
+                    break
+            windows += 1
+            win += bal >= goalBal ? 1 : 0
+            bust += f_lots(math.max(bal, 0), nz(typEff, minSlPips), f_winPips(nz(typEff, minSlPips))) <= 0 and bal < goalBal ? 1 : 0
+    string chTxt = acctBal >= goalBal ? "Goal reached ✓" : windows == 0 ? "needs " + str.tostring(chTrades) + "+ closed trades" : str.tostring(win) + "/" + str.tostring(windows) + " reached (" + str.tostring(100.0 * win / windows, "0.0") + "%) · " + str.tostring(100.0 * bust / windows, "0") + "% bust"
+    float ceilPct = math.min(100, 100 * acctBal / goalBal)
+
+    float openR = trade.dir != 0 ? trade.r + trade.rem * (close - trade.entry) / trade.risk * trade.dir : na
+    float openP = trade.dir != 0 ? trade.pips + trade.rem * (close - trade.entry) * trade.dir / pip : na
+    float nextTp = trade.dir == 0 ? na : not trade.hit1 ? trade.tp1 : not trade.hit2 ? trade.tp2 : trade.tp3
+    string pf = perf.grossLoss > 0 ? str.tostring(perf.grossWin / perf.grossLoss, "0.00") : perf.grossWin > 0 ? "∞" : "—"
+
+    table.cell(dash, 0, 0, "🎯 FALCON SNIPER V3", text_color = color.white, bgcolor = HEAD_BG, text_size = sz)
+    f_row(dash, 1, "Liquidity", liq, liq == "No recent sweep" ? neutCol : bullLiq ? bullCol : bearCol, sz)
+    f_row(dash, 2, "Kill zone", kzTxt, kzTxt == "Closed" ? neutCol : ACCENT, sz)
+    f_row(dash, 3, "Structure", f_dirTxt(structDir) + (freshChoch ? " · CHoCH" : ""), f_dirCol(structDir), sz)
+    f_row(dash, 4, "Price zone", zTxt, zTxt == "—" ? neutCol : close < eqLvl ? bullCol : bearCol, sz)
+    f_row(dash, 5, "HTF " + f_tfText(htfTf) + " bias" + (htfMode == "Manual" and not manualOk ? " ⚠" : ""), f_dirTxt(htfBias) + (htfGate == "Off" ? "" : " · " + htfGate), f_dirCol(htfBias), sz)
+    f_row(dash, 6, "Confluence L / S", str.tostring(scoreL) + " / " + str.tostring(scoreS) + " of " + str.tostring(N_FACTORS) + " · FVG " + str.tostring(fB + fS) + " OB " + str.tostring(oB + oS), KEY_COL, sz)
+    f_row(dash, 7, "Stop fit (" + f_tfText(timeframe.period) + ")", fitTxt, na(typ) ? neutCol : fits ? bullCol : bearCol, sz)
+    table.cell_set_tooltip(dash, 1, 7, "Median stop of the last " + str.tostring(array.size(fitRisk)) + " setups on this chart, before the stop-size gate. ✗ too wide: switch to a lower timeframe for this instrument, or lower the target.")
+    f_row(dash, 8, "Pip · value per lot", str.tostring(pip) + " · " + f_usd(pipValLot), KEY_COL, sz)
+    f_row(dash, 9, "Balance · sizing", f_usd(acctBal) + " · " + (sizeMode == "Fixed risk %" ? str.tostring(riskPct) + "% risk" : "Challenge (optimal)"), KEY_COL, sz)
+    f_row(dash, 10, trade.dir != 0 ? "Lots · risk (live)" : "Lots · risk (typical)", lotTxt, planLots > 0 ? KEY_COL : bearCol, sz)
+    f_row(dash, 11, "Win at target → balance", winTxt, planLots > 0 ? bullCol : neutCol, sz)
+    f_row(dash, 12, "Goal " + f_usd(goalBal) + " in " + str.tostring(chTrades), chTxt, windows == 0 ? neutCol : win > 0 ? ACCENT : bearCol, sz)
+    table.cell_set_tooltip(dash, 1, 12, "Replays every run of " + str.tostring(chTrades) + " consecutive closed trades on this chart with the current balance and sizing. Bust = too little left for the minimum lot.")
+    f_row(dash, 13, "Zero-edge ceiling", str.tostring(ceilPct, "0.0") + "% (balance ÷ goal)", neutCol, sz)
+    table.cell_set_tooltip(dash, 1, 13, "With no real edge, no sizing plan can reach the goal more often than balance ÷ goal, and spread lowers it further. A replay above this ceiling means the sample was lucky or the edge is real. Only more data can tell which.")
+    f_row(dash, 14, "Position", trade.dir == 1 ? "LONG @ " + f_px(trade.entry) : trade.dir == -1 ? "SHORT @ " + f_px(trade.entry) : "FLAT", f_dirCol(trade.dir), sz)
+    f_row(dash, 15, "Stop · next level", trade.dir != 0 ? f_px(trade.sl) + " · " + f_px(nextTp) : "—", KEY_COL, sz)
+    f_row(dash, 16, "Open P&L", trade.dir != 0 ? f_p(openP) + " · " + f_r(openR) : "—", trade.dir == 0 ? neutCol : openR >= 0 ? bullCol : bearCol, sz)
+    f_row(dash, 17, "Closed trades", str.tostring(perf.trades) + "  (" + str.tostring(perf.wins) + "W / " + str.tostring(perf.losses) + "L)", KEY_COL, sz)
+    table.cell_set_tooltip(dash, 1, 17, "Stopped: " + str.tostring(perf.stops) + " · TP3 exits: " + str.tostring(perf.tp3) + " · Reversals: " + str.tostring(perf.reversals))
+    f_row(dash, 18, "Win rate", f_pct(perf.wins, perf.trades), perf.trades == 0 ? neutCol : perf.wins * 2 >= perf.trades ? bullCol : bearCol, sz)
+    f_row(dash, 19, "TP1 · TP2 · TP3 hit", f_pct(perf.tp1, perf.trades) + " · " + f_pct(perf.tp2, perf.trades) + " · " + f_pct(perf.tp3, perf.trades), KEY_COL, sz)
+    f_row(dash, 20, "Net pips · net R", f_p(perf.netPips) + " · " + f_r(perf.netR), perf.netR >= 0 ? bullCol : bearCol, sz)
+    f_row(dash, 21, "Profit factor · max DD", pf + " · " + (perf.maxDD > 0 ? "-" + str.tostring(perf.maxDD, "0.00") + "R" : "0.00R"), perf.grossLoss > 0 and perf.grossWin >= perf.grossLoss ? bullCol : perf.grossLoss > 0 ? bearCol : neutCol, sz)
+    table.cell(dash, 0, ROWS - 1, "Hypothetical · no fees/spread/slippage · stop-first fills", text_color = neutCol, text_size = size.tiny)
