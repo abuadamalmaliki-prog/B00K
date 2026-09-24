@@ -1,0 +1,492 @@
+//@version=6
+// ═════════════════════════════════════════════════════════════════════════════
+//  FALCON CONFLUENCE PRO
+//  Multi-factor confluence engine for TradingView (Pine Script v6).
+//
+//  What it does
+//    • Scores six independent factors (trend, Supertrend, strength/regime,
+//      momentum, volume, higher timeframe) for both sides on every bar.
+//    • Fires BUY / SELL only when a trigger (Supertrend flip or trend
+//      pullback) lines up with the minimum confluence score.
+//    • Builds every trade with a stop (ATR or swing structure) and three
+//      R-multiple targets, manages it bar by bar (breakeven, trail) and draws
+//      the live levels on the chart.
+//    • Keeps a running scorecard of every closed trade: win rate, target hit
+//      rates, net R, profit factor and max drawdown.
+//
+//  Non-repainting rules (by design, not by setting)
+//    • Signals are issued on confirmed (closed) bars only.
+//    • Higher-timeframe data is the previous *closed* HTF bar ([1] offset with
+//      lookahead_on), the documented non-repainting request pattern.
+//    • Trades are evaluated from the bar after entry. When one bar touches
+//      both the stop and a target, the stop is assumed to have filled first.
+//      Stops that gap through are filled at the open, targets at their price.
+// ═════════════════════════════════════════════════════════════════════════════
+indicator("Falcon Confluence Pro", shorttitle = "Falcon Pro", overlay = true, max_lines_count = 500, max_labels_count = 500)
+
+// ─── Input groups ────────────────────────────────────────────────────────────
+const string G_TREND = "① Trend engine"
+const string G_MOM   = "② Momentum, strength & regime"
+const string G_HTF   = "③ Higher-timeframe confirmation"
+const string G_SIG   = "④ Signal rules"
+const string G_RISK  = "⑤ Risk & trade management"
+const string G_VIS   = "⑥ Visuals"
+const string G_DASH  = "⑦ Dashboard"
+
+// ─── ① Trend engine ──────────────────────────────────────────────────────────
+emaFastLen = input.int(21, "EMA fast", minval = 1, group = G_TREND, inline = "ema")
+emaMidLen  = input.int(50, "mid", minval = 1, group = G_TREND, inline = "ema")
+emaSlowLen = input.int(200, "slow", minval = 1, group = G_TREND, inline = "ema", tooltip = "Trend factor: close above the slow EMA with fast EMA above mid EMA (mirror for shorts).")
+stFactor   = input.float(3.0, "Supertrend factor", minval = 0.1, step = 0.1, group = G_TREND)
+stAtrLen   = input.int(10, "Supertrend ATR length", minval = 1, group = G_TREND)
+
+// ─── ② Momentum, strength & regime ───────────────────────────────────────────
+rsiLen   = input.int(14, "RSI length", minval = 2, group = G_MOM)
+rsiOB    = input.float(70.0, "RSI overbought", minval = 50, maxval = 100, group = G_MOM, inline = "rsi")
+rsiOS    = input.float(30.0, "oversold", minval = 0, maxval = 50, group = G_MOM, inline = "rsi")
+macdFast = input.int(12, "MACD fast", minval = 1, group = G_MOM, inline = "macd")
+macdSlow = input.int(26, "slow", minval = 1, group = G_MOM, inline = "macd")
+macdSig  = input.int(9, "signal", minval = 1, group = G_MOM, inline = "macd")
+adxLen   = input.int(14, "ADX length", minval = 1, group = G_MOM, inline = "adx")
+adxMin   = input.float(20.0, "min", minval = 0, group = G_MOM, inline = "adx", tooltip = "Strength factor needs ADX at or above this value and the directional index (+DI / -DI) on the trade side.")
+useChop  = input.bool(true, "Choppiness filter", group = G_MOM, inline = "chop")
+chopLen  = input.int(14, "length", minval = 2, group = G_MOM, inline = "chop")
+chopMax  = input.float(61.8, "max", minval = 0, maxval = 100, group = G_MOM, inline = "chop", tooltip = "When enabled, the strength factor also requires the Choppiness Index below this value (a trending, not ranging, market).")
+volLen   = input.int(20, "Volume average length", minval = 1, group = G_MOM)
+volMult  = input.float(1.0, "Volume ≥ average ×", minval = 0, step = 0.1, group = G_MOM, tooltip = "Volume factor: bar volume at least this multiple of its average, on a candle closing in the trade direction. Symbols without volume data pass this factor automatically.")
+
+// ─── ③ Higher-timeframe confirmation ─────────────────────────────────────────
+useHtf    = input.bool(true, "Use higher-timeframe confirmation", group = G_HTF, tooltip = "HTF factor: previous closed HTF bar closed above a rising HTF EMA (mirror for shorts). When disabled this factor passes automatically.")
+htfMode   = input.string("Auto", "HTF selection", options = ["Auto", "Manual"], group = G_HTF, tooltip = "Auto: ≤1m→15m, ≤5m→1H, ≤1H→4H, ≤4H→D, D→W, above→M.")
+htfManual = input.timeframe("240", "Manual HTF", group = G_HTF, tooltip = "Used when HTF selection is Manual. A timeframe lower than the chart's is ignored and the chart timeframe is used instead.")
+htfEmaLen = input.int(50, "HTF EMA length", minval = 1, group = G_HTF)
+
+// ─── ④ Signal rules ──────────────────────────────────────────────────────────
+trigMode = input.string("Flip + Pullback", "Entry trigger", options = ["Flip + Pullback", "Flip only", "Pullback only"], group = G_SIG, tooltip = "Flip: Supertrend changes direction. Pullback: inside a Supertrend trend, price dipped to the fast EMA within the lookback and closes back beyond it and beyond the previous bar's extreme.")
+pbLen    = input.int(3, "Pullback lookback (bars)", minval = 1, group = G_SIG)
+minScore = input.int(4, "Minimum confluence score (of 6)", minval = 1, maxval = 6, group = G_SIG, tooltip = "Signals need at least this many of the six factors on their side. A 6/6 signal is marked STRONG.")
+avoidExh = input.bool(true, "Block longs at RSI overbought / shorts at oversold", group = G_SIG)
+cooldown = input.int(3, "Cooldown bars between signals", minval = 0, group = G_SIG)
+
+// ─── ⑤ Risk & trade management ───────────────────────────────────────────────
+slMethod   = input.string("Swing", "Stop method", options = ["ATR", "Swing"], group = G_RISK, tooltip = "ATR: entry ∓ ATR × multiple. Swing: beyond the lowest low / highest high of the lookback plus an ATR buffer; if that risk falls outside the min–max ATR band the ATR stop is used instead.")
+atrLen     = input.int(14, "ATR length", minval = 1, group = G_RISK)
+slAtrMult  = input.float(1.5, "ATR stop multiple", minval = 0.1, step = 0.1, group = G_RISK)
+swingLen   = input.int(10, "Swing lookback (bars)", minval = 2, group = G_RISK)
+swingBuf   = input.float(0.25, "Swing buffer (× ATR)", minval = 0, step = 0.05, group = G_RISK)
+swingMinR  = input.float(0.5, "Swing risk min (× ATR)", minval = 0.1, step = 0.1, group = G_RISK, inline = "swr")
+swingMaxR  = input.float(3.0, "max", minval = 0.2, step = 0.1, group = G_RISK, inline = "swr")
+rr1        = input.float(1.0, "TP1 (R)", minval = 0.1, step = 0.1, group = G_RISK, inline = "tp")
+rr2        = input.float(2.0, "TP2 (R)", minval = 0.1, step = 0.1, group = G_RISK, inline = "tp")
+rr3        = input.float(3.0, "TP3 (R)", minval = 0.1, step = 0.1, group = G_RISK, inline = "tp", tooltip = "One third of the position is taken off at each target. Scorecard results are in R (multiples of the initial risk).")
+beAfterTp1 = input.bool(true, "Move stop to breakeven after TP1", group = G_RISK)
+trailTp2   = input.bool(true, "Move stop to TP1 after TP2", group = G_RISK)
+
+// ─── ⑥ Visuals ───────────────────────────────────────────────────────────────
+showEmas   = input.bool(true, "EMA ribbon", group = G_VIS, inline = "v1")
+showSt     = input.bool(true, "Supertrend", group = G_VIS, inline = "v1")
+showSig    = input.bool(true, "Signals", group = G_VIS, inline = "v1")
+showLevels = input.bool(true, "Trade levels", group = G_VIS, inline = "v2")
+keepHist   = input.bool(true, "Keep closed trades", group = G_VIS, inline = "v2")
+colorBars  = input.bool(false, "Color bars by bias", group = G_VIS, inline = "v2")
+bullCol    = input.color(#00C853, "Bull", group = G_VIS, inline = "col")
+bearCol    = input.color(#FF1744, "Bear", group = G_VIS, inline = "col")
+neutCol    = input.color(#9E9E9E, "Neutral", group = G_VIS, inline = "col")
+
+// ─── ⑦ Dashboard ─────────────────────────────────────────────────────────────
+showDash   = input.bool(true, "Show dashboard", group = G_DASH)
+dashPosIn  = input.string("Top Right", "Position", options = ["Top Right", "Top Left", "Middle Right", "Bottom Right", "Bottom Left"], group = G_DASH)
+dashSizeIn = input.string("Small", "Text size", options = ["Tiny", "Small", "Normal"], group = G_DASH)
+
+// ─── Input validation ────────────────────────────────────────────────────────
+if emaFastLen >= emaMidLen or emaMidLen >= emaSlowLen
+    runtime.error("Falcon Pro: EMA lengths must increase — fast < mid < slow.")
+if rr1 >= rr2 or rr2 >= rr3
+    runtime.error("Falcon Pro: targets must increase — TP1 < TP2 < TP3.")
+if macdFast >= macdSlow
+    runtime.error("Falcon Pro: MACD fast length must be below slow length.")
+if swingMinR >= swingMaxR
+    runtime.error("Falcon Pro: swing risk min must be below max.")
+
+// ─── Constants ───────────────────────────────────────────────────────────────
+const float PART       = 1.0 / 3.0
+const int   LVL_OFFSET = 4
+const color PANEL_BG   = #0D1117F2
+const color PANEL_EDGE = #30363D
+const color HEAD_BG    = #1F6FEB
+const color KEY_COL    = #C9D1D9
+const color ACCENT     = #58A6FF
+
+// ─── Types ───────────────────────────────────────────────────────────────────
+// One managed position. Drawing slots: 0 entry, 1 stop, 2 TP1, 3 TP2, 4 TP3;
+// superseded stop segments are appended after slot 4. `slSlot` is the slot the
+// stop currently sits on (1 = its own level, 0 = breakeven, 2 = TP1) so that
+// two labels are never printed on top of each other.
+type Trade
+    int dir = 0
+    int entryBar
+    float entry
+    float risk
+    float sl
+    float tp1
+    float tp2
+    float tp3
+    bool hit1 = false
+    bool hit2 = false
+    bool hit3 = false
+    float rem = 0.0
+    float r = 0.0
+    int slSlot = 1
+    array<line> lines
+    array<label> labels
+
+// Running scorecard of closed trades, all results in R.
+type Perf
+    int trades = 0
+    int wins = 0
+    int losses = 0
+    int tp1 = 0
+    int tp2 = 0
+    int tp3 = 0
+    int stops = 0
+    int reversals = 0
+    float grossWin = 0.0
+    float grossLoss = 0.0
+    float netR = 0.0
+    float peakR = 0.0
+    float maxDD = 0.0
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+f_px(float p) =>
+    str.tostring(p, format.mintick)
+
+f_r(float r) =>
+    (r > 0 ? "+" : "") + str.tostring(r, "0.00") + "R"
+
+f_pct(int n, int d) =>
+    d > 0 ? str.tostring(100.0 * n / d, "0.0") + "%" : "—"
+
+f_join(string a, string b) =>
+    a == "" ? b : a + " | " + b
+
+f_dirTxt(int d) =>
+    d == 1 ? "Bullish" : d == -1 ? "Bearish" : "Neutral"
+
+f_dirCol(int d) =>
+    d == 1 ? bullCol : d == -1 ? bearCol : neutCol
+
+f_pos(string p) =>
+    switch p
+        "Top Left"     => position.top_left
+        "Middle Right" => position.middle_right
+        "Bottom Right" => position.bottom_right
+        "Bottom Left"  => position.bottom_left
+        => position.top_right
+
+f_size(string s) =>
+    s == "Tiny" ? size.tiny : s == "Normal" ? size.normal : size.small
+
+f_tfText(simple string tf) =>
+    int secs = timeframe.in_seconds(tf)
+    string out = tf
+    if secs < 60
+        out := str.tostring(secs) + "s"
+    else if secs < 86400 and secs % 3600 == 0
+        out := str.tostring(math.round(secs / 3600.0)) + "H"
+    else if secs < 86400
+        out := str.tostring(math.round(secs / 60.0)) + "m"
+    out
+
+f_row(table t, int row, string k, string v, color c, string sz) =>
+    table.cell(t, 0, row, k, text_color = KEY_COL, text_halign = text.align_left, text_size = sz)
+    table.cell(t, 1, row, v, text_color = c, text_halign = text.align_right, text_size = sz)
+
+// Higher-timeframe bias, evaluated inside the HTF context and shifted one HTF
+// bar back so that only closed HTF bars are ever used.
+f_htfBias(simple int len) =>
+    float e = ta.ema(close, len)
+    int b = close > e and e > e[1] ? 1 : close < e and e < e[1] ? -1 : 0
+    b[1]
+
+// ─── Core calculations (all ta.* calls live here, evaluated on every bar) ────
+emaFast = ta.ema(close, emaFastLen)
+emaMid  = ta.ema(close, emaMidLen)
+emaSlow = ta.ema(close, emaSlowLen)
+[stLine, stDir] = ta.supertrend(stFactor, stAtrLen)
+rsi = ta.rsi(close, rsiLen)
+[macdLine, macdSignal, macdHist] = ta.macd(close, macdFast, macdSlow, macdSig)
+[diPlus, diMinus, adx] = ta.dmi(adxLen, adxLen)
+atr = ta.atr(atrLen)
+
+trSum     = math.sum(ta.tr(true), chopLen)
+chopRange = ta.highest(high, chopLen) - ta.lowest(low, chopLen)
+chop      = chopRange > 0 ? 100 * math.log10(trSum / chopRange) / math.log10(chopLen) : 50.0
+
+volAvg = ta.sma(volume, volLen)
+hasVol = not na(volume) and nz(volAvg) > 0
+relVol = hasVol ? volume / volAvg : na
+
+pbLow   = ta.lowest(low, pbLen)
+pbHigh  = ta.highest(high, pbLen)
+swLow   = ta.lowest(low, swingLen)
+swHigh  = ta.highest(high, swingLen)
+
+// Higher timeframe
+chartSec = timeframe.in_seconds()
+autoHtf  = chartSec <= 60 ? "15" : chartSec <= 300 ? "60" : chartSec <= 3600 ? "240" : chartSec <= 14400 ? "D" : chartSec <= 86400 ? "W" : "M"
+manualOk = timeframe.in_seconds(htfManual) >= chartSec
+htfTf    = htfMode == "Auto" ? autoHtf : manualOk ? htfManual : timeframe.period
+htfRaw   = request.security(syminfo.tickerid, htfTf, f_htfBias(htfEmaLen), lookahead = barmerge.lookahead_on)
+htfBias  = useHtf ? nz(htfRaw) : 0
+
+// ─── Confluence factors ──────────────────────────────────────────────────────
+warmup = math.max(emaSlowLen, macdSlow + macdSig, adxLen * 2, stAtrLen, chopLen, volLen, atrLen, swingLen)
+ready  = bar_index >= warmup and not na(emaSlow) and not na(stDir) and not na(rsi) and not na(macdHist) and not na(adx) and not na(atr) and atr > 0
+
+trendL   = close > emaSlow and emaFast > emaMid
+trendS   = close < emaSlow and emaFast < emaMid
+stL      = stDir < 0
+stS      = stDir > 0
+regimeOk = adx >= adxMin and (not useChop or chop < chopMax)
+strL     = regimeOk and diPlus > diMinus
+strS     = regimeOk and diMinus > diPlus
+momL     = rsi > 50 and macdHist > 0
+momS     = rsi < 50 and macdHist < 0
+volOk    = not hasVol or relVol >= volMult
+volL     = volOk and close > open
+volS     = volOk and close < open
+htfL     = not useHtf or htfBias == 1
+htfS     = not useHtf or htfBias == -1
+
+int scoreL = (trendL ? 1 : 0) + (stL ? 1 : 0) + (strL ? 1 : 0) + (momL ? 1 : 0) + (volL ? 1 : 0) + (htfL ? 1 : 0)
+int scoreS = (trendS ? 1 : 0) + (stS ? 1 : 0) + (strS ? 1 : 0) + (momS ? 1 : 0) + (volS ? 1 : 0) + (htfS ? 1 : 0)
+int bias   = scoreL >= minScore and scoreL > scoreS ? 1 : scoreS >= minScore and scoreS > scoreL ? -1 : 0
+
+// ─── Triggers ────────────────────────────────────────────────────────────────
+flipL = stDir < 0 and stDir[1] > 0
+flipS = stDir > 0 and stDir[1] < 0
+pbL   = stDir < 0 and pbLow <= emaFast and close > emaFast and close > high[1] and close > open
+pbS   = stDir > 0 and pbHigh >= emaFast and close < emaFast and close < low[1] and close < open
+
+useFlip = trigMode != "Pullback only"
+usePb   = trigMode != "Flip only"
+trigL   = (useFlip and flipL) or (usePb and pbL)
+trigS   = (useFlip and flipS) or (usePb and pbS)
+
+exhL = avoidExh and rsi >= rsiOB
+exhS = avoidExh and rsi <= rsiOS
+
+// ─── Trade objects ───────────────────────────────────────────────────────────
+f_risk(int d) =>
+    float r = atr * slAtrMult
+    if slMethod == "Swing"
+        float sr = d == 1 ? close - (swLow - atr * swingBuf) : (swHigh + atr * swingBuf) - close
+        if sr >= atr * swingMinR and sr <= atr * swingMaxR
+            r := sr
+    r
+
+// Rewrite every level label from the trade's state.
+method refresh(Trade t) =>
+    if array.size(t.labels) >= 5
+        label lbSl = array.get(t.labels, 1)
+        label.set_text(array.get(t.labels, 0), (t.dir == 1 ? "LONG " : "SHORT ") + f_px(t.entry) + (t.slSlot == 0 ? " · SL" : ""))
+        label.set_y(lbSl, t.sl)
+        label.set_text(lbSl, t.slSlot == 1 ? "SL " + f_px(t.sl) : "")
+        label.set_color(lbSl, t.slSlot == 1 ? bearCol : color.new(bearCol, 100))
+        label.set_text(array.get(t.labels, 2), (t.hit1 ? "✓ " : "") + "TP1 " + f_px(t.tp1) + " (" + str.tostring(rr1, "#.##") + "R)" + (t.slSlot == 2 ? " · SL" : ""))
+        label.set_text(array.get(t.labels, 3), (t.hit2 ? "✓ " : "") + "TP2 " + f_px(t.tp2) + " (" + str.tostring(rr2, "#.##") + "R)")
+        label.set_text(array.get(t.labels, 4), (t.hit3 ? "✓ " : "") + "TP3 " + f_px(t.tp3) + " (" + str.tostring(rr3, "#.##") + "R)")
+    t.dir
+
+f_newTrade(int d, float entry, float risk) =>
+    Trade t = Trade.new(dir = d, entryBar = bar_index, entry = entry, risk = risk, sl = entry - d * risk, tp1 = entry + d * risk * rr1, tp2 = entry + d * risk * rr2, tp3 = entry + d * risk * rr3, rem = 1.0, r = 0.0, slSlot = 1, lines = array.new<line>(), labels = array.new<label>())
+    if showLevels
+        int x2 = bar_index + LVL_OFFSET
+        array.push(t.lines, line.new(bar_index, t.entry, x2, t.entry, color = neutCol, width = 2))
+        array.push(t.lines, line.new(bar_index, t.sl, x2, t.sl, color = bearCol, width = 2))
+        array.push(t.lines, line.new(bar_index, t.tp1, x2, t.tp1, color = bullCol, style = line.style_dashed))
+        array.push(t.lines, line.new(bar_index, t.tp2, x2, t.tp2, color = bullCol, style = line.style_dashed))
+        array.push(t.lines, line.new(bar_index, t.tp3, x2, t.tp3, color = bullCol, style = line.style_dashed))
+        array.push(t.labels, label.new(x2, t.entry, "", color = neutCol, textcolor = color.white, style = label.style_label_left, size = size.small))
+        array.push(t.labels, label.new(x2, t.sl, "", color = bearCol, textcolor = color.white, style = label.style_label_left, size = size.small))
+        array.push(t.labels, label.new(x2, t.tp1, "", color = bullCol, textcolor = color.white, style = label.style_label_left, size = size.small))
+        array.push(t.labels, label.new(x2, t.tp2, "", color = bullCol, textcolor = color.white, style = label.style_label_left, size = size.small))
+        array.push(t.labels, label.new(x2, t.tp3, "", color = bullCol, textcolor = color.white, style = label.style_label_left, size = size.small))
+        t.refresh()
+    t
+
+// Book a target: one third off at its R multiple, mark its level as filled.
+method bookTarget(Trade t, int slot, float rr) =>
+    t.r := t.r + PART * rr
+    t.rem := t.rem - PART
+    if array.size(t.lines) >= 5
+        line.set_style(array.get(t.lines, slot), line.style_solid)
+    t.refresh()
+    t.r
+
+// Move the stop onto another level: end the old stop segment here and start a
+// new one at the new price. Takes effect from the next bar.
+method moveStop(Trade t, float newSl, int onSlot) =>
+    t.sl := newSl
+    t.slSlot := onSlot
+    if array.size(t.lines) >= 5
+        line prev = array.get(t.lines, 1)
+        line.set_x2(prev, bar_index)
+        array.push(t.lines, prev)
+        array.set(t.lines, 1, line.new(bar_index, newSl, bar_index + LVL_OFFSET, newSl, color = bearCol, width = 2))
+    t.refresh()
+    t.sl
+
+// Realise whatever is still open at `px`, record the trade, retire drawings.
+// Only the five live slots are frozen at this bar; superseded stop segments
+// already end where they were replaced.
+method closeOut(Trade t, Perf p, float px) =>
+    t.r := t.r + t.rem * (px - t.entry) / t.risk * t.dir
+    t.rem := 0.0
+    p.trades := p.trades + 1
+    p.netR := p.netR + t.r
+    if t.r > 0
+        p.wins := p.wins + 1
+        p.grossWin := p.grossWin + t.r
+    else if t.r < 0
+        p.losses := p.losses + 1
+        p.grossLoss := p.grossLoss - t.r
+    p.tp1 := p.tp1 + (t.hit1 ? 1 : 0)
+    p.tp2 := p.tp2 + (t.hit2 ? 1 : 0)
+    p.tp3 := p.tp3 + (t.hit3 ? 1 : 0)
+    p.peakR := math.max(p.peakR, p.netR)
+    p.maxDD := math.max(p.maxDD, p.peakR - p.netR)
+    for [i, ln] in t.lines
+        if not keepHist
+            line.delete(ln)
+        else if i < 5
+            line.set_x2(ln, bar_index)
+    for lb in t.labels
+        label.delete(lb)
+    t.dir := 0
+    t.r
+
+var Trade trade  = Trade.new()
+var Perf  perf = Perf.new()
+var int lastSigBar = na
+
+// ─── 1. Manage the open trade with this bar's range ──────────────────────────
+string evt = ""
+if trade.dir != 0 and bar_index > trade.entryBar
+    int d = trade.dir
+    bool slHit = d == 1 ? low <= trade.sl : high >= trade.sl
+    if slHit
+        float slPx = d == 1 ? math.min(open, trade.sl) : math.max(open, trade.sl)
+        string what = trade.slSlot != 1 ? "Protected stop" : "Stop loss"
+        perf.stops := perf.stops + 1
+        float resSl = trade.closeOut(perf, slPx)
+        evt := what + " hit, closed " + f_r(resSl)
+    else
+        if not trade.hit1 and (d == 1 ? high >= trade.tp1 : low <= trade.tp1)
+            trade.hit1 := true
+            trade.bookTarget(2, rr1)
+            evt := f_join(evt, "TP1 hit")
+            if beAfterTp1
+                trade.moveStop(trade.entry, 0)
+        if not trade.hit2 and (d == 1 ? high >= trade.tp2 : low <= trade.tp2)
+            trade.hit2 := true
+            trade.bookTarget(3, rr2)
+            evt := f_join(evt, "TP2 hit")
+            if trailTp2
+                trade.moveStop(trade.tp1, 2)
+        if d == 1 ? high >= trade.tp3 : low <= trade.tp3
+            trade.hit3 := true
+            if array.size(trade.lines) >= 5
+                line.set_style(array.get(trade.lines, 4), line.style_solid)
+            float resTp = trade.closeOut(perf, trade.tp3)
+            evt := f_join(evt, "TP3 hit, closed " + f_r(resTp))
+
+// ─── 2. Signals (confirmed bars only) ────────────────────────────────────────
+cdOk = na(lastSigBar) or bar_index - lastSigBar >= cooldown
+
+longSignal  = barstate.isconfirmed and ready and cdOk and trigL and not exhL and scoreL >= minScore and trade.dir != 1
+shortSignal = barstate.isconfirmed and ready and cdOk and trigS and not exhS and scoreS >= minScore and trade.dir != -1
+strongL     = longSignal and scoreL == 6
+strongS     = shortSignal and scoreS == 6
+
+string sigMsg = ""
+if longSignal or shortSignal
+    int nd = longSignal ? 1 : -1
+    if trade.dir == -nd
+        perf.reversals := perf.reversals + 1
+        float resRev = trade.closeOut(perf, close)
+        evt := f_join(evt, "Reversal exit " + f_r(resRev))
+    trade := f_newTrade(nd, close, f_risk(nd))
+    lastSigBar := bar_index
+    int sc = nd == 1 ? scoreL : scoreS
+    sigMsg := (nd == 1 ? "BUY" : "SELL") + (sc == 6 ? " ★ STRONG" : "") + " | Entry " + f_px(trade.entry) + " | SL " + f_px(trade.sl) + " | TP1 " + f_px(trade.tp1) + " | TP2 " + f_px(trade.tp2) + " | TP3 " + f_px(trade.tp3) + " | Score " + str.tostring(sc) + "/6"
+
+// ─── 3. Keep the live trade's levels projected to the right ──────────────────
+if trade.dir != 0 and not na(trade.lines) and array.size(trade.lines) >= 5
+    int xr = bar_index + LVL_OFFSET
+    for i = 0 to 4
+        line.set_x2(array.get(trade.lines, i), xr)
+        label.set_x(array.get(trade.labels, i), xr)
+
+// ─── Plots ───────────────────────────────────────────────────────────────────
+pFast = plot(showEmas ? emaFast : na, "EMA fast", color = emaFast > emaMid ? bullCol : bearCol, linewidth = 1)
+pMid  = plot(showEmas ? emaMid : na, "EMA mid", color = emaFast > emaMid ? bullCol : bearCol, linewidth = 1)
+fill(pFast, pMid, color = emaFast > emaMid ? color.new(bullCol, 85) : color.new(bearCol, 85), title = "EMA ribbon")
+plot(showEmas ? emaSlow : na, "EMA slow", color = neutCol, linewidth = 2)
+plot(showSt and stDir < 0 ? stLine : na, "Supertrend up", color = bullCol, linewidth = 2, style = plot.style_linebr)
+plot(showSt and stDir > 0 ? stLine : na, "Supertrend down", color = bearCol, linewidth = 2, style = plot.style_linebr)
+
+plotshape(showSig and longSignal and not strongL, "Buy", shape.labelup, location.belowbar, bullCol, text = "BUY", textcolor = color.white, size = size.small)
+plotshape(showSig and strongL, "Strong buy", shape.labelup, location.belowbar, bullCol, text = "BUY ★", textcolor = color.white, size = size.normal)
+plotshape(showSig and shortSignal and not strongS, "Sell", shape.labeldown, location.abovebar, bearCol, text = "SELL", textcolor = color.white, size = size.small)
+plotshape(showSig and strongS, "Strong sell", shape.labeldown, location.abovebar, bearCol, text = "SELL ★", textcolor = color.white, size = size.normal)
+
+barcolor(colorBars ? f_dirCol(bias) : na)
+
+// ─── Alerts ──────────────────────────────────────────────────────────────────
+alertcondition(longSignal, "Falcon Pro · Buy", "Falcon Pro BUY {{ticker}} [{{interval}}] @ {{close}}")
+alertcondition(shortSignal, "Falcon Pro · Sell", "Falcon Pro SELL {{ticker}} [{{interval}}] @ {{close}}")
+alertcondition(longSignal or shortSignal, "Falcon Pro · Any signal", "Falcon Pro signal {{ticker}} [{{interval}}] @ {{close}}")
+
+// One consolidated alert() per closed bar: new signal with its full plan,
+// plus any target / stop / reversal events on the same bar.
+alertText = f_join(evt, sigMsg)
+if alertText != ""
+    alert("Falcon Pro " + syminfo.ticker + " [" + f_tfText(timeframe.period) + "] | " + alertText, alert.freq_once_per_bar_close)
+
+// ─── Dashboard ───────────────────────────────────────────────────────────────
+var table dash = na
+if showDash and barstate.isfirst
+    dash := table.new(f_pos(dashPosIn), 2, 20, bgcolor = PANEL_BG, frame_color = PANEL_EDGE, frame_width = 1, border_color = PANEL_EDGE, border_width = 1)
+    table.merge_cells(dash, 0, 0, 1, 0)
+    table.merge_cells(dash, 0, 19, 1, 19)
+
+if showDash and barstate.islast
+    string sz = f_size(dashSizeIn)
+    int trendDir = trendL ? 1 : trendS ? -1 : 0
+    float openR = trade.dir != 0 ? trade.r + trade.rem * (close - trade.entry) / trade.risk * trade.dir : na
+    float nextTp = trade.dir == 0 ? na : not trade.hit1 ? trade.tp1 : not trade.hit2 ? trade.tp2 : trade.tp3
+    string pf = perf.grossLoss > 0 ? str.tostring(perf.grossWin / perf.grossLoss, "0.00") : perf.grossWin > 0 ? "∞" : "—"
+    string htfKey = "HTF " + f_tfText(htfTf) + (htfMode == "Manual" and not manualOk ? " ⚠" : "")
+
+    table.cell(dash, 0, 0, "FALCON CONFLUENCE PRO", text_color = color.white, bgcolor = HEAD_BG, text_size = sz)
+    f_row(dash, 1, "Bias", bias == 1 ? "BULLISH" : bias == -1 ? "BEARISH" : "NEUTRAL", f_dirCol(bias), sz)
+    f_row(dash, 2, "EMA trend", f_dirTxt(trendDir), f_dirCol(trendDir), sz)
+    f_row(dash, 3, "Supertrend", stDir < 0 ? "▲ Up" : "▼ Down", stDir < 0 ? bullCol : bearCol, sz)
+    f_row(dash, 4, "ADX", str.tostring(adx, "0.0") + (adx >= adxMin ? " · strong" : " · weak"), adx >= adxMin ? ACCENT : neutCol, sz)
+    f_row(dash, 5, "Choppiness", useChop ? str.tostring(chop, "0.0") + (chop < chopMax ? " · trending" : " · choppy") : "off", useChop and chop < chopMax ? ACCENT : neutCol, sz)
+    f_row(dash, 6, "RSI", str.tostring(rsi, "0.0") + (rsi >= rsiOB ? " · OB" : rsi <= rsiOS ? " · OS" : ""), rsi > 50 ? bullCol : rsi < 50 ? bearCol : neutCol, sz)
+    f_row(dash, 7, "MACD", macdHist > 0 ? "Bullish" : macdHist < 0 ? "Bearish" : "Flat", macdHist > 0 ? bullCol : macdHist < 0 ? bearCol : neutCol, sz)
+    f_row(dash, 8, "Rel. volume", hasVol ? str.tostring(relVol, "0.00") + "×" : "n/a", hasVol and relVol >= volMult ? ACCENT : neutCol, sz)
+    f_row(dash, 9, htfKey, useHtf ? f_dirTxt(htfBias) : "off", useHtf ? f_dirCol(htfBias) : neutCol, sz)
+    f_row(dash, 10, "Score long / short", str.tostring(scoreL) + " / " + str.tostring(scoreS) + "  (min " + str.tostring(minScore) + ")", f_dirCol(bias), sz)
+    f_row(dash, 11, "Position", trade.dir == 1 ? "LONG @ " + f_px(trade.entry) : trade.dir == -1 ? "SHORT @ " + f_px(trade.entry) : "FLAT", f_dirCol(trade.dir), sz)
+    f_row(dash, 12, "Stop · next target", trade.dir != 0 ? f_px(trade.sl) + " · " + f_px(nextTp) : "—", KEY_COL, sz)
+    f_row(dash, 13, "Open P&L", trade.dir != 0 ? f_r(openR) : "—", trade.dir == 0 ? neutCol : openR >= 0 ? bullCol : bearCol, sz)
+    f_row(dash, 14, "Closed trades", str.tostring(perf.trades) + "  (" + str.tostring(perf.wins) + "W / " + str.tostring(perf.losses) + "L)", KEY_COL, sz)
+    table.cell_set_tooltip(dash, 1, 14, "Stopped: " + str.tostring(perf.stops) + " · TP3 exits: " + str.tostring(perf.tp3) + " · Reversals: " + str.tostring(perf.reversals))
+    f_row(dash, 15, "Win rate", f_pct(perf.wins, perf.trades), perf.trades == 0 ? neutCol : perf.wins * 2 >= perf.trades ? bullCol : bearCol, sz)
+    f_row(dash, 16, "TP1 · TP2 · TP3", f_pct(perf.tp1, perf.trades) + " · " + f_pct(perf.tp2, perf.trades) + " · " + f_pct(perf.tp3, perf.trades), KEY_COL, sz)
+    f_row(dash, 17, "Net R · profit factor", f_r(perf.netR) + " · " + pf, perf.netR >= 0 ? bullCol : bearCol, sz)
+    f_row(dash, 18, "Max drawdown", perf.maxDD > 0 ? "-" + str.tostring(perf.maxDD, "0.00") + "R" : "0.00R", perf.maxDD > 0 ? bearCol : neutCol, sz)
+    table.cell(dash, 0, 19, "Hypothetical results · no fees or slippage · stop-first fills", text_color = neutCol, text_size = size.tiny)
