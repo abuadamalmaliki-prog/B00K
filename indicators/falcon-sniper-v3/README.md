@@ -99,7 +99,7 @@ A 300-pip target only works as a sniper trade if the stop behind the sweep is sm
 
 **The rule behind the table:** choose the timeframe where the typical sniper stop is **10–33%** of the target. Volatility changes, so V3 checks this **live**. Watch the **Stop fit** row: ✓ means this chart works for your target, and *✗ too wide → lower TF* means switch down.
 
-**Top-down routine (unchanged from V2):** Weekly/Daily for bias and obvious liquidity, **H4 for signals**, and the kill zones for timing. In Kuwait time, London is 10:00–13:00 (Nov–Mar) or 09:00–12:00 (Mar–Nov), and New York is 15:00–18:00 or 14:00–17:00. On H4 the kill-zone filter switches off automatically.
+**Top-down routine (unchanged from V2):** Weekly/Daily for bias and obvious liquidity, **H4 for signals**, and the kill zones for timing. In Malaysia time, London is 15:00–18:00 (Nov–Mar) or 14:00–17:00 (Mar–Nov), and New York is 20:00–23:00 or 19:00–22:00. On H4 the kill-zone filter switches off automatically.
 
 ---
 

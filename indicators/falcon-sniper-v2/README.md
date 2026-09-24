@@ -148,14 +148,14 @@ These are backtest results with default settings over about 2 years of data, bef
 
 **Lesson 2.** Hit rates fall steeply as the target gets further away. That's normal. A sniper system makes its money by losing small (−1R) and letting a minority of trades run.
 
-### 5.4 Kill zones in your local time (Kuwait, UTC+3, no daylight saving)
+### 5.4 Kill zones in your local time (Malaysia, UTC+8, no daylight saving)
 
-| Kill zone | New York time | Kuwait time: Nov → Mar | Kuwait time: Mar → Nov |
+| Kill zone | New York time | Malaysia time: Nov → Mar | Malaysia time: Mar → Nov |
 |---|---|---|---|
-| **London** | 02:00–05:00 | **10:00–13:00** | **09:00–12:00** |
-| **New York** | 07:00–10:00 | **15:00–18:00** | **14:00–17:00** |
+| **London** | 02:00–05:00 | **15:00–18:00** | **14:00–17:00** |
+| **New York** | 07:00–10:00 | **20:00–23:00** | **19:00–22:00** |
 
-The indicator converts times automatically and shades the kill zones on the chart. The two columns differ because the US changes its clocks and Kuwait doesn't.
+The indicator converts times automatically and shades the kill zones on the chart. The two columns differ because the US changes its clocks and Malaysia doesn't.
 
 ### 5.5 Your routine, step by step
 

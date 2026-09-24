@@ -24,8 +24,9 @@ indicator("Falcon V20 Trend-Sweep Scanner", shorttitle = "Falcon V20", overlay =
 
 // ─── ① Plan ──────────────────────────────────────────────────────────────────
 const string G_PLAN = "① Plan"
-planStart = input.time(timestamp("2026-10-02T00:00:00+03:00"), "Plan start", group = G_PLAN, tooltip = "Kuwait time (UTC+3): 2 Oct 2026 00:00 = 1 Oct 17:00 New York, the start of Friday's trading day.")
-planEnd   = input.time(timestamp("2026-11-01T00:00:00+03:00"), "Deadline", group = G_PLAN)
+const string MY_TZ = "Asia/Kuala_Lumpur"
+planStart = input.time(timestamp("2026-10-02T00:00:00+08:00"), "Plan start", group = G_PLAN, tooltip = "Malaysia time (UTC+8). 2 Oct 2026 00:00 is 1 Oct 12:00 New York: the first 5 hours are the end of Thursday's session.")
+planEnd   = input.time(timestamp("2026-11-01T00:00:00+08:00"), "Deadline", group = G_PLAN, tooltip = "Malaysia time (UTC+8). The last trading close before it is Sat 31 Oct 05:00 Malaysia time (Fri 30 Oct 17:00 New York).")
 startBal  = input.float(30, "Start balance ($)", minval = 1, group = G_PLAN)
 balance   = input.float(30, "Current balance ($)", minval = 0.01, group = G_PLAN, tooltip = "Update after every closed trade (MT5 → History). Lot sizes and probabilities are computed from it.")
 goal      = input.float(5000, "Goal ($)", minval = 1, group = G_PLAN)
@@ -346,21 +347,25 @@ fx10 = request.currency_rate(f_quote(tk10), "USD", ignore_invalid_currency = tru
 fx11 = request.currency_rate(f_quote(tk11), "USD", ignore_invalid_currency = true)
 
 // ─── Plan state ──────────────────────────────────────────────────────────────
-f_tradingDaysLeft(int fromT, int toT) =>
-    int n = 0
-    for k = 0 to 70
-        int d = fromT + k * 86400000
-        if d >= toT
+// Trading days between two times, part-days included. A trading day runs 17:00-17:00 New York
+// and is named after the date it ends on; Saturday and Sunday have none.
+f_tradingDays(int fromT, int toT) =>
+    float n = 0.0
+    int lastEnd = 0
+    for k = 0 to 71
+        int s = fromT + k * 86400000 + 7 * 3600000
+        int dEnd = timestamp("America/New_York", year(s, "America/New_York"), month(s, "America/New_York"), dayofmonth(s, "America/New_York"), 17, 0)
+        if dEnd - 86400000 >= toT
             break
-        // a trading day runs 17:00-17:00 New York and is named after the date it ends on
-        int dw = dayofweek(d + 7 * 3600000, "America/New_York")
-        if dw != dayofweek.saturday and dw != dayofweek.sunday
-            n += 1
+        int dw = dayofweek(s, "America/New_York")
+        if dEnd != lastEnd and dw != dayofweek.saturday and dw != dayofweek.sunday
+            n += math.max(0, math.min(dEnd, toT) - math.max(dEnd - 86400000, fromT)) / 86400000.0
+        lastEnd := dEnd
     n
 
 nowT      = math.max(timenow, planStart)
-daysLeft  = timenow >= planEnd ? 0 : f_tradingDaysLeft(nowT, planEnd)
-daysTotal = f_tradingDaysLeft(planStart, planEnd)
+daysLeft  = timenow >= planEnd ? 0.0 : f_tradingDays(nowT, planEnd)
+daysTotal = f_tradingDays(planStart, planEnd)
 tradesLeft = daysLeft <= 0 ? 0 : math.max(1, math.min(TAB_N, int(math.round(daysLeft * tradesDay))))
 
 // Milestones: the ladder below the goal, then the goal.
@@ -447,7 +452,7 @@ if tickets != "" and isH4
 // Remember the most recent signals for the panel.
 var array<string> recent = array.new<string>()
 if tickets != ""
-    array.unshift(recent, str.format_time(time, "dd MMM HH:mm", "Asia/Kuwait") + " · " + tickets)
+    array.unshift(recent, str.format_time(time, "dd MMM HH:mm", MY_TZ) + " · " + tickets)
     while array.size(recent) > 3
         array.pop(recent)
 
@@ -485,10 +490,11 @@ f_row(int r, string k, string v, color c, string sz) =>
 
 if barstate.islast
     string sz = dashSize == "Tiny" ? size.tiny : dashSize == "Normal" ? size.normal : size.small
-    int dayNo = timenow < planStart ? 0 : daysTotal - daysLeft + 1
-    string phase = timenow < planStart ? "starts " + str.format_time(planStart, "dd MMM", "Asia/Kuwait") : timenow >= planEnd ? "deadline passed" : "day " + str.tostring(dayNo) + " of " + str.tostring(daysTotal)
+    int dayNo = int((timenow - planStart) / 86400000) + 1
+    int calDays = int(math.ceil((planEnd - planStart) / 86400000.0))
+    string phase = timenow < planStart ? "starts " + str.format_time(planStart, "dd MMM", MY_TZ) : timenow >= planEnd ? "deadline passed" : "day " + str.tostring(dayNo) + " of " + str.tostring(calDays)
     table.cell(dash, 0, 0, "FALCON V20 · TREND-SWEEP", text_color = color.white, bgcolor = #1F6FEB, text_size = sz)
-    f_row(1, "Plan", phase + " · " + str.tostring(daysLeft) + " days left", #C9D1D9, sz)
+    f_row(1, "Plan", phase + " · " + str.tostring(daysLeft, "0.0") + " of " + str.tostring(daysTotal, "0.0") + " trading days left", #C9D1D9, sz)
     f_row(2, "Balance → goal", "$" + str.tostring(balance, "0.00") + " → $" + str.tostring(goal, "#"), #C9D1D9, sz)
     f_row(3, "P(goal by deadline)", str.tostring(pGoal * 100, "0.00") + "%", pGoal >= 0.5 ? #00C853 : #FFB300, sz)
     f_row(4, "P(next $" + str.tostring(nextM, "#") + ")", str.tostring(pNext * 100, "0.0") + "%", pNext >= 0.5 ? #00C853 : #FFB300, sz)

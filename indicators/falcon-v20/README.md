@@ -13,9 +13,9 @@ One chart, one alert, 11 symbols scanned on H4. Every alert carries the MT5 orde
 
 | | |
 |---|---|
-| Start | **Fri 2 Oct 2026, 00:00 Kuwait** (Thu 1 Oct 17:00 New York) |
-| Deadline | **Sun 1 Nov 2026, 00:00 Kuwait** (last trading close Fri 30 Oct) |
-| Trading days | **21** |
+| Start | **Fri 2 Oct 2026, 00:00 Malaysia time** (Thu 1 Oct 12:00 New York) |
+| Deadline | **Sun 1 Nov 2026, 00:00 Malaysia time**. The market's last close before it is **Sat 31 Oct, 05:00 Malaysia time** |
+| Trading days | **21.2**: the last 5 hours of Thursday's session (2 Oct, 00:00–05:00 Malaysia time), then 21 full days |
 | Account | JustMarkets Standard, **$30**, leverage **1:3000** |
 | Goal | **$5,000** |
 | Trades available | median **7** in 21 days (between 4 and 9 in 80% of months), one position at a time across 11 symbols |
@@ -73,7 +73,7 @@ The TradingView **app** has no Pine Editor, so use the website in Chrome:
 4. It's now in your account. In the **TradingView app**, open a chart, then **Indicators → My scripts → Falcon V20**.
 
 ### B. Settings (gear icon on the indicator)
-- **① Plan:** start and deadline are preset (2 Oct and 1 Nov 2026). Start balance **30**, goal **5000**. **Current balance:** update it after every closed trade.
+- **① Plan:** start and deadline are preset to 2 Oct and 1 Nov 2026, 00:00 Malaysia time. Start balance **30**, goal **5000**. **Current balance:** update it after every closed trade.
 - **② Account:** leverage **3000**, margin safety **×3**, stop-out 50%, lot step 0.01.
 - **③ Watchlist:** 11 symbols (OANDA feed). Set each **spread** to what MT5 shows for that symbol.
 - Keep the chart on **4 hours (H4)**. Alerts only fire on an H4 chart; on any other timeframe the panel's **Chart** row turns red and says so.
@@ -103,7 +103,7 @@ If a line says **skip: 0.01 lot is too big for this balance and stop**, the mini
 
 | Row | Meaning |
 |---|---|
-| Plan | Day X of 21, trading days left |
+| Plan | Day X of 30 (calendar days in Malaysia time), trading days left out of 21.2 |
 | Balance → goal | From your input |
 | **P(goal by deadline)** | Live maximum probability for your balance and trades left |
 | **P(next $…)** | The same for the next milestone |
@@ -111,7 +111,7 @@ If a line says **skip: 0.01 lot is too big for this balance and stop**, the mini
 | Trades left (est.) | Trading days left × 0.33 (research average) |
 | Chart | Green **H4 ✓ alerts active**, or red when the chart isn't on 4h |
 | Scanner history | All symbols' past signals net of costs: trades, win %, R per trade |
-| Last | The most recent alert text |
+| Last | The most recent alert, with its time in Malaysia time |
 
 ---
 
@@ -122,7 +122,7 @@ If a line says **skip: 0.01 lot is too big for this balance and stop**, the mini
 | Pine engine vs research, logic mirrored line by line | **800 / 800** signals identical |
 | Scorecard vs research | Identical for every symbol (trades, wins, total R) |
 | Policy tables in the indicator | Reproduce the dynamic programme: 0.771% vs 0.770% |
-| Trading-day counter | 21 days for 2 Oct – 1 Nov 2026 |
+| Trading-day counter | 21.2 days for 2 Oct – 1 Nov 2026 (Malaysia time), with part-days counted. Checked against a separate Python version, including across US clock changes. |
 | Syntax | Offline Pine parser: OK |
 | Independent code review | A separate agent reviewed the Pine v6 code: 1 compile error (the date-input default) and 5 behaviour issues (panel dates in UTC, signal time, lower-timeframe history, the minimum-lot override, empty values). All 6 fixed and re-parsed. |
 
