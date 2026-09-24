@@ -1,0 +1,210 @@
+//@version=6
+// 20 Setups: 20 fixed-time setups per trading day with a fixed TP, for the markets that passed
+// the market scan (see market_scan/README.md). One setup at the first bar of each listed
+// Malaysia-time hour. Outcomes are tracked bar by bar: if TP and SL are both touched in the
+// same bar, it counts as SL. The table shows the real hit rate on your chart and the trade history.
+// Use a chart timeframe of 1 hour or lower (5m recommended).
+indicator("20 Setups", shorttitle = "20S", overlay = true, max_labels_count = 500, max_lines_count = 500)
+
+TZ = "Asia/Kuala_Lumpur"
+
+// ───────── Inputs
+grpM   = "Market"
+preset = input.string("US500: buy, TP 20 / SL 300 pts", "Preset", options = ["US500: buy, TP 20 / SL 300 pts", "US100: buy, TP 50 / SL 1200 pts", "EURGBP: 24h fade, TP 10 / SL 200 pips", "XAUUSD: buy, TP 50 / SL 2500 pips", "Custom"], group = grpM, tooltip = "Backtest 2016-2026 (Dukascopy M5): US500 averaged 18.9 of 20 TP and 90-92% of days with 18+. US100 averaged 19.1-19.2 and 90-93%. EURGBP averaged 18.9-19.3 and 86-91% (lost money in 2016-20). XAUUSD scored 19.8 on 2020-26 M15 data. Use 'Custom' for your own values.")
+
+grpC      = "Custom (used when Preset = Custom)"
+cDir      = input.string("Buy only", "Direction", options = ["Buy only", "Sell only", "Daily trend (SMA)", "24h mean fade"], group = grpC)
+cPip      = input.float(1.0, "Pip / point size", minval = 0.00001, group = grpC, tooltip = "Indices: 1.0 (points). XAUUSD: 0.10. EURUSD-type pairs: 0.0001. JPY pairs: 0.01.")
+cTp       = input.float(20, "Take profit (pips/points)", minval = 0.1, group = grpC)
+cSl       = input.float(300, "Stop loss (pips/points)", minval = 0.1, group = grpC)
+cSpr      = input.float(1.0, "Spread (pips/points)", minval = 0, group = grpC)
+smaLen    = input.int(50, "Daily SMA length (Daily trend mode)", minval = 2, group = grpC)
+
+grpS     = "Setups"
+slotsStr = input.string("08,09,10,11,12,13,14,15,16,17,18,19,20,21,22,23,00,01,02,03", "Setup hours (Malaysia time)", group = grpS, tooltip = "One setup at the first bar of each listed hour (MYT, UTC+8). 20 hours = 20 setups per trading day. The trading day runs 07:00 to 06:59 MYT.")
+
+grpV     = "Style"
+buyCol   = input.color(#D4AF37, "Buy", group = grpV)
+sellCol  = input.color(#808000, "Sell", group = grpV)
+tpCol    = input.color(#D4AF37, "Take profit", group = grpV)
+slCol    = input.color(#9E9E9E, "Stop loss", group = grpV)
+showLns  = input.bool(true, "Show TP/SL lines", group = grpV)
+showDays = input.bool(true, "Split days", group = grpV)
+histRows = input.int(20, "Trade history rows", minval = 0, maxval = 60, group = grpV)
+tblPosIn = input.string("Top right", "Table position", options = ["Top right", "Bottom right", "Top left", "Bottom left"], group = grpV)
+
+// ───────── Preset values
+isUS500 = preset == "US500: buy, TP 20 / SL 300 pts"
+isUS100 = preset == "US100: buy, TP 50 / SL 1200 pts"
+isEG    = preset == "EURGBP: 24h fade, TP 10 / SL 200 pips"
+isXAU   = preset == "XAUUSD: buy, TP 50 / SL 2500 pips"
+dirMode = isUS500 or isUS100 or isXAU ? "Buy only" : isEG ? "24h mean fade" : cDir
+pipSize = isUS500 or isUS100 ? 1.0 : isEG ? 0.0001 : isXAU ? 0.10 : cPip
+tpPips  = isUS500 ? 20.0 : isUS100 ? 50.0 : isEG ? 10.0 : isXAU ? 50.0 : cTp
+slPips  = isUS500 ? 300.0 : isUS100 ? 1200.0 : isEG ? 200.0 : isXAU ? 2500.0 : cSl
+sprPips = isUS500 ? 0.6 : isUS100 ? 1.5 : isEG ? 1.5 : isXAU ? 3.0 : cSpr
+unitTxt = isUS500 or isUS100 or (preset == "Custom" and cPip >= 1) ? "pts" : "pips"
+
+// ───────── Types
+type DayStat
+    int    key
+    string name
+    int    setups = 0
+    int    tp     = 0
+    int    sl     = 0
+    label  lbl
+
+type Trade
+    int     dir
+    float   entry
+    float   tp
+    float   sl
+    int     openTime
+    int     status = 0
+    int     closeTime
+    DayStat day
+    line    tpLine
+    line    slLine
+
+// ───────── State
+var array<int>     slotHours  = array.new<int>()
+var array<Trade>   openTrades = array.new<Trade>()
+var array<Trade>   allTrades  = array.new<Trade>()
+var array<DayStat> days       = array.new<DayStat>()
+var DayStat        today      = na
+
+if barstate.isfirst
+    for s in str.split(slotsStr, ",")
+        v = str.tonumber(str.replace_all(s, " ", ""))
+        if not na(v)
+            slotHours.push(int(v))
+
+tfOk  = timeframe.in_seconds() <= 3600
+pip   = pipSize
+spr   = sprPips * pip
+eps   = pip * 1e-6
+
+// ───────── Direction (all inputs are from completed bars, no repaint)
+[dClose, dSma] = request.security(syminfo.tickerid, "D", [close[1], ta.sma(close, smaLen)[1]], lookahead = barmerge.lookahead_on)
+bullBias = na(dSma) or dClose >= dSma
+len24  = math.max(2, math.round(86400 / timeframe.in_seconds()))
+mean24 = ta.sma(close, len24)
+fadeDir = na(mean24[1]) or close[1] <= mean24[1] ? 1 : -1     // below 24h mean = discount: buy
+dir = dirMode == "Buy only" ? 1 : dirMode == "Sell only" ? -1 : dirMode == "24h mean fade" ? fadeDir : bullBias ? 1 : -1
+
+// ───────── Trading day (07:00 MYT to 06:59 MYT)
+tdT    = time - 7 * 3600000
+dayKey = year(tdT, TZ) * 10000 + month(tdT, TZ) * 100 + dayofmonth(tdT, TZ)
+newDay = barstate.isfirst or dayKey != nz(dayKey[1])
+
+dayText(DayStat d) =>
+    d.name + "\nTP " + str.tostring(d.tp) + "/" + str.tostring(d.setups) + "   SL " + str.tostring(d.sl)
+
+if newDay
+    today := DayStat.new(dayKey, str.format_time(tdT, "EEE dd MMM", TZ))
+    days.push(today)
+    if days.size() > 400
+        days.shift()
+    if showDays
+        line.new(bar_index, low, bar_index, high, extend = extend.both, color = color.new(color.gray, 50), style = line.style_dashed)
+        today.lbl := label.new(bar_index, high, dayText(today), yloc = yloc.abovebar, style = label.style_label_left, color = color.new(color.black, 100), textcolor = color.gray, size = size.small)
+
+// ───────── New setup at the first bar of each listed MYT hour
+h      = hour(time, TZ)
+isSlot = tfOk and h != nz(h[1], -1) and slotHours.includes(h)
+
+if isSlot
+    float e   = dir > 0 ? open + spr : open
+    float tpP = e + dir * tpPips * pip
+    float slP = e - dir * slPips * pip
+    Trade t   = Trade.new(dir, e, tpP, slP, time, 0, na, today)
+    today.setups += 1
+    if not na(today.lbl)
+        today.lbl.set_text(dayText(today))
+    string tip = (dir > 0 ? "BUY " : "SELL ") + str.format_time(time, "yyyy-MM-dd HH:mm", TZ) + " MYT\nEntry " + str.tostring(e, format.mintick) + "\nTP " + str.tostring(tpP, format.mintick) + "\nSL " + str.tostring(slP, format.mintick)
+    label.new(bar_index, dir > 0 ? low : high, dir > 0 ? "BUY" : "SELL", yloc = dir > 0 ? yloc.belowbar : yloc.abovebar, style = dir > 0 ? label.style_label_up : label.style_label_down, color = dir > 0 ? buyCol : sellCol, textcolor = dir > 0 ? color.black : color.white, size = size.small, tooltip = tip)
+    if showLns
+        t.tpLine := line.new(bar_index, tpP, bar_index + 1, tpP, color = tpCol, width = 1)
+        t.slLine := line.new(bar_index, slP, bar_index + 1, slP, color = slCol, width = 1, style = line.style_dotted)
+    openTrades.push(t)
+    allTrades.push(t)
+    if allTrades.size() > 300
+        allTrades.shift()
+    alert((dir > 0 ? "BUY " : "SELL ") + syminfo.ticker + " entry " + str.tostring(e, format.mintick) + " TP " + str.tostring(tpP, format.mintick) + " SL " + str.tostring(slP, format.mintick), alert.freq_once_per_bar)
+
+// ───────── Resolve open trades (same-bar TP and SL counts as SL)
+if openTrades.size() > 0
+    for i = openTrades.size() - 1 to 0
+        Trade t = openTrades.get(i)
+        bool hitSL = t.dir > 0 ? low <= t.sl + eps : high + spr >= t.sl - eps
+        bool hitTP = t.dir > 0 ? high >= t.tp - eps : low + spr <= t.tp + eps
+        if hitSL or hitTP
+            t.status    := hitSL ? -1 : 1
+            t.closeTime := time
+            if hitSL
+                t.day.sl += 1
+            else
+                t.day.tp += 1
+            if not na(t.day.lbl)
+                t.day.lbl.set_text(dayText(t.day))
+            if showLns
+                t.tpLine.set_x2(bar_index)
+                t.slLine.set_x2(bar_index)
+            float px = hitSL ? t.sl : t.tp
+            label.new(bar_index, px, hitSL ? "SL" : "TP", style = t.dir > 0 == hitTP ? label.style_label_down : label.style_label_up, color = hitSL ? slCol : tpCol, textcolor = color.black, size = size.tiny)
+            openTrades.remove(i)
+        else if showLns
+            t.tpLine.set_x2(bar_index)
+            t.slLine.set_x2(bar_index)
+
+alertcondition(isSlot and dir > 0, "20 Setups BUY", "BUY setup on {{ticker}} at {{open}}")
+alertcondition(isSlot and dir < 0, "20 Setups SELL", "SELL setup on {{ticker}} at {{open}}")
+
+// ───────── Stats and trade history table
+tblPos = tblPosIn == "Top right" ? position.top_right : tblPosIn == "Bottom right" ? position.bottom_right : tblPosIn == "Top left" ? position.top_left : position.bottom_left
+var table tbl = table.new(tblPos, 6, histRows + 6, bgcolor = color.new(color.black, 15), border_color = color.new(color.gray, 60), border_width = 1)
+
+if barstate.islast
+    tbl.clear(0, 0, 5, histRows + 5)
+    int nSlots = slotHours.size()
+    int fullDays = 0
+    int sumTp = 0
+    int ge18 = 0
+    int totTp = 0
+    int totSl = 0
+    for d in days
+        totTp += d.tp
+        totSl += d.sl
+        if d.setups == nSlots and d.tp + d.sl == d.setups
+            fullDays += 1
+            sumTp += d.tp
+            if d.tp >= math.min(18, nSlots)
+                ge18 += 1
+    color hdr = color.new(color.gray, 70)
+    color wt  = color.white
+    int   openN = na(today) ? 0 : today.setups - today.tp - today.sl
+    string winTxt = totTp + totSl > 0 ? str.tostring(100.0 * totTp / (totTp + totSl), "#.0") + "%" : "-"
+    array<string> r0 = array.from("20 Setups " + syminfo.ticker, "TP " + str.tostring(tpPips) + " " + unitTxt, "SL " + str.tostring(slPips) + " " + unitTxt, dirMode, tfOk ? "Spread " + str.tostring(sprPips) : "Use chart TF", tfOk ? "" : "1h or lower")
+    array<string> r1 = array.from("Today", str.tostring(na(today) ? 0 : today.setups) + " setups", "TP " + str.tostring(na(today) ? 0 : today.tp), "SL " + str.tostring(na(today) ? 0 : today.sl), "Open " + str.tostring(openN), "")
+    array<string> r2 = array.from("Chart", str.tostring(fullDays) + " full days", fullDays > 0 ? "Avg TP " + str.tostring(1.0 * sumTp / fullDays, "#.00") + "/" + str.tostring(nSlots) : "Avg TP -", "18+ TP days " + str.tostring(ge18), fullDays > 0 ? str.tostring(100.0 * ge18 / fullDays, "#.0") + "% of days" : "-", "TP rate " + winTxt)
+    for c = 0 to 5
+        tbl.cell(c, 0, r0.get(c), text_color = c == 0 ? tpCol : c == 4 or c == 5 ? color.orange : wt, bgcolor = hdr, text_size = size.small)
+        tbl.cell(c, 1, r1.get(c), text_color = wt, text_size = size.small)
+        tbl.cell(c, 2, r2.get(c), text_color = wt, text_size = size.small)
+    if histRows > 0
+        array<string> heads = array.from("Time (MYT)", "Side", "Entry", "TP", "SL", "Result")
+        for c = 0 to 5
+            tbl.cell(c, 4, heads.get(c), text_color = wt, bgcolor = hdr, text_size = size.tiny)
+        int n = math.min(histRows, allTrades.size())
+        if n > 0
+            for r = 0 to n - 1
+                Trade t = allTrades.get(allTrades.size() - 1 - r)
+                color sc = t.dir > 0 ? buyCol : sellCol
+                string res = t.status == 1 ? "TP +" + str.tostring(tpPips) : t.status == -1 ? "SL -" + str.tostring(slPips) : "OPEN"
+                color rc = t.status == 1 ? tpCol : t.status == -1 ? slCol : wt
+                tbl.cell(0, 5 + r, str.format_time(t.openTime, "dd MMM HH:mm", TZ), text_color = wt, text_size = size.tiny)
+                tbl.cell(1, 5 + r, t.dir > 0 ? "BUY" : "SELL", text_color = sc, text_size = size.tiny)
+                tbl.cell(2, 5 + r, str.tostring(t.entry, format.mintick), text_color = wt, text_size = size.tiny)
+                tbl.cell(3, 5 + r, str.tostring(t.tp, format.mintick), text_color = tpCol, text_size = size.tiny)
+                tbl.cell(4, 5 + r, str.tostring(t.sl, format.mintick), text_color = slCol, text_size = size.tiny)
+                tbl.cell(5, 5 + r, res, text_color = rc, text_size = size.tiny)

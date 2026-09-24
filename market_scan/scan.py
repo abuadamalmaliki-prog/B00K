@@ -33,8 +33,8 @@ TP_P = np.array([10, 20, 30, 50], np.float64)
 SL_P = np.array([10, 20, 30, 50, 75, 100, 150, 200, 300, 450, 600, 900, 1200], np.float64)
 
 
-def load(inst):
-    fs = sorted(f for f in glob.glob(os.path.join(DATA, f'{inst}-20*.csv')) if f[-8:-4] >= '2021')
+def load(inst, since='2021'):
+    fs = sorted(f for f in glob.glob(os.path.join(DATA, f'{inst}-20*.csv')) if f[-8:-4] >= since)
     d = pd.concat([pd.read_csv(f) for f in fs])
     d.index = pd.to_datetime(d.pop('timestamp'), unit='ms').astype('datetime64[ns]')
     d = d[~d.index.duplicated()].sort_index().astype(float)
