@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>RZ-01 — 60 s edit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Michroma&family=IBM+Plex+Mono:wght@300;400&family=Zen+Kaku+Gothic+New:wght@300&display=block">
+<script src="../../studio.js"></script>
+<script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  } }
+</script>
+<style>
+  #stage { background: #f5f6fa; color: #16161d; }
+  canvas { position: absolute; inset: 0; }
+  .t { position: absolute; opacity: 0; white-space: pre; }
+  .mono { font: 300 22px/1.4 'IBM Plex Mono', monospace; letter-spacing: 1px; }
+  .wide { font-family: 'Michroma', sans-serif; }
+  .jp { font: 300 22px 'Zen Kaku Gothic New', sans-serif; letter-spacing: 6px; }
+  .light { color: #f5f6fa; }
+
+  #title { left: 0; right: 0; top: 590px; text-align: center; font-size: 58px; letter-spacing: 22px; padding-left: 22px; }
+  #spec { left: 0; right: 0; top: 700px; text-align: center; color: #6b6a86; }
+  #label { left: 64px; bottom: 64px; }
+  #label .jp { margin-left: 18px; color: #8b86c9; }
+  #tc { right: 64px; top: 60px; color: #6b6a86; }
+  #cap { left: 80px; top: 842px; color: #3c3b4a; }
+  #cap2 { right: 80px; top: 842px; color: #9a98b3; text-align: right; }
+  #four { left: 0; right: 0; top: 640px; text-align: center; font-size: 30px; letter-spacing: 16px; color: #8b86c9; }
+  #fin { color: #d9d4ff; left: 0; right: 0; top: 650px; text-align: center; font-size: 34px; letter-spacing: 18px; }
+  #model { left: 0; right: 0; bottom: 64px; text-align: center; color: #9a98b3; }
+
+  /* Print registration marks around the café photographs. */
+  .reg { position: absolute; width: 26px; height: 26px; opacity: 0; }
+  .reg::before, .reg::after { content: ''; position: absolute; background: #b9b0ff; }
+  .reg::before { left: 12px; top: 0; width: 1px; height: 26px; }
+  .reg::after { top: 12px; left: 0; height: 1px; width: 26px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="reg" style="left:67px;top:249px"></div><div class="reg" style="right:67px;top:249px"></div>
+  <div class="reg" style="left:67px;top:793px"></div><div class="reg" style="right:67px;top:793px"></div>
+  <div id="title" class="t wide">RZ—01</div>
+  <div id="spec" class="t mono">rain / café / fireworks / night</div>
+  <div id="label" class="t mono"><span id="label-text"></span><span id="label-jp" class="jp"></span></div>
+  <div id="tc" class="t mono"></div>
+  <div id="cap" class="t mono"></div>
+  <div id="cap2" class="t mono"></div>
+  <div id="four" class="t wide">04</div>
+  <div id="fin" class="t wide">fin.</div>
+  <div id="model" class="t mono">RZ—01 · 2025</div>
+</div>
+<script type="module">
+  import * as THREE from 'three';
+  import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+  const W = 1080, H = 1350, FPS = 24, DUR = 60;
+
+  // ---- the edit -------------------------------------------------------------
+  // The song's bars (173 BPM, measured from the track) — every cut sits on one.
+  const BAR = 4 * 0.3468;
+  const b = (i) => 0.62 + BAR * i;
+  const DROP = b(22); // the chorus lands here (song 2:07)
+
+  const CLEAN = 'media/clean.mp4', CHURCH = 'media/church.mp4', FIRE = 'media/fireworks.mp4';
+  // Church clip: burned-in subtitles and credits live outside this vertical band.
+  const churchBand = [0.13, 0.86];
+  const fireBand = [0.1, 1];
+
+  const segments = [];
+  const seg = (mode, start, end, shots = [], opts = {}) => segments.push({ mode, start, end, shots, ...opts });
+  const run = (mode, startBar, list, opts) => {
+    let i = startBar;
+    for (const [src, from, bars, extra] of list) { seg(mode, b(i), b(i + bars), [{ src, from, ...extra }], opts); i += bars; }
+    return i;
+  };
+
+  seg('void', 0, b(2));
+  let at = run('panel', 2, [[CLEAN, 0.4, 2], [CLEAN, 2.6, 2], [CLEAN, 6.1, 2], [CLEAN, 12.2, 2]]);
+  at = run('page', at, [
+    [CLEAN, 16.1, 2], [CLEAN, 20.5, 1], [CLEAN, 22.1, 1],
+    [CLEAN, 24.62, 1, { hold: 0.8 }],          // the laugh, frozen mid-breath
+    [CLEAN, 25.6, 2], [CLEAN, 30.4, 1], [CLEAN, 32.7, 1],
+  ]);
+  seg('pause', b(at), b(21));
+  seg('full', b(21), DROP, [{ src: CHURCH, from: 81.4, band: churchBand, gmap: 1 }]);
+  seg('wall', DROP, b(26), [6.0, 15.2, 21.0, 36.2, 48.2, 33.2].map((from) => ({ src: FIRE, from, band: fireBand })));
+  run('full', 26, [18.3, 24.1, 42.1, 54.1, 27.1, 45.4, 63.1, 66.6].map((from) => [FIRE, from, 1, { band: fireBand, gmap: 0.88 }]));
+  run('full', 34, [[CHURCH, 9.6, 2, { band: churchBand, gmap: 0.45 }], [CHURCH, 15.4, 2, { band: churchBand, gmap: 0.45 }],
+    [CHURCH, 72.6, 2, { band: churchBand, gmap: 0.45, fx: 0.5 }]]);
+  seg('end', b(40), DUR, [{ src: CLEAN, from: 35.4 }]);
+
+  const footage = {};
+  segments.forEach((s, si) => s.shots.forEach((shot, k) => {
+    shot.name = `s${si}_${k}`;
+    footage[shot.name] = { src: shot.src, start: s.start, from: shot.from, duration: shot.hold ?? (s.end - s.start + 0.1) };
+  }));
+
+  Studio.setup({
+    width: W, height: H, fps: FPS, duration: DUR, footage,
+    audio: [{ src: 'media/song.webm', from: 96, volume: 1, fadeIn: 0.2, fadeOut: 3.6 }],
+  });
+
+  // ---- renderer ---------------------------------------------------------------
+  const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(devicePixelRatio);
+  renderer.setSize(W, H);
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.autoClear = false;
+  document.getElementById('stage').prepend(renderer.domElement);
+
+  // Footage shader: crop rect, a cool grade, and a gradient map into
+  // black → purple → light purple → light blue → white.
+  const footageMaterial = () => new THREE.ShaderMaterial({
+    uniforms: {
+      map: { value: null }, rect: { value: new THREE.Vector4(0, 0, 1, 1) },
+      gmap: { value: 0 }, scan: { value: 0 }, wash: { value: 0 }, dark: { value: 0 },
+    },
+    vertexShader: `varying vec2 vUv; void main() { vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.); }`,
+    fragmentShader: `
+      uniform sampler2D map; uniform vec4 rect; uniform float gmap, scan, wash, dark;
+      varying vec2 vUv;
+      vec3 ramp(float x) {
+        vec3 c0 = vec3(.043,.039,.071), c1 = vec3(.36,.31,.64), c2 = vec3(.73,.69,1.), c3 = vec3(.75,.89,1.), c4 = vec3(1.);
+        if (x < .3) return mix(c0, c1, x / .3);
+        if (x < .6) return mix(c1, c2, (x - .3) / .3);
+        if (x < .82) return mix(c2, c3, (x - .6) / .22);
+        return mix(c3, c4, (x - .82) / .18);
+      }
+      void main() {
+        vec3 c = texture2D(map, rect.xy + vUv * rect.zw).rgb;
+        float l = dot(c, vec3(.299, .587, .114));
+        vec3 g = mix(vec3(l), c, .86) * vec3(.97, .985, 1.03) + vec3(.03, .02, .055) * (1. - l);
+        c = mix(g, ramp(smoothstep(.02, .96, l)), gmap);
+        c *= 1. - scan * .1 * (.5 + .5 * sin(gl_FragCoord.y * 1.5708));
+        c = mix(c, vec3(1.), wash);
+        c *= 1. - dark;
+        gl_FragColor = vec4(c, 1.);
+      }`,
+  });
+
+  const textures = {};
+  function tex(shot) {
+    if (!textures[shot.name]) {
+      const t = new THREE.Texture(Studio.footage(shot.name));
+      t.minFilter = THREE.LinearFilter; t.generateMipmaps = false;
+      textures[shot.name] = t;
+    }
+    textures[shot.name].needsUpdate = true;
+    return textures[shot.name];
+  }
+
+  // Crop rect (uv offset + scale) that fills targetAspect from a 16:9 source.
+  function fitRect(shot, targetAspect) {
+    const [y0, y1] = shot.band || [0, 1];
+    const sa = 16 / 9;
+    let h = y1 - y0, w = targetAspect * h / sa;
+    if (w > 1) { w = 1; h = sa / targetAspect; }
+    const x = Math.min(1 - w, Math.max(0, (shot.fx ?? 0.5) - w / 2));
+    const y = Math.min(1 - h, Math.max(0, (y0 + y1) / 2 - h / 2));
+    return new THREE.Vector4(x, y, w, h);
+  }
+
+  function bindShot(mat, shot, aspect) {
+    mat.uniforms.map.value = tex(shot);
+    mat.uniforms.rect.value.copy(fitRect(shot, aspect));
+    mat.uniforms.gmap.value = shot.gmap ?? 0;
+  }
+
+  // ---- 3D: a white room, pearls, floating screens --------------------------------
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xf5f6fa);
+  scene.fog = new THREE.Fog(0xf5f6fa, 12, 40);
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  const camera = new THREE.PerspectiveCamera(32, W / H, 0.1, 100);
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xd9d4ff, 1.2));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.4); sun.position.set(3, 8, 5); scene.add(sun);
+
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0xf3f4f9, roughness: 1 }));
+  floor.rotation.x = -Math.PI / 2; scene.add(floor);
+  const grid = new THREE.GridHelper(80, 80, 0xc9c2ff, 0xdcd8ff);
+  grid.position.y = 0.002; grid.material.transparent = true; grid.material.opacity = 0.55; scene.add(grid);
+
+  // Soft contact shadow, drawn once into a canvas.
+  const shadowTex = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 128;
+    const g = c.getContext('2d'), r = g.createRadialGradient(64, 64, 0, 64, 64, 64);
+    r.addColorStop(0, 'rgba(40,36,70,.28)'); r.addColorStop(1, 'rgba(40,36,70,0)');
+    g.fillStyle = r; g.fillRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(c);
+  })();
+  const blob = (sx, sz) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(sx, sz), new THREE.MeshBasicMaterial({ map: shadowTex, transparent: true, depthWrite: false }));
+    m.rotation.x = -Math.PI / 2; m.position.y = 0.004; return m;
+  };
+
+  const rand = Studio.random(20);
+  const pearls = [];
+  const pearlMat = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.12, clearcoat: 1, iridescence: 1, iridescenceIOR: 1.35, iridescenceThicknessRange: [200, 600] });
+  for (let i = 0; i < 7; i++) {
+    const r = 0.18 + rand() * 0.34;
+    const p = new THREE.Mesh(new THREE.SphereGeometry(r, 64, 32), pearlMat);
+    const home = new THREE.Vector3((rand() - 0.5) * 9, 0.6 + rand() * 2.6, -rand() * 7 + 1.5);
+    const shadow = blob(r * 5, r * 5);
+    scene.add(p, shadow);
+    pearls.push({ p, home, shadow, phase: rand() * 6.28, r });
+  }
+
+  const screenAspect = 16 / 9;
+  function makePanel() {
+    const group = new THREE.Group();
+    const bezel = new THREE.Mesh(new THREE.BoxGeometry(3.24, 1.9, 0.07),
+      new THREE.MeshPhysicalMaterial({ color: 0x0c0c12, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.08 }));
+    const mat = footageMaterial();
+    mat.uniforms.scan.value = 1;
+    const screen = new THREE.Mesh(new THREE.PlaneGeometry(3.04, 3.04 / screenAspect), mat);
+    screen.position.z = 0.037;
+    group.add(bezel, screen);
+    const shadow = blob(4.4, 1.3);
+    scene.add(group, shadow);
+    return { group, screen, mat, shadow };
+  }
+  const hero = makePanel();
+  const wall = Array.from({ length: 6 }, makePanel);
+
+  // ---- 2D: flat footage on an orthographic plane --------------------------------
+  const flat = new THREE.Scene();
+  const flatCam = new THREE.OrthographicCamera(0, W, H, 0, -1, 1);
+  const flatMat = footageMaterial();
+  const flatPlane = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), flatMat);
+  flat.add(flatPlane);
+  function placeFlat(x, y, w, h) { flatPlane.position.set(x + w / 2, H - y - h / 2, 0); flatPlane.scale.set(w, h, 1); }
+
+  // ---- text cues --------------------------------------------------------------
+  const $ = (id) => document.getElementById(id);
+  const regs = [...document.querySelectorAll('.reg')];
+  const { progress, lerp, ease } = Studio;
+  const fade = (t, a, z, fin = 0.35, fout = 0.25) => Math.min(progress(t, a, a + fin), 1 - progress(t, z - fout, z));
+  const typed = (t, a, text, cps = 28) => text.slice(0, Math.max(0, Math.floor((t - a) * cps)));
+  const timecode = (t) => {
+    const f = Math.floor(t * FPS), s = Math.floor(f / FPS);
+    return [Math.floor(s / 60), s % 60, f % FPS].map((n) => String(n).padStart(2, '0')).join(':');
+  };
+
+  function cues(t, s) {
+    const set = (id, o) => { $(id).style.opacity = Math.max(0, o); };
+    set('title', fade(t, 0.4, b(2) - 0.1, 0.8, 0.3));
+    set('spec', fade(t, 1.0, b(2) - 0.1, 0.6, 0.3));
+    $('spec').textContent = typed(t, 1.0, 'rain / café / fireworks / night');
+
+    let label = '', jp = '', light = false;
+    if (t >= b(2) && t < b(10)) { label = '01  rain'; jp = '雨'; }
+    else if (t >= DROP && t < DROP + BAR * 2) { label = '04  fireworks'; jp = '花火'; light = true; }
+    else if (t >= b(34) && t < b(40)) { label = '05  school, at night'; jp = '夜'; light = true; }
+    const la = label ? segments.find((x) => x.start <= t && t < x.end && (x.mode === 'panel' || x.mode === 'wall' || x.mode === 'full')) : null;
+    const labelStart = label === '01  rain' ? b(2) : label === '04  fireworks' ? DROP : b(34);
+    $('label-text').textContent = label ? typed(t, labelStart + 0.2, label, 22) : '';
+    $('label-jp').textContent = label && t > labelStart + 0.9 ? jp : '';
+    $('label').classList.toggle('light', light);
+    set('label', label && la ? 1 : 0);
+
+    const tcOn = t >= b(2) && t < b(19);
+    set('tc', tcOn ? 1 : 0);
+    $('tc').textContent = `▷ PLAY  ${timecode(t - b(2))}`;
+    $('tc').style.color = s.mode === 'page' ? '#6b6a86' : '#6b6a86';
+
+    const page = s.mode === 'page';
+    set('cap', page ? 1 : 0); set('cap2', page ? 1 : 0);
+    regs.forEach((r) => { r.style.opacity = page ? 1 : 0; });
+    if (page) {
+      const i = segments.filter((x) => x.mode === 'page').indexOf(s) + 1;
+      $('cap').textContent = typed(t, s.start + 0.15, `02  café\nfig. ${String(i).padStart(2, '0')}`, 30);
+      $('cap2').textContent = typed(t, s.start + 0.3, `${(s.shots[0].from).toFixed(2)} s\n1280 × 720`, 30);
+    }
+
+    set('four', s.mode === 'pause' ? fade(t, s.start + 0.5, s.end - 0.2, 0.2, 0.2) : 0);
+    set('fin', fade(t, 58.7, 61, 0.6));
+    set('model', fade(t, 59.1, 61, 0.5));
+  }
+
+  // ---- per-frame --------------------------------------------------------------
+  function pearlsAt(t, spread = 1) {
+    for (const q of pearls) {
+      const y = q.home.y + Math.sin(t * 0.9 + q.phase) * 0.12;
+      q.p.position.set(q.home.x * spread, y, q.home.z);
+      q.shadow.position.set(q.home.x * spread, 0.004, q.home.z);
+      q.shadow.material.opacity = 0.9 - y * 0.18;
+    }
+  }
+
+  function showPanel(p, visible, pos, rotY = 0) {
+    p.group.visible = p.shadow.visible = visible;
+    if (!visible) return;
+    p.group.position.copy(pos);
+    p.group.rotation.set(0, rotY, 0);
+    p.shadow.position.set(pos.x, 0.004, pos.z + 0.1);
+    p.shadow.material.opacity = Math.max(0.15, 0.9 - pos.y * 0.25);
+  }
+
+  Studio.onFrame((t) => {
+    const s = segments.find((x) => t >= x.start && t < x.end) || segments[segments.length - 1];
+    const k = progress(t, s.start, s.end);
+    renderer.clear();
+
+    if (s.mode === 'page' || s.mode === 'full') {
+      if (s.mode === 'page') {
+        renderer.setClearColor(0xf5f6fa);
+        renderer.clear();
+        placeFlat(80, 262, 920, 920 * 9 / 16);
+        bindShot(flatMat, s.shots[0], 16 / 9);
+      } else {
+        renderer.setClearColor(0x000000);
+        renderer.clear();
+        // A slow push, never a zoom punch.
+        const z = 1 + 0.035 * k;
+        placeFlat(-(W * (z - 1)) / 2, -(H * (z - 1)) / 2, W * z, H * z);
+        bindShot(flatMat, s.shots[0], W / H);
+      }
+      renderer.render(flat, flatCam);
+    } else {
+      renderer.setClearColor(0xf5f6fa);
+      renderer.clear();
+      showPanel(hero, false); wall.forEach((p) => showPanel(p, false));
+      pearlsAt(t);
+
+      if (s.mode === 'void' || s.mode === 'pause') {
+        const a = s.mode === 'void' ? lerp(-0.25, -0.1, k) : lerp(0.4, 0.5, k);
+        camera.position.set(Math.sin(a) * 10, 1.6, Math.cos(a) * 10);
+        camera.lookAt(0, 1.5, 0);
+      } else if (s.mode === 'panel' || s.mode === 'end') {
+        const pos = new THREE.Vector3(0, 1.55 + Math.sin(t * 0.8) * 0.05, 0);
+        showPanel(hero, true, pos, Math.sin(t * 0.3) * 0.08);
+        bindShot(hero.mat, s.shots[0], screenAspect);
+        hero.screen.scale.set(1, 1, 1);
+        hero.mat.uniforms.wash.value = 0;
+        if (s.mode === 'panel') {
+          const kk = progress(t, b(2), b(10));
+          const a = lerp(-0.42, 0.3, ease.inOut(kk));
+          const d = lerp(7.6, 6.1, kk);
+          camera.position.set(Math.sin(a) * d, 1.9, Math.cos(a) * d);
+        } else {
+          const kk = progress(t, s.start, 58.2);
+          camera.position.set(lerp(0.9, 0.2, ease.out(kk)), 1.75, lerp(9.2, 8.0, ease.out(kk)));
+          // The TV switches off: collapse to a line, then to a point, then gone.
+          const off = progress(t, 58.2, 58.36), dot = progress(t, 58.36, 58.56);
+          hero.screen.scale.set(Math.max(0.004, 1 - ease.in(dot)), Math.max(0.006, 1 - ease.out(off)), 1);
+          hero.mat.uniforms.wash.value = Math.min(1, off * 1.6);
+          if (t > 58.56) hero.screen.visible = false; else hero.screen.visible = true;
+        }
+        camera.lookAt(0, 1.5, 0);
+      } else if (s.mode === 'wall') {
+        s.shots.forEach((shot, i) => {
+          // Two columns, three rows: a portrait video wall.
+          const col = i % 2, row = Math.floor(i / 2);
+          const pos = new THREE.Vector3((col - 0.5) * 3.5, 1.2 + (2 - row) * 2.1, -0.4 * row);
+          showPanel(wall[i], true, pos, -(col - 0.5) * 0.22);
+          bindShot(wall[i].mat, shot, screenAspect);
+          wall[i].mat.uniforms.gmap.value = 0.9;
+        });
+        const kk = ease.out(k);
+        camera.position.set(lerp(-1.2, 0.6, kk), lerp(2.6, 2.3, kk), lerp(22, 16.5, kk));
+        camera.lookAt(0, 3.1, 0);
+      }
+      renderer.render(scene, camera);
+    }
+    cues(t, s);
+  });
+</script>
+</body>
+</html>

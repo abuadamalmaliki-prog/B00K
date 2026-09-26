@@ -217,8 +217,11 @@ async function main() {
       const src = resolveMedia(f.src, pageUrl, origin);
       if (!/^https?:/.test(src) && !fs.existsSync(src)) fail(`footage "${key}" not found: ${f.src}`);
       process.stdout.write(`render: extracting footage "${key}"… `);
-      run('ffmpeg', ['-v', 'error', '-ss', String(f.from), '-i', src, '-t', String(Math.max(0.1, duration - f.start + 1)),
-        '-vf', `fps=${fps},scale=w='min(iw,${Math.round(width * scale)})':h='min(ih,${Math.round(height * scale)})':force_original_aspect_ratio=decrease`,
+      // Keep enough resolution for the clip to be cropped or scaled up to fill the frame.
+      const box = Math.round(Math.max(width, height) * scale);
+      const span = f.duration ?? Math.max(0.1, duration - f.start + 1);
+      run('ffmpeg', ['-v', 'error', '-ss', String(f.from), '-i', src, '-t', String(span),
+        '-vf', `fps=${fps},scale=w='min(iw,${box})':h='min(ih,${box})':force_original_aspect_ratio=decrease`,
         '-q:v', '2', path.join(dir, '%06d.jpg')]);
       counts[key] = fs.readdirSync(dir).length;
       console.log(`${counts[key]} frames`);

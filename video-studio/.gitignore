@@ -1,3 +1,5 @@
 node_modules/
 out/
 examples/footage-fx/media/
+projects/*/media/
+projects/*/work/

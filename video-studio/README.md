@@ -73,8 +73,9 @@ Rules that keep renders exact:
 - **Use `Studio.random(seed)`**, not `Math.random()`.
 - **Footage:** `Studio.footage('name')` returns an element to draw or upload as a
   texture — `<img>` while rendering, `<video>` in preview. It is always already
-  on the current frame. `start` places the clip on the timeline and `from` sets
-  its in-point.
+  on the current frame. `start` places the clip on the timeline, `from` sets
+  its in-point, and `duration` limits how much is used (the clip then holds its
+  last frame).
 - **Slow assets:** wrap loads in `Studio.wait(promise)` so rendering waits for them.
 - Helpers: `Studio.progress(t, start, end)`, `Studio.lerp(a, b, x)`,
   `Studio.ease.{in,out,inOut,outBack}`.
