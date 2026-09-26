@@ -922,12 +922,13 @@ export function createKit(renderer, opts = {}) {
     };
     const defaults = { tone: 'silver', seed: 1, speed: 1, glass: 0.45, count: 1, tubes: 1, energy: 0, unfurl: 0, dist: 8.5, orbit: 0.12,
       post: {} };
+    const RIBBON_TONE = { pearl: { glass: 0.6, count: 0.75, tubes: 0.6 }, prism: { glass: 0.3 } }; // per-tone defaults
     let p = defaults;
     const self = {
       defaults,
       update(t, params = {}) {
-        p = { ...defaults, ...params };
-        p.tone = toneOf(p) || 'silver';
+        const tn = toneOf(params) || 'silver';
+        p = { ...defaults, ...(RIBBON_TONE[tn] || {}), ...params, tone: tn };
         self._t = t;
         for (const [k, s] of systems) s.group.visible = k === p.seed;
         sys(p.seed).update(t, { tone: p.tone, speed: p.speed, glass: p.glass, count: p.count, tubes: p.tubes, energy: p.energy,
@@ -1149,7 +1150,7 @@ export function createKit(renderer, opts = {}) {
       silver: { tints: [[1.05, 1.05, 1.1], [0.55, 0.85, 1.25]], env: 'silver', gain: 1.3, bright: 1.6, film: 0.6, flash: [1, 1, 1.08], bg: [[0.01, 0.01, 0.014], [0, 0, 0]] },
       electric: { tints: [[0.2, 0.42, 1.5], [0.75, 0.85, 1.3]], env: 'electric', gain: 1.3, bright: 1.7, film: 0.5, flash: [0.12, 0.3, 1.6], bg: TONES.electric.bg },
       pearl: { tints: [[0.95, 0.95, 1.05], [0.72, 0.68, 1.15]], env: 'silver', gain: 1.3, bright: 1.5, film: 0.7, flash: [1, 1, 1.05], bg: [[0.9, 0.91, 0.96], [0.66, 0.68, 0.78]] },
-      prism: { tints: [[1.0, 1.0, 1.04], [0.55, 0.8, 1.25]], env: 'prism', gain: 0.75, bright: 1.1, film: 1.3, flash: [0.8, 0.8, 0.85], bg: [[1.35, 1.35, 1.4], [0.74, 0.75, 0.82]] },
+      prism: { tints: [[1.0, 1.0, 1.04], [0.55, 0.8, 1.25]], env: 'prism', gain: 0.75, bright: 1.1, film: 1.3, flash: [0.8, 0.8, 0.85], bg: [[0.85, 0.85, 0.9], [0.015, 0.015, 0.02]] },
       sky: { tints: [[1, 1, 1.05], [0.6, 0.85, 1.2]], env: 'sky', gain: 1.1, bright: 1.3, film: 0.6, flash: [1, 1, 1.05], bg: TONES.sky.bg },
     };
     let p = defaults, flash = 0, tau = 0, since = 1e9;
