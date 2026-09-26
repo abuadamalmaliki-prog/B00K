@@ -9,7 +9,7 @@
 | (b) `render-parallel`, 3 jobs | | 0.545 overall |
 
 Stills: `out/eng-store-full.png`, `out/eng-field-full.png`. Clips: `out/eng-store.mp4`, `out/eng-field.mp4`. Code: `work/engine/`.
-My view: both read as real places. The shop is clean but sterile. The grass near the camera is good; the far land is plain.
+My view: both read as real places. The shop is sterile and the far land is plain.
 
 ## SwiftShader rules (A/B measured in-page)
 - Anisotropic filtering 16× costs **+380 ms**, so use 1×. Mip-nearest takes 108 ms vs trilinear 154 ms.
@@ -25,10 +25,10 @@ My view: both read as real places. The shop is clean but sterile. The grass near
 - **Shots** live in a data file: Catmull-Rom position keys, yaw/pitch keys, fov. Footstep phase comes from arc length, and head sway and breath are added on top. The film is mostly continuous POV. Time skips are cuts or blinks on confirmed downbeats.
 - **Hands**: procedural skinned hand plus two-bone IK to keyframed wrist targets, with grip presets. This has no licence risk. A CC0 glTF body also works if its rig is clean.
 - **CD case**: the cover is sRGB, mip-mapped and trilinear (the hero object only). The camera distance is clamped so the 1 000 px cover stays ≤ ~950 px on screen. FXAA is masked there so the cover is not softened.
-- **3D text**: troika-three-text renders in headless (verified; SDF, sharp, ~20 ms). Glyph bounds drive per-letter reveals. Extruded letters use TextGeometry.
+- **3D text**: troika-three-text renders in headless (verified; SDF, sharp, ~20 ms). Per-letter reveals via glyph bounds.
 
 ## Budget
-Scene ≤ 170 ms + post ≤ 60 ms + capture 100 ms ≈ **0.33 s/frame**. That requires ≤ 60 k blades, one ⅓-res reflection and no instancing. Realistic today: 0.40–0.47 s/frame.
-**3 600 frames: about 25–28 min wall clock** (around 6 resumable 280 s runs). Two jobs render as fast as three.
+Scene ≤ 170 ms + post ≤ 60 ms + capture 100 ms ≈ **0.33 s/frame**. Realistic today: 0.40–0.47 s/frame.
+**3 600 frames: about 25–28 min wall clock** (≈6 resumable runs). Two jobs render as fast as three.
 
 **Verdict: feasible** at full resolution with no upscaling. The limits are art time, not the engine.
