@@ -17,8 +17,8 @@
   let config = { width: 1920, height: 1080, fps: 30, duration: 5, footage: {}, audio: [] };
   const handlers = [];
   const waits = [];
-  const footage = {}; // name -> { el, src, start, from }
-  let footageFrames = {}; // name -> frame count, filled in by render.mjs
+  const footage = {}; // name -> { el, src, start, from, duration, manual }
+  let footageInfo = {}; // name -> { count, fps } of the extracted frames, filled in by render.mjs
 
   const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
@@ -32,7 +32,7 @@
     setup(opts) {
       config = { ...config, ...opts };
       for (const [name, spec] of Object.entries(config.footage || {})) {
-        const { src, start = 0, from = 0 } = typeof spec === 'string' ? { src: spec } : spec;
+        const { src, start = 0, from = 0, duration, manual = false } = typeof spec === 'string' ? { src: spec } : spec;
         let el;
         if (rendering) {
           el = new Image();
@@ -41,7 +41,7 @@
           Object.assign(el, { src, muted: true, playsInline: true, preload: 'auto' });
           waits.push(new Promise((r) => el.addEventListener('loadeddata', r, { once: true })));
         }
-        footage[name] = { el, src, start, from };
+        footage[name] = { el, src, start, from, duration, manual };
       }
       layout();
       return Studio;
@@ -54,9 +54,18 @@
     wait(promise) { waits.push(promise); return promise; },
 
     /** Drawable element (<img> when rendering, <video> in preview) for a footage clip. */
-    footage(name) {
-      if (!footage[name]) throw new Error(`Unknown footage "${name}" — declare it in Studio.setup({ footage })`);
-      return footage[name].el;
+    footage(name) { return entry(name).el; },
+
+    /**
+     * Put a footage element on the frame at `seconds` of its source file
+     * (absolute source time, clamped into the declared from…from+duration).
+     * Meant for entries declared with `manual: true`, which the timeline never
+     * moves by itself. Resolves to the element once that frame is decoded.
+     */
+    async footageAt(name, seconds) {
+      const f = entry(name);
+      await showFrame(name, f, seconds - f.from, true);
+      return f.el;
     },
 
     /** 0→1 as t goes from start to end, clamped. */
@@ -87,21 +96,34 @@
       await Promise.all(waits);
       await document.fonts.ready;
     },
-    _setFootageFrames(counts) { footageFrames = counts; },
+    _setFootage(info) { footageInfo = info; },
     async _seek(t) { await seek(t); await nextPaint(); },
   };
 
-  // A clip placed at `start` on the timeline, beginning `from` seconds into the source.
-  async function loadFootageFrame(name, f, t) {
-    const rel = Math.max(0, t - f.start);
+  function entry(name) {
+    if (!footage[name]) throw new Error(`Unknown footage "${name}" — declare it in Studio.setup({ footage })`);
+    return footage[name];
+  }
+
+  // Show the frame `rel` seconds after the clip's in-point (`from`).
+  async function showFrame(name, f, rel, exact) {
     if (rendering) {
-      // render.mjs extracts frames starting at `from`, so index by timeline offset.
-      const count = footageFrames[name] || 1;
-      const index = clamp(Math.floor(rel * config.fps + 1e-6), 0, count - 1) + 1;
+      // render.mjs extracts frames from `from` at the source's own rate (capped at
+      // the composition's), so index by source time at that rate.
+      const { count = 1, fps = config.fps } = footageInfo[name] || {};
+      const index = clamp(Math.floor(rel * fps + 1e-4), 0, count - 1) + 1;
       const url = `/__footage/${encodeURIComponent(name)}/${String(index).padStart(6, '0')}.jpg`;
       if (f.el.getAttribute('src') !== url) {
         f.el.src = url;
-        await f.el.decode();
+        // A newer footageAt() on the same element cancels this decode; that's fine.
+        try { await f.el.decode(); } catch (e) { if (f.el.getAttribute('src') === url) throw e; }
+      }
+    } else if (exact) {
+      const end = Math.min(f.from + (f.duration ?? Infinity), (f.el.duration || Infinity) - 0.01);
+      const time = clamp(f.from + rel, f.from, end);
+      if (Math.abs(f.el.currentTime - time) > 0.02) {
+        f.el.currentTime = time;
+        await new Promise((r) => { f.el.addEventListener('seeked', r, { once: true }); setTimeout(r, 400); });
       }
     } else {
       const time = Math.min(rel + f.from, (f.el.duration || Infinity) - 0.01);
@@ -112,7 +134,9 @@
   async function seek(t) {
     Studio.time = t;
     Studio.frame = Math.round(t * config.fps);
-    await Promise.all(Object.entries(footage).map(([n, f]) => loadFootageFrame(n, f, t)));
+    // A clip placed at `start` on the timeline follows it; manual clips wait for footageAt().
+    await Promise.all(Object.entries(footage).filter(([, f]) => !f.manual)
+      .map(([n, f]) => showFrame(n, f, Math.max(0, t - f.start))));
     for (const fn of handlers) await fn(t, Studio);
     for (const a of document.getAnimations()) {
       a.pause();
@@ -196,7 +220,10 @@
       playing = !playing;
       button.textContent = playing ? '❚❚' : '▶';
       playStart = performance.now() - Studio.time * 1000;
-      for (const f of Object.values(footage)) playing ? f.el.play().catch(() => {}) : f.el.pause();
+      for (const f of Object.values(footage)) {
+        if (f.manual) continue;
+        playing ? f.el.play().catch(() => {}) : f.el.pause();
+      }
     };
     button.onclick = toggle;
     range.oninput = () => { if (playing) toggle(); show(+range.value); };
