@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Footage + WebGL shader grade</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;800&display=block">
+<script src="../../studio.js"></script>
+<style>
+  #stage { background: #000; font-family: 'Inter', sans-serif; color: #fff; }
+  canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  .tag { position: absolute; top: 60px; padding: 12px 22px; border-radius: 10px; font-size: 30px; font-weight: 800;
+    letter-spacing: 4px; background: rgba(0,0,0,.45); backdrop-filter: blur(6px); animation: pop .6s ease-out .6s both; }
+  .tag.before { left: 60px; }
+  .tag.after { right: 60px; }
+  @keyframes pop { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: none; } }
+
+  .lower { position: absolute; left: 80px; bottom: 90px; display: flex; align-items: stretch; gap: 22px;
+    padding: 22px 34px 22px 22px; border-radius: 16px; background: rgba(8,8,14,.62); backdrop-filter: blur(10px);
+    animation: lower-in .8s cubic-bezier(.2,.8,.2,1) 4.4s both; }
+  .lower .bar { width: 10px; border-radius: 5px; background: linear-gradient(#ffb347, #ff5e62); }
+  .lower h2 { margin: 0; font-size: 62px; font-weight: 800; }
+  .lower p { margin: 6px 0 0; font-size: 30px; opacity: .8; }
+  @keyframes lower-in { from { opacity: 0; transform: translateX(-60px); clip-path: inset(0 100% 0 0); } to { opacity: 1; transform: none; clip-path: inset(0 0 0 0); } }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas></canvas>
+  <div class="tag before">BEFORE</div>
+  <div class="tag after">AFTER</div>
+  <div class="lower"><div class="bar"></div><div><h2>Your footage, graded in WebGL</h2><p>Split-tone · grain · vignette · chromatic aberration · glitch</p></div></div>
+</div>
+<script>
+  Studio.setup({
+    width: 1920, height: 1080, fps: 30, duration: 6,
+    footage: { clip: 'media/sample.mp4' },
+    audio: [{ footage: 'clip', volume: 0.8, fadeIn: 0.3, fadeOut: 1 }],
+  });
+
+  const canvas = document.querySelector('canvas');
+  canvas.width = Studio.config.width;
+  canvas.height = Studio.config.height;
+  const gl = canvas.getContext('webgl2', { preserveDrawingBuffer: true });
+
+  const vert = `#version 300 es
+    in vec2 p; out vec2 uv;
+    void main() { uv = p * .5 + .5; gl_Position = vec4(p, 0., 1.); }`;
+
+  const frag = `#version 300 es
+    precision highp float;
+    in vec2 uv; out vec4 color;
+    uniform sampler2D tex;
+    uniform float time, wipe, glitch, aspect;
+
+    float hash(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+
+    vec3 grade(vec2 st) {
+      // Chromatic aberration: split the channels away from the centre.
+      vec2 dir = (st - .5) * .006;
+      vec3 c = vec3(texture(tex, st + dir).r, texture(tex, st).g, texture(tex, st - dir).b);
+      // Contrast, a touch less saturation, then teal shadows / orange highlights.
+      c = clamp((c - .5) * 1.18 + .5, 0., 1.);
+      float l = dot(c, vec3(.2126, .7152, .0722));
+      c = mix(vec3(l), c, .82);
+      c += mix(vec3(-.02, .05, .08), vec3(.10, .03, -.06), smoothstep(.2, .8, l));
+      // Vignette and animated film grain.
+      vec2 v = (st - .5) * vec2(aspect, 1.);
+      c *= 1. - smoothstep(.45, 1.1, length(v));
+      c += (hash(st * 900. + time) - .5) * .06;
+      return c;
+    }
+
+    void main() {
+      vec2 st = uv;
+      // Glitch: shift horizontal bands and pull the RGB channels apart.
+      if (glitch > 0.) {
+        float band = floor(st.y * 24. + floor(time * 20.));
+        st.x += (hash(vec2(band, floor(time * 30.))) - .5) * .12 * glitch * step(.55, hash(vec2(band, 3.)));
+      }
+      vec3 before = texture(tex, st).rgb;
+      vec3 after = grade(st);
+      if (glitch > 0.) after.r = grade(st + vec2(.02 * glitch, 0.)).r;
+      float edge = smoothstep(wipe - .0015, wipe + .0015, uv.x);
+      vec3 c = mix(after, before, 1. - edge);
+      c = mix(c, vec3(1.), (1. - smoothstep(0., .003, abs(uv.x - wipe))) * step(.001, wipe) * step(wipe, .999));
+      color = vec4(c, 1.);
+    }`;
+
+  function shader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, shader(gl.VERTEX_SHADER, vert));
+  gl.attachShader(prog, shader(gl.FRAGMENT_SHADER, frag));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, 'p');
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+  gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+  for (const [k, v] of [[gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR],
+    [gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE]]) gl.texParameteri(gl.TEXTURE_2D, k, v);
+
+  const u = (n) => gl.getUniformLocation(prog, n);
+  const { ease, progress } = Studio;
+  const tagBefore = document.querySelector('.tag.before');
+  const tagAfter = document.querySelector('.tag.after');
+
+  Studio.onFrame((t) => {
+    // Upload the current footage frame (an <img> when rendering, a <video> in preview).
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, Studio.footage('clip'));
+
+    // Wipe sweeps from "all before" (1) to "all after" (0) between 1.2 s and 3.2 s.
+    const wipe = 1 - ease.inOut(progress(t, 1.2, 3.2));
+    const glitch = Math.max(0, 1 - Math.abs(t - 3.7) / 0.25);
+
+    gl.uniform1f(u('time'), Studio.frame);
+    gl.uniform1f(u('wipe'), wipe);
+    gl.uniform1f(u('glitch'), glitch);
+    gl.uniform1f(u('aspect'), canvas.width / canvas.height);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+
+    tagBefore.style.visibility = wipe > 0.08 ? 'visible' : 'hidden';
+    tagAfter.style.visibility = wipe < 0.92 ? 'visible' : 'hidden';
+  });
+</script>
+</body>
+</html>

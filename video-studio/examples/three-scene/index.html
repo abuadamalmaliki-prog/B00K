@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>3D scene — Three.js + HTML overlay</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;800&display=block">
+<script src="../../studio.js"></script>
+<script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  } }
+</script>
+<style>
+  #stage { background: #04040a; font-family: 'Inter', sans-serif; color: #fff; }
+  canvas { position: absolute; inset: 0; }
+
+  /* HTML layered on top of the WebGL canvas, animated with plain CSS. */
+  .title { position: absolute; left: 140px; bottom: 150px; }
+  .title h1 { margin: 0; font-size: 150px; font-weight: 800; letter-spacing: -4px;
+    background: linear-gradient(90deg, #fff 0%, #ffd27a 60%, #ff8a3d 100%); -webkit-background-clip: text; color: transparent;
+    animation: slide 1.2s cubic-bezier(.2,.8,.2,1) 1.6s both; }
+  .title p { margin: 12px 0 0 6px; font-size: 40px; font-weight: 300; letter-spacing: 10px; color: #b9c2ff; text-transform: uppercase;
+    animation: slide 1.2s cubic-bezier(.2,.8,.2,1) 2s both; }
+  @keyframes slide { from { opacity: 0; transform: translateX(-80px); clip-path: inset(0 100% 0 0); } to { opacity: 1; transform: none; clip-path: inset(0 0 0 0); } }
+  .fade { position: absolute; inset: 0; background: #000; animation: fade 6s linear both; pointer-events: none; }
+  @keyframes fade { 0% { opacity: 1; } 8% { opacity: 0; } 90% { opacity: 0; } 100% { opacity: 1; } }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="title"><h1>B00K Studio</h1><p>HTML · CSS · WebGL · Three.js</p></div>
+  <div class="fade"></div>
+</div>
+<script type="module">
+  import * as THREE from 'three';
+  import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+  import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+  import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+  import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+  const { width: W, height: H } = Studio.setup({ width: 1920, height: 1080, fps: 30, duration: 6 }).config;
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(devicePixelRatio);
+  renderer.setSize(W, H);
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  document.getElementById('stage').prepend(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x04040a, 0.035);
+  const camera = new THREE.PerspectiveCamera(40, W / H, 0.1, 200);
+
+  // Hero object: a golden torus knot inside a slowly turning wireframe shell.
+  const knot = new THREE.Mesh(
+    new THREE.TorusKnotGeometry(1.4, 0.42, 320, 48),
+    new THREE.MeshStandardMaterial({ color: 0xffc46b, metalness: 0.9, roughness: 0.22, emissive: 0x3a1a00 }),
+  );
+  const shell = new THREE.Mesh(
+    new THREE.IcosahedronGeometry(3.2, 1),
+    new THREE.MeshBasicMaterial({ color: 0x6f7dff, wireframe: true, transparent: true, opacity: 0.35 }),
+  );
+  const hero = new THREE.Group().add(knot, shell);
+  hero.position.set(2.2, 0.3, 0);
+  scene.add(hero);
+
+  // Star field from a seeded generator, so every render is identical.
+  const rand = Studio.random(7);
+  const stars = new Float32Array(3000 * 3).map(() => (rand() - 0.5) * 80);
+  const points = new THREE.Points(
+    new THREE.BufferGeometry().setAttribute('position', new THREE.BufferAttribute(stars, 3)),
+    new THREE.PointsMaterial({ color: 0xaab4ff, size: 0.06, sizeAttenuation: true }),
+  );
+  scene.add(points);
+
+  scene.add(new THREE.AmbientLight(0x404060, 1.5));
+  const key = new THREE.PointLight(0xffa860, 70, 30); key.position.set(4, 3, 5); scene.add(key);
+  const rim = new THREE.PointLight(0x5b6cff, 160, 30); rim.position.set(-5, -2, -3); scene.add(rim);
+
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  composer.addPass(new UnrealBloomPass(new THREE.Vector2(W, H), 0.55, 0.5, 0.45));
+  composer.addPass(new OutputPass());
+
+  const { ease, progress, lerp } = Studio;
+
+  // Everything below is a pure function of t — no clocks, no Math.random().
+  Studio.onFrame((t) => {
+    const intro = ease.out(progress(t, 0, 2.5));
+    knot.rotation.set(t * 0.6, t * 0.9, 0);
+    knot.scale.setScalar(lerp(0.2, 1, ease.outBack(progress(t, 0.2, 1.6))));
+    shell.rotation.set(-t * 0.15, t * 0.25, t * 0.1);
+    points.rotation.y = t * 0.03;
+
+    const angle = lerp(-0.9, 0.35, ease.inOut(progress(t, 0, 6)));
+    const dist = lerp(16, 9, intro);
+    camera.position.set(Math.sin(angle) * dist, lerp(3, 1.2, intro), Math.cos(angle) * dist);
+    camera.lookAt(1.2, 0, 0);
+
+    composer.render();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{
+  "name": "video-studio",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Frame-accurate video rendering from HTML, CSS, JavaScript, WebGL and Three.js",
+  "type": "module",
+  "scripts": {
+    "render": "node render.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.56.1"
+  }
+}

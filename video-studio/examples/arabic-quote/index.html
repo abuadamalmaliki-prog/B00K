@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<title>Arabic quote — HTML + CSS</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=block">
+<script src="../../studio.js"></script>
+<style>
+  #stage {
+    background: radial-gradient(120% 80% at 50% 35%, #123d36 0%, #0a1f1c 55%, #050d0c 100%);
+    color: #f4ecd8;
+    font-family: 'Amiri', serif;
+  }
+
+  /* Slowly turning eight-point star pattern in the background. */
+  .pattern {
+    position: absolute; inset: -40%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cg fill='none' stroke='%23d4af37' stroke-width='1.4' opacity='.5'%3E%3Crect x='40' y='40' width='80' height='80'/%3E%3Crect x='40' y='40' width='80' height='80' transform='rotate(45 80 80)'/%3E%3Ccircle cx='80' cy='80' r='18'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 160px 160px;
+    opacity: 0.12;
+    animation: turn 8s linear both;
+  }
+  @keyframes turn { from { transform: rotate(0deg) scale(1.05); } to { transform: rotate(6deg) scale(1); } }
+
+  .glow {
+    position: absolute; left: 50%; top: 42%; width: 900px; height: 900px; margin: -450px 0 0 -450px;
+    background: radial-gradient(circle, rgba(212,175,55,.28), transparent 65%);
+    animation: breathe 8s ease-in-out both;
+  }
+  @keyframes breathe { 0% { opacity: 0; transform: scale(.7); } 30% { opacity: 1; } 100% { opacity: .8; transform: scale(1.1); } }
+
+  .frame {
+    position: absolute; inset: 90px; border: 2px solid rgba(212,175,55,.55); border-radius: 28px;
+    animation: draw 1.4s cubic-bezier(.2,.7,.2,1) both;
+  }
+  @keyframes draw { from { clip-path: inset(0 50% 0 50%); opacity: 0; } to { clip-path: inset(0 0 0 0); opacity: 1; } }
+
+  .content {
+    position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 0 150px; text-align: center; direction: rtl;
+    animation: out .8s ease-in 7.2s both;
+  }
+  @keyframes out { to { opacity: 0; transform: translateY(-40px); } }
+
+  .basmala { font-size: 54px; color: #d4af37; margin-bottom: 70px; animation: rise 1s cubic-bezier(.2,.7,.2,1) .4s both; }
+
+  .quote { font-size: 92px; line-height: 1.75; font-weight: 700; }
+  .quote .w { display: inline-block; margin: 0 .06em; animation: rise .9s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(1.2s + var(--i) * .22s); }
+  @keyframes rise { from { opacity: 0; transform: translateY(40px); filter: blur(10px); } to { opacity: 1; transform: none; filter: blur(0); } }
+
+  .rule { width: 0; height: 3px; margin: 70px auto 40px; background: linear-gradient(90deg, transparent, #d4af37, transparent);
+    animation: grow 1s ease-out 4.6s both; }
+  @keyframes grow { to { width: 520px; } }
+
+  .source { font-size: 46px; color: #cbbf9f; animation: rise 1s cubic-bezier(.2,.7,.2,1) 5s both; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="pattern"></div>
+  <div class="glow"></div>
+  <div class="frame"></div>
+  <div class="content">
+    <div class="basmala">بسم الله الرحمن الرحيم</div>
+    <div class="quote">الحمد لله الذي أرسل رسوله بالهدى ودين الحق؛ ليظهره على الدين كله وكفى بالله شهيدا</div>
+    <div class="rule"></div>
+    <div class="source">ابن تيمية · العقيدة الواسطية</div>
+  </div>
+</div>
+<script>
+  // Split the quote into words so each one can animate in turn.
+  const quote = document.querySelector('.quote');
+  quote.innerHTML = quote.textContent.trim().split(/\s+/)
+    .map((w, i) => `<span class="w" style="--i:${i}">${w}</span>`).join(' ');
+
+  Studio.setup({ width: 1080, height: 1920, fps: 30, duration: 8 });
+</script>
+</body>
+</html>
