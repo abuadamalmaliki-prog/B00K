@@ -321,7 +321,8 @@ async function main() {
   const rel = path.relative(ROOT, input).split(path.sep).map(encodeURIComponent).join('/');
   const pageUrl = `${origin}/${rel}?render${opts.transparent ? '&transparent' : ''}`;
 
-  const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required', '--font-render-hinting=none'] });
+  // No GPU here: opt in to SwiftShader WebGL explicitly (Chromium deprecated the silent fallback).
+  const browser = await chromium.launch({ args: ['--autoplay-policy=no-user-gesture-required', '--font-render-hinting=none', '--enable-unsafe-swiftshader'] });
   try {
     const open = async (contextOpts) => {
       const page = await (await browser.newContext(contextOpts)).newPage();
