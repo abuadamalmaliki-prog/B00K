@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>RZ—02 — 60 s edit</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&display=block">
+<script src="../../studio.js"></script>
+<script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  } }
+</script>
+<style>
+  #stage { background: #000; }
+  canvas { position: absolute; inset: 0; }
+  /* Watermark (director's style bible): one line, bottom-centre, every frame. */
+  .wm { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); padding: 7px 16px; border-radius: 999px;
+    background: rgba(7,8,12,.35); border: 1px solid rgba(255,255,255,.18); white-space: pre;
+    font: 400 20px/1 'IBM Plex Mono', monospace; letter-spacing: .06em; color: #fff; }
+  .wm b { font-weight: 400; color: #BFE3FF; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="wm"><b>Instagram:</b> ihvyone_1   ·   <b>Tiktok:</b> rapidfirequestion</div>
+</div>
+<script type="module">
+  import * as THREE from 'three';
+  import plan from './plan.js';
+  import { createFootageLayer, footageEntries, shotTime, slotName, BEAT } from '../../lib/footage.js';
+  import { createKit } from '../../lib/kit3d.js';
+
+  const W = 1080, H = 1350;
+
+  Studio.setup({
+    width: W, height: H, fps: 120, duration: 60,
+    footage: footageEntries({
+      clean: 'media/clean.mp4',
+      church: { src: 'media/church.mp4', duration: 84 },
+      fireworks: 'media/fireworks.mp4',
+    }),
+    audio: [{ src: 'media/song.webm', from: 96, volume: 1, fadeIn: 0.25, fadeOut: 3.6 }],
+  });
+
+  const renderer = new THREE.WebGLRenderer({ antialias: false, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(devicePixelRatio);
+  renderer.setSize(W, H);
+  renderer.autoClear = false;
+  document.getElementById('stage').prepend(renderer.domElement);
+
+  const layer = createFootageLayer(W, H);
+  const kit = createKit(renderer, { width: W, height: H });
+
+  // Onset strength of every beat in the song window (work/beats.txt); beat k is at 0.275 + k·BEAT.
+  const HITS = [0.22,0.52,0.15,0.22,0.3,0.71,0.36,0.68,0.51,0.57,0.25,0.26,0.26,0.65,0.31,0.43,0.19,0.48,0.17,0.2,0.16,0.58,0.5,0.77,0.54,0.74,0,0.19,0.33,0.63,0.5,0.29,0.32,0.49,0.33,0.13,0.11,0.66,0.32,0.59,0.56,0.88,0.36,0.39,0.15,0.39,0.22,0.28,0.26,0.52,0.32,0.18,0.25,0.66,0.34,0.57,0.53,0.79,0.4,0.84,0.21,0.71,0.23,0.28,0.15,0.5,0.17,0.18,0.12,0.75,0.42,0.7,0.55,0.82,0.37,0.29,0.35,0.37,0.16,0.46,1,0.39,0.29,0.21,0.11,0.68,0.37,0.67,0.26,0.78,0.3,0.28,0.26,0.48,0.6,0.29,0.15,0.41,0.16,0.13,0.28,0.53,0.37,0.62,0.37,0.79,0.33,0.29,0.23,0.49,0.31,0.33,0.16,0.4,0.18,0.17,0.34,0.77,0.28,0.56,0.4,0.7,0.31,0.3,0.25,0.46,0.62,0.29,0.16,0.39,0.16,0.13,0.15,0.71,0.32,0.63,0.44,0.71,0.3,0.31,0.19,0.47,0.26,0.26,0.15,0.38,0.15,0.18,0.29,0.69,0.37,0.58,0.4,0.63,0.12,0.27,0.26,0.46,0.3,0.29,0.16,0.38,0.11,0.2,0.13,0.53,0.34,0.6,0.27,0.59,0.27,0.35,0.34];
+  const beatTime = (k) => 0.275 + k * BEAT;
+
+  // Beat envelope 0..1 for the 3D (brightness / swell only): the last beat's strength, decaying.
+  function energy(t) {
+    const k = Math.floor((t - 0.275) / BEAT);
+    if (k < 0) return 0;
+    return (HITS[k] ?? 0) * Math.exp(-(t - beatTime(k)) * 7);
+  }
+
+  // Strong beats inside a segment, in segment-local time — where the shards burst.
+  function hitsIn(seg, min = 0.5) {
+    const out = [];
+    for (let k = 0; k < HITS.length; k++) {
+      const bt = beatTime(k);
+      if (bt >= seg.start - 0.01 && bt < seg.end && HITS[k] >= min) out.push(Math.max(0.02, bt - seg.start));
+    }
+    return out.length ? out : [0.02];
+  }
+
+  // Same scene back-to-back keeps one continuous clock, so its motion never jumps.
+  const clockStart = new Map();
+  plan.forEach((seg, i) => {
+    const prev = plan[i - 1];
+    clockStart.set(seg, prev && prev.kind === '3d' && prev.scene === seg.scene ? clockStart.get(prev) : seg.start);
+  });
+
+  const DUR = 0.16;
+  function postFor(seg, t) {
+    const k = Math.min(1, (t - seg.start) / DUR), r = 1 - k;
+    if (seg.in === 'flash') return { flash: r * r };
+    if (seg.in === 'prism') return { disp: 1.5 * r, flash: 0.15 * r * r };
+    if (seg.in === 'iris') return { fade: Math.pow(1 - Math.min(1, (t - seg.start) / 0.3), 2) };
+    return {};
+  }
+
+  async function footageEl(seg, shot, t, slot = 0) {
+    return Studio.footageAt(slotName(shot.src, slot), shotTime(seg, shot, t, BEAT));
+  }
+
+  // The frame the previous clip segment ends on — what a shatter with no shot breaks.
+  function outgoing(seg) {
+    const i = plan.indexOf(seg);
+    for (let j = i - 1; j >= 0; j--) if (plan[j].kind === 'clip') return plan[j];
+    return null;
+  }
+
+  async function render3d(seg, t) {
+    const local = t - clockStart.get(seg);
+    const scene = kit.scenes[seg.scene];
+    const p = { tone: seg.tone || 'pearl', energy: energy(t), post: postFor(seg, t) };
+    const shot = seg.shots && seg.shots[0];
+
+    if (seg.scene === 'ribbons') {
+      if (seg.start < 1) p.unfurl = 1.3;
+      if (seg.tone === 'silver') p.glass = 0.25;
+    } else if (seg.scene === 'kaleido') {
+      Object.assign(p, { source: 'chrome', folds: seg.tone === 'electric' ? 8 : 6, mode: seg.tone === 'electric' ? 'kifs' : 'radial' });
+    } else if (seg.scene === 'shards') {
+      const segLocal = t - seg.start;
+      if (seg.in === 'shatter') {
+        const src = shot ? { seg, shot } : (() => { const o = outgoing(seg); return o && { seg: o, shot: o.shots[0], at: o.end - 1 / 120 }; })();
+        const el = src ? await footageEl(src.seg, src.shot, src.at ?? t, 2) : null;
+        Object.assign(p, { mode: 'shatter', footage: el, hit: 0.02, duration: seg.end - seg.start, behind: 'burst' });
+      } else {
+        Object.assign(p, { mode: 'burst', hits: hitsIn(seg).map((h) => h + (seg.start - clockStart.get(seg))) });
+      }
+      scene.update(seg.in === 'shatter' ? segLocal : local, p);
+      scene.render(null, p.post);
+      return;
+    } else if (seg.scene === 'sky') {
+      if (shot) {
+        p.footage = await footageEl(seg, { ...shot, speed: 0.5 }, t, 2);
+        p.object = 'none';
+      } else {
+        p.object = seg.start < 30 ? 'rings' : 'none';
+        p.cross = [0, seg.end - seg.start];
+      }
+    }
+    scene.update(local, p);
+    scene.render(null, p.post);
+  }
+
+  let cursor = 0;
+  Studio.onFrame(async (t) => {
+    // Plan segments are sorted; walk forward (or restart when scrubbing back).
+    if (plan[cursor].start > t) cursor = 0;
+    while (cursor < plan.length - 1 && t >= plan[cursor].end) cursor++;
+    const seg = plan[cursor];
+
+    renderer.setRenderTarget(null);
+    if (seg.kind === 'black') {
+      renderer.setClearColor(0x000000);
+      renderer.clear();
+    } else if (seg.kind === 'clip') {
+      await layer.render(renderer, seg, t);
+    } else {
+      await render3d(seg, t);
+    }
+  });
+</script>
+</body>
+</html>
