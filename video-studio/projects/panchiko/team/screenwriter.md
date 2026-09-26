@@ -1,40 +1,33 @@
-# Screenwriter: "Found" (60 s, first person)
+# Screenwriter: "Found" (60.69 s, first person), BUILD version
+
+All on-screen words live in `src/copy.js`. They are invented and brand-free; the only exceptions are Panchiko's name, the EP and track titles, and the true cards.
 
 ## Facts (Wikipedia, read 26 Sep 2026)
-- **Where:** "an Oxfam store in Sherwood, Nottingham". That's a **charity shop, not a 7-Eleven** (4chan section, sentence 1).
+- **Where:** "an Oxfam store in Sherwood, Nottingham", a charity shop (4chan section, sentence 1). The film uses an invented music store instead. The bin reads "PRE-OWNED / DONATED CDs … goes to local charity", and an end card states the true place.
 - **When:** posted 21 July 2016.
-- **Post:** "I picked this up because it looked interesting"; "does anybody recognise the album?"
-- **Condition:** not stated. Rot appears only in a later YouTube upload and the reissue, so showing it is licence.
-- **Afterwards:** a cult following grew, unknown to the band. The 4chan search stalled because there were no surnames on the back.
-- **Found:** on 21 Jan 2020 the singer was asked "…are you the lead singer of Panchiko?" He replied "Yeah."
-- song.mp4 is probably the 4:21 title track (my inference).
+- **Afterwards:** a cult following grew and the 4chan search began. No surnames on the back.
+- **The band is found:** 21 Jan 2020, "…are you the lead singer of Panchiko?" He replied "Yeah."
 
-**Honouring both:** the user's konbini shop (invented name) with a "DONATED CDs, for charity" box at the till. An end card gives the true place. No Oxfam, 4chan or Facebook branding.
+## Shot list (film seconds; beat `n` from timing.json)
+1. **0–5.52 Arrival.** Rain, the glowing LANTERNFISH window: "LOST SOMETHING? IT'S PROBABLY IN HERE." The door is pushed on a downbeat. Card: "Nottingham · 2016".
+2. **5.52–11.03 The store.** Racks, section signs, posters. The head turns to the bargain bin on a snare hit.
+3. **11.03–17.24 Discovery.** CD flicks on the snares. They stop, we push in, and the cover (as supplied) catches the light.
+4. **17.24–22.07 Held breath.** Turn it over: the four track titles, no surnames. The disc goes into the NORVELLE player and the LCD reads READING. Headphones on.
+5. **22.07 Slam.** Press play (LCD "PLAY 01"); white blooms into sky.
+6. **22.07–41.38 Nowhere on earth.** Walking, the hand brushing grass.
+7. **41.38–44.14 Breath.** Stop, look up.
+8. **44.14–52.40 Title rise.** `D> E> A> T> H> M> E> T> A> L`, one group per beat (n 65–74), then hold.
+9. **52.41–57.24 True cards.** n 77 "Found in a charity shop / Sherwood, Nottingham · 2016". n 80 "2020, a message to the singer: '…are you the lead singer of Panchiko?'" n 83 "'Yeah.'"
+10. **57.24–60.69 PANCHIKO,** with D>E>A>T>H>M>E>T>A>L below. Fine print: "A dramatisation. Store, products and people shown are invented."
 
-## Shot list
-1. **0–4 Hook.** Rainy dusk. The hand pushes the door; a bell rings. "Nottingham, July 2016".
-2. **4–8 Who.** Our reflection in the fridge glass.
-3. **8–12 Routine.** Fingers flick through the CD box, on the beat.
-4. **12–16.5 Discovery.** The fingers stop and we push in. The cover (as supplied) catches the light. The hum dips.
-5. **16.5–21 Mystery.** Turn it over: track titles, no surnames.
-6. **21–24 Ownership.** A coin on the counter, out into the rain.
-7. **24–30 Nobody knows.** The phone search says "No results". The thumb types the post quotes into a generic forum.
-8. **30–34 Threshold.** The portable CD player, headphones on. The thumb presses play.
-9. **34–36 Leap.** On the downbeat, fluorescent white blooms into sky.
-10. **36–44 Nowhere on earth.** Green hills, blue sky. We walk, the hand brushing the grass.
-11. **44–52 Words.** Tilt up and the text appears.
-12. **52–57 Resolution.** The disc throws a rainbow. Cards: "Found in a charity shop, Nottingham", then "2020: the singer replied, 'Yeah.'"
-13. **57–60 Title.** Panchiko, D>E>A>T>H>M>E>T>A>L (2000), plus the watermark.
-
-The song's best section plays under shots 9–12, which cut on downbeats.
-
-## Landscape text (no lyrics)
-Giant letters in the clouds or grass, one per downbeat.
-- **A (facts):** "Recorded in a bedroom, 2000", "Found, 2016", then the title.
-- **B (original, recommended):** "Sixteen years on a shelf." "No surnames. No trace." "Somebody, somewhere, made this." "Now it's mine."
+## Notes for the lead
+- Card 2 in shot 9 gets about 2 s, which is tight to read. Fallback: drop line 1, "2020, a message to the singer:".
+- The £1 sticker goes on the case back only, never on the cover.
+- "BLU-RAY" and "DVD" appear as plain words only. No format or certification logos.
+- The invented names were spot-checked by web search and none matched a real one.
 
 ## Scenes to add for 4:22
-- **2000 prologue:** burning the CD-Rs and mailing them to labels (hands only).
-- **2016–2020 montage:** the thread grows, seasons pass, lockdown.
-- **The 2020 message,** then map lines to South Korea and Cambridge.
-- **Bookend:** an empty slot in the shop box.
+- A 2000 prologue: burning about 30 CD-Rs (hands only).
+- The 2016 post and a 2016–2020 montage.
+- The 2020 message, with map lines to South Korea and Cambridge.
+- A bookend: the empty slot in the bin. `cards.endLong` is ready for it.
