@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>kit3d — scene demo</title>
+<script src="../../studio.js"></script>
+<script type="importmap">
+  { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+  } }
+</script>
+<style>
+  #stage { background: #000; }
+  canvas { position: absolute; inset: 0; }
+  #lbl { position: absolute; left: 22px; top: 18px; font: 13px/1 ui-monospace, monospace; color: #fff;
+    mix-blend-mode: difference; opacity: .55; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+<div id="stage"><div id="lbl"></div></div>
+<script type="module">
+  import * as THREE from 'three';
+  import { createKit } from '../kit3d.js';
+
+  const W = 1080, H = 1350, SEC = 2;
+  const FW = [0, 0.1, 1, 0.9]; // fireworks: skip the dark box at the bottom
+
+  // Each entry: [scene, params(t, foot)] — 2 s apiece, local time starts at 0.
+  const SEQ = [
+    ['ribbons', () => ({ tone: 'pearl', unfurl: 1.4 })],
+    ['ribbons', () => ({ tone: 'electric', seed: 2 })],
+    ['ribbons', () => ({ tone: 'silver', seed: 3, dist: 4.2 })],
+    ['kaleido', () => ({ tone: 'silver', folds: 6 })],
+    ['kaleido', () => ({ tone: 'electric', mode: 'kifs', seed: 4 })],
+    ['kaleido', (t, f) => ({ source: { src: f('fwK'), rect: FW }, folds: 8, spin: 0.25 })],
+    ['shards', () => ({ tone: 'electric', hits: [0.6] })],
+    ['shards', () => ({ tone: 'prism', hits: [0.25, 1.3] })],
+    ['shards', (t, f) => ({ tone: 'prism', mode: 'shatter', footage: { src: f('fwS'), rect: FW, fx: 0.45 }, hit: 0.35 })],
+    ['sky', () => ({ object: 'rings', cross: [0, 2.2] })],
+    ['sky', (t, f) => ({ footage: f('clSky'), object: 'none' })],
+    ['orbit', (t, f) => ({ tone: 'pearl', footage: f('clOrb') })],
+    ['orbit', () => ({ tone: 'pearl' })],
+    ['orbit', () => ({ tone: 'electric', seed: 3 })],
+  ];
+  const at = (i) => i * SEC;
+  const idx = (name) => SEQ.findIndex((s, i) => s[1].toString().includes(`'${name}'`));
+  const clip = (name, src, from) => ({ src, from, start: at(idx(name)), duration: SEC + 0.1 });
+
+  Studio.setup({
+    width: W, height: H, fps: 30, duration: SEQ.length * SEC,
+    footage: {
+      fwK: clip('fwK', '../../projects/reze2/media/fireworks.mp4', 10.9),
+      fwS: clip('fwS', '../../projects/reze2/media/fireworks.mp4', 37.0),
+      clSky: clip('clSky', '../../projects/reze2/media/clean.mp4', 33.3),
+      clOrb: clip('clOrb', '../../projects/reze2/media/clean.mp4', 30.4),
+    },
+  });
+
+  const renderer = new THREE.WebGLRenderer({ antialias: false, preserveDrawingBuffer: true });
+  renderer.setPixelRatio(devicePixelRatio);
+  renderer.setSize(W, H);
+  document.getElementById('stage').prepend(renderer.domElement);
+  const kit = createKit(renderer, { width: W, height: H });
+  const lbl = document.getElementById('lbl');
+
+  Studio.onFrame((t) => {
+    const i = Math.min(SEQ.length - 1, Math.floor(t / SEC));
+    const [name, fn] = SEQ[i];
+    const local = t - at(i);
+    const params = fn(local, (n) => Studio.footage(n));
+    const scene = kit.scenes[name];
+    scene.update(local, params);
+    scene.render();
+    lbl.textContent = `${String(i).padStart(2, '0')}  ${name}  ${params.tone || ''} ${params.mode || ''}  ${local.toFixed(2)}s`;
+  });
+</script>
+</body>
+</html>

@@ -17,7 +17,7 @@
  *   --still S           save a single PNG of time S instead of a video
  *   --audio-only FILE   write only the mixed, limited audio track (.m4a) — no frames
  *   --prepare           extract all footage into the cache (out/.cache/footage) and exit
- *   --info FILE         write the composition's size, fps and duration as JSON and exit
+ *   --info FILE         write the composition's size, fps, duration and loaded files as JSON and exit
  */
 import { chromium } from 'playwright';
 import { spawn, spawnSync } from 'node:child_process';
@@ -109,7 +109,8 @@ function probe(src) {
   return probes.get(src);
 }
 
-function serve(footageDirs) {
+/** Serve the studio folder and extracted footage; `served` collects the page's own files (for --info). */
+function serve(footageDirs, served) {
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, 'http://x');
     let root = ROOT;
@@ -129,6 +130,7 @@ function serve(footageDirs) {
     if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, 'index.html');
     fs.readFile(file, (err, data) => {
       if (err) { res.writeHead(404).end(); return; }
+      if (root === ROOT) served.add(path.relative(ROOT, file));
       res.writeHead(200, { 'content-type': MIME[path.extname(file).toLowerCase()] || 'application/octet-stream' });
       res.end(data);
     });
@@ -313,7 +315,8 @@ async function main() {
   if (framesWanted) fs.mkdirSync(path.dirname(out), { recursive: true });
 
   const footageDirs = {};
-  const server = await serve(footageDirs);
+  const served = new Set();
+  const server = await serve(footageDirs, served);
   const origin = `http://127.0.0.1:${server.address().port}`;
   const rel = path.relative(ROOT, input).split(path.sep).map(encodeURIComponent).join('/');
   const pageUrl = `${origin}/${rel}?render${opts.transparent ? '&transparent' : ''}`;
@@ -344,7 +347,8 @@ async function main() {
     const audioFor = (firstInput) => audioGraph(config, footage, { pageUrl, origin, duration, rangeStart, rangeEnd, firstInput });
 
     if (opts.info) {
-      const info = { name, width, height, fps, duration, footage: Object.keys(footage).length, audio: !!audioFor(0).graph };
+      // `files`: everything the page loaded from this folder — what its frames depend on.
+      const info = { name, width, height, fps, duration, footage: Object.keys(footage).length, audio: !!audioFor(0).graph, files: [...served].sort() };
       fs.mkdirSync(path.dirname(path.resolve(opts.info)), { recursive: true });
       fs.writeFileSync(opts.info, JSON.stringify(info, null, 2));
     }

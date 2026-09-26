@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>lib/footage.js — test card</title>
+<script src="../studio.js"></script>
+<script type="importmap">
+  { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" } }
+</script>
+<style>
+  #stage { background: #000; }
+  canvas { position: absolute; inset: 0; }
+  #tag { position: absolute; left: 0; right: 0; bottom: 30px; text-align: center; color: #BFE3FF; mix-blend-mode: difference;
+    font: 400 20px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: 3px; }
+</style>
+</head>
+<body>
+<div id="stage"><div id="tag"></div></div>
+<script type="module">
+  // Every layout, look and transition of lib/footage.js in 4 s, cut to the song's beat.
+  // Footage comes from the RZ—02 project; media paths resolve from this page.
+  import * as THREE from 'three';
+  import { BEAT, createFootageLayer, footageEntries } from './footage.js';
+
+  const W = 1080, H = 1350;
+  const M = '../projects/reze2/media/';
+  const B = (n) => n * BEAT;
+  const c = (from, fx = 0.5) => ({ src: 'clean', from, fx });
+  const ch = (from, fx = 0.5) => ({ src: 'church', from, fx });
+  const fw = (from, fx = 0.5) => ({ src: 'fireworks', from, fx });
+
+  const plan = [
+    { start: B(0), end: B(2), layout: 'full', look: 'natural', in: 'cut', shots: [c(2.6, 0.4)] },
+    { start: B(2), end: B(3), layout: 'strip', look: 'ice', in: 'flash', bg: 'white', shots: [c(5.8, 0.45)] },
+    { start: B(3), end: B(4), layout: 'stack2', look: 'chrome', in: 'prism', shots: [fw(18.3), c(24.7, 0.4)] },
+    { start: B(4), end: B(6), layout: 'stack3', look: 'mono', stutter: 0.5, in: 'cut', bg: 'white',
+      shots: [c(13.25, 0.45), fw(42.1), { ...c(3.0, 0.35), look: 'natural' }] },
+    { start: B(6), end: B(7), layout: 'full', look: 'invert', in: 'iris', shots: [ch(81.4)] },
+    { start: B(7), end: B(9), layout: 'kaleido', look: 'ice', in: 'flash', shots: [fw(15.2)] },
+    { start: B(9), end: B(10), layout: 'strip', look: 'natural', in: 'shatter', shots: [ch(72.6)] },
+    { start: B(10), end: 4, layout: 'strip', look: 'natural', speed: 0.5, in: 'prism', bg: 'white', shots: [c(12.9, 0.45)] },
+  ];
+
+  Studio.setup({
+    width: W, height: H, fps: 120, duration: 4,
+    footage: footageEntries({
+      clean: { src: M + 'clean.mp4', duration: 38.8 },
+      church: { src: M + 'church.mp4', duration: 83.7 },
+      fireworks: { src: M + 'fireworks.mp4', duration: 78 },
+    }),
+    audio: [{ src: M + 'song.webm', from: 96 + 31.14, fadeIn: 0.02, fadeOut: 0.5 }],
+  });
+
+  const renderer = new THREE.WebGLRenderer({ preserveDrawingBuffer: true });
+  renderer.setPixelRatio(devicePixelRatio);
+  renderer.setSize(W, H);
+  renderer.autoClear = false;
+  document.getElementById('stage').prepend(renderer.domElement);
+
+  const layer = createFootageLayer(W, H);
+  const tag = document.getElementById('tag');
+
+  Studio.onFrame(async (t) => {
+    const seg = plan.find((s) => t >= s.start && t < s.end) || plan[plan.length - 1];
+    await layer.render(renderer, seg, t);
+    tag.textContent = [seg.layout, seg.look, `in ${seg.in}`, seg.stutter && `stutter ${seg.stutter}`, seg.speed && `${seg.speed}×`]
+      .filter(Boolean).join('  ·  ');
+  });
+</script>
+</body>
+</html>
