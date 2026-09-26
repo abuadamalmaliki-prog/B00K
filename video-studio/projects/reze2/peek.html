@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>RZ—02 peek</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&display=block">
+<script src="../../studio.js"></script>
+<style>
+  #stage { background: #fff; }
+  canvas { position: absolute; inset: 0; }
+  /* Watermark, per the director's style bible. */
+  .wm { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); padding: 7px 16px; border-radius: 999px;
+    background: rgba(7,8,12,.35); border: 1px solid rgba(255,255,255,.18); white-space: pre;
+    font: 400 20px/1 'IBM Plex Mono', monospace; letter-spacing: .06em; color: #fff; }
+  .wm b { font-weight: 400; color: #BFE3FF; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas></canvas>
+  <div class="wm"><b>Instagram:</b> ihvyone_1   ·   <b>Tiktok:</b> rapidfirequestion</div>
+</div>
+<script type="module">
+  import plan from './plan.js';
+
+  // A quick 2D-only preview of one second of the plan (no 3D segments).
+  const FROM = 24.202, TO = 25.243, BEAT = 0.3468;
+  const W = 1080, H = 1350, SAFE = 80;
+  const SRC = { clean: 'media/clean.mp4', church: 'media/church.mp4', fireworks: 'media/fireworks.mp4' };
+
+  const segs = plan.filter((s) => s.kind === 'clip' && s.end > FROM && s.start < TO);
+  const footage = {};
+  segs.forEach((s, si) => s.shots.forEach((shot, k) => {
+    // Stutter = the shot's first window replayed; one footage entry per repeat.
+    const win = s.stutter ? s.stutter * BEAT : s.end - s.start;
+    const reps = Math.ceil((s.end - s.start) / win - 1e-6);
+    shot.names = [];
+    for (let r = 0; r < reps; r++) {
+      const name = `p${si}_${k}_${r}`;
+      footage[name] = { src: SRC[shot.src], start: s.start + r * win - FROM, from: shot.from, duration: win + 0.05 };
+      shot.names.push(name);
+    }
+    shot.win = win;
+  }));
+
+  Studio.setup({
+    width: W, height: H, fps: 120, duration: TO - FROM, footage,
+    audio: [{ src: 'media/song.webm', from: 96 + FROM, volume: 0.9 }],
+  });
+
+  const canvas = document.querySelector('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingQuality = 'high';
+
+  function rects(layout) {
+    const avail = H - SAFE;
+    if (layout === 'stack2') {
+      const w = 1040, h = w * 9 / 16, gap = 12, y0 = (avail - (2 * h + gap)) / 2;
+      return [[20, y0, w, h], [20, y0 + h + gap, w, h]];
+    }
+    const h = W * 9 / 16;
+    return [[0, (avail - h) / 2, W, h]];
+  }
+
+  function drawShot(img, [x, y, w, h], k) {
+    // Slow 2 % push inside the segment; crop keeps the 16:9 source unstretched.
+    const z = 1 + 0.02 * k, sw = img.naturalWidth / z, sh = img.naturalHeight / z;
+    ctx.drawImage(img, (img.naturalWidth - sw) / 2, (img.naturalHeight - sh) / 2, sw, sh, x, y, w, h);
+  }
+
+  Studio.onFrame((t) => {
+    const at = t + FROM;
+    const s = segs.find((x) => at >= x.start && at < x.end) || segs[segs.length - 1];
+    const k = Studio.progress(at, s.start, s.end);
+    ctx.fillStyle = s.bg === 'black' ? '#07080C' : '#F5F6FA';
+    ctx.fillRect(0, 0, W, H);
+    const r = rects(s.layout);
+    s.shots.forEach((shot, i) => {
+      const rep = Math.min(shot.names.length - 1, Math.floor((at - s.start) / shot.win + 1e-6));
+      drawShot(Studio.footage(shot.names[rep]), r[i], k);
+    });
+  });
+</script>
+</body>
+</html>
