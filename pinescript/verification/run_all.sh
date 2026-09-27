@@ -21,3 +21,17 @@ for t in A B C; do
   python3 mirror.py candles.json "cfg_$t.json" "mirror_$t.json" --pinets-compat > /dev/null
   python3 compare.py "$t" | tail -1
 done
+
+echo
+echo "## 3. XAUUSD Asian range breakout: real gold data through PineTS vs the Python mirror"
+DATA="${XAU_DATA:-../xauusd_research}"
+if [ -f "$DATA/m5_utc.json" ] && [ -f "$DATA/m15_utc.json" ]; then
+  python3 xau_build_test.py "$DATA/m5_utc.json" "$DATA/m15_utc.json"
+  for s in "dst_spring_m5 5" "dst_autumn_m5 5" "y2025_m15 15"; do
+    set -- $s
+    node run_pine.mjs "xau_$1.json" xau_test.pine "xau_pine_$1.json" "$2" > /dev/null
+    python3 xau_compare.py "$1" "$2" | tail -1
+  done
+else
+  echo "   skipped: run ../xauusd_research/get_data.py first (or set XAU_DATA to its folder)"
+fi

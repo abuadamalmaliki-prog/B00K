@@ -1,0 +1,306 @@
+//@version=6
+// ─────────────────────────────────────────────────────────────────────────────
+// XAUUSD Asian Range Breakout — auto plan with BUY STOP / SELL STOP, TP and SL
+//
+// The pattern (tested on 17 years of XAUUSD M5 and M15, 2009-2026):
+//   1. Mark the high and low of the Asian session, 18:30-03:00 New York time.
+//   2. At 03:00 New York (London open) place a BUY STOP at the range high and a
+//      SELL STOP at the range low. The first one to fill is the trade; cancel the
+//      other. Unfilled orders are cancelled at 08:20 New York (COMEX open).
+//   3. SL = the opposite side of the Asian range. TP = 3 x that risk.
+//   4. Anything still open is closed at 13:30 New York.
+//
+// Backtest (M5, 1 R risked per trade, net of 1 bp round-trip cost): 3711 trades,
+// 44 % winners, +0.044 R per trade, total +162 R, worst drawdown 53 R, 9 of 17
+// full years positive. Settings were chosen on 2009-2017 (+0.065 R per trade,
+// t = 2.3). On 2018-2026, which was held out, it made only +0.020 R per trade
+// (t = 0.7): not statistically significant. Treat it as a small, uncertain edge.
+// Entering at the close of a breakout candle instead of with stop orders roughly
+// halves the edge, so use the pending orders this indicator draws.
+//
+// All session logic runs on the New York clock, so US and UK daylight-saving
+// changes are handled. Times are displayed in the time zone you choose
+// (default Asia/Kuala_Lumpur).
+// Signals are evaluated on closed bars only; nothing repaints.
+// ─────────────────────────────────────────────────────────────────────────────
+indicator("XAUUSD Asian Range Breakout (Auto TP/SL)", shorttitle = "XAU ARB", overlay = true,
+  max_boxes_count = 500, max_labels_count = 500, max_lines_count = 500)
+
+NY = "America/New_York"
+
+// ── Inputs ──────────────────────────────────────────────────────────────────
+G_S = "Sessions (New York clock, daylight saving handled)"
+G_T = "Trade"
+G_V = "Display"
+
+int rsH = input.int(18, "Asian range from", minval = 0, maxval = 23, inline = "rs", group = G_S)
+int rsM = input.int(30, ":", minval = 0, maxval = 59, inline = "rs", group = G_S,
+  tooltip = "Start of the Asian range, New York time. 18:30 skips the first 30 minutes after the daily reopen, when spreads are wide. Tested plateau: 18:05-20:00.")
+int reH = input.int(3, "Range ends, orders go live", minval = 0, maxval = 23, inline = "re", group = G_S)
+int reM = input.int(0, ":", minval = 0, maxval = 59, inline = "re", group = G_S,
+  tooltip = "End of the Asian range = London open, New York time. The BUY STOP and SELL STOP become live here.")
+int eeH = input.int(8, "Cancel unfilled orders at", minval = 0, maxval = 23, inline = "ee", group = G_S)
+int eeM = input.int(20, ":", minval = 0, maxval = 59, inline = "ee", group = G_S,
+  tooltip = "08:20 New York = COMEX gold open.")
+int exH = input.int(13, "Close open trade at", minval = 0, maxval = 23, inline = "ex", group = G_S)
+int exM = input.int(30, ":", minval = 0, maxval = 59, inline = "ex", group = G_S,
+  tooltip = "Time exit, New York time. 13:30 = COMEX gold settlement.")
+
+float tpR = input.float(3.0, "Take profit (× risk)", minval = 0.5, step = 0.5, group = G_T,
+  tooltip = "Risk = distance from entry to SL (the other side of the Asian range). 3R was chosen on 2009-2017 data; most trades end at the time exit, the TP caps big days.")
+float costBp = input.float(1.0, "Round-trip cost for chart stats (bp)", minval = 0.0, step = 0.1, group = G_T,
+  tooltip = "Spread + commission + slippage per trade, in basis points of price. 1 bp is about 0.30 USD at 3000 USD gold. Used only for the statistics in the dashboard.")
+
+string dispTz    = input.string("Asia/Kuala_Lumpur", "Show times in", group = G_V,
+  tooltip = "IANA time zone for labels and the dashboard, e.g. Asia/Kuala_Lumpur, Asia/Singapore, Europe/London, UTC.")
+bool showRange   = input.bool(true, "Asian range box", group = G_V)
+bool showPlan    = input.bool(true, "Pending BUY STOP / SELL STOP plan", group = G_V)
+bool showTrades  = input.bool(true, "Trade boxes with TP and SL", group = G_V)
+bool showTable   = input.bool(true, "Dashboard", group = G_V)
+
+color C_BUY   = #089981
+color C_SELL  = #f23645
+color C_RANGE = #f7a600
+color C_TXT   = #d1d4dc
+
+// ── Trading-day clock (New York) ────────────────────────────────────────────
+// Minutes since 18:00 New York, the start of gold's trading day.
+relOf(int h, int m) =>
+    (h * 60 + m - 1080 + 1440) % 1440
+
+int relRS = relOf(rsH, rsM)
+int relRE = relOf(reH, reM)
+int relEE = relOf(eeH, eeM)
+int relEX = relOf(exH, exM)
+bool cfgOk = relRS < relRE and relRE < relEE and relEE < relEX
+
+int   rel     = relOf(hour(time, NY), minute(time, NY))
+int   t6      = time + 21600000                       // +6 h: the trading day is named after the date it ends on
+int   ty      = year(t6, NY)
+int   tm      = month(t6, NY)
+int   td      = dayofmonth(t6, NY)
+int   tdKey   = ty * 10000 + tm * 100 + td
+bool  newDay  = tdKey != nz(tdKey[1], -1)
+float tfMin   = timeframe.in_seconds() / 60.0
+int   dayStartTs = timestamp(NY, ty, tm, td, 0, 0) - 21600000   // 18:00 New York the evening before
+
+tsOf(int r) =>
+    dayStartTs + r * 60000
+
+// ── State ───────────────────────────────────────────────────────────────────
+var float rHi      = na
+var float rLo      = na
+var int   rCnt     = 0
+var bool  dayDone  = false
+var bool  planned  = false
+var int   pos      = 0
+var float entryPx  = na
+var float slPx     = na
+var float tpPx     = na
+var float riskPx   = na
+var int   entryBar = na
+var int   nTrades  = 0
+var int   nWin     = 0
+var int   nTP      = 0
+var int   nSL      = 0
+var int   nTime    = 0
+var float sumR     = 0.0
+var float peakR    = 0.0
+var float maxDD    = 0.0
+
+var box   rangeBox = na
+var box   tpBox    = na
+var box   slBox    = na
+var line  buyLine  = na
+var line  sellLine = na
+var label buyLbl   = na
+var label sellLbl  = na
+
+bool  evPlan  = false
+bool  evBuy   = false
+bool  evSell  = false
+bool  evTP    = false
+bool  evSL    = false
+bool  evTime  = false
+float exitPx  = na
+float exitR   = na
+int   exitT   = na
+
+fmtPx(float v) =>
+    str.tostring(v, format.mintick)
+
+fmtR(float r) =>
+    (r >= 0 ? "+" : "") + str.tostring(r, "#.00") + "R"
+
+if barstate.isconfirmed and cfgOk
+    // 1. A new trading day: close anything left from the previous day at its last close.
+    if newDay
+        if pos != 0
+            exitPx := close[1]
+            exitT  := time[1]
+            evTime := true
+        rHi     := na
+        rLo     := na
+        rCnt    := 0
+        dayDone := false
+        planned := false
+
+    // 2. Manage an open trade, from the bar after entry: time exit at the open,
+    //    then SL before TP (pessimistic when a bar touches both). Gaps fill at the open.
+    if pos != 0 and not evTime and bar_index > entryBar
+        if rel >= relEX
+            exitPx := open
+            exitT  := time
+            evTime := true
+        else if (pos == 1 and low <= slPx) or (pos == -1 and high >= slPx)
+            exitPx := pos == 1 ? math.min(open, slPx) : math.max(open, slPx)
+            exitT  := time
+            evSL   := true
+        else if (pos == 1 and high >= tpPx) or (pos == -1 and low <= tpPx)
+            exitPx := pos == 1 ? math.max(open, tpPx) : math.min(open, tpPx)
+            exitT  := time
+            evTP   := true
+
+    // 3. Build the Asian range.
+    if rel >= relRS and rel < relRE
+        rHi  := na(rHi) ? high : math.max(rHi, high)
+        rLo  := na(rLo) ? low : math.min(rLo, low)
+        rCnt += 1
+        if showRange
+            if rCnt == 1
+                rangeBox := box.new(time, rHi, tsOf(relEE), rLo, xloc = xloc.bar_time, border_color = color.new(C_RANGE, 40),
+                  bgcolor = color.new(C_RANGE, 90), text = "Asian range", text_size = size.small,
+                  text_color = color.new(C_RANGE, 20), text_halign = text.align_left, text_valign = text.align_top)
+            else if not na(rangeBox)
+                box.set_top(rangeBox, rHi)
+                box.set_bottom(rangeBox, rLo)
+
+    bool rangeOk = rCnt >= 0.8 * (relRE - relRS) / tfMin and rHi > rLo
+
+    // 4. The range is complete: the plan (two pending orders) goes live.
+    bool lastRangeBar = rel >= relRS and rel < relRE and rel + tfMin >= relRE
+    bool firstWindowBar = rel >= relRE and rel < relEE
+    if not planned and not dayDone and rangeOk and (lastRangeBar or firstWindowBar)
+        planned := true
+        evPlan  := true
+        if showPlan
+            float bRisk = rHi - rLo
+            buyLine  := line.new(tsOf(relRE), rHi, tsOf(relEE), rHi, xloc = xloc.bar_time, color = C_BUY, style = line.style_dashed, width = 1)
+            sellLine := line.new(tsOf(relRE), rLo, tsOf(relEE), rLo, xloc = xloc.bar_time, color = C_SELL, style = line.style_dashed, width = 1)
+            buyLbl   := label.new(tsOf(relEE), rHi, "BUY STOP " + fmtPx(rHi) + "\nSL " + fmtPx(rLo) + "  TP " + fmtPx(rHi + tpR * bRisk),
+              xloc = xloc.bar_time, style = label.style_label_left, color = color.new(C_BUY, 20), textcolor = color.white, size = size.small)
+            sellLbl  := label.new(tsOf(relEE), rLo, "SELL STOP " + fmtPx(rLo) + "\nSL " + fmtPx(rHi) + "  TP " + fmtPx(rLo - tpR * bRisk),
+              xloc = xloc.bar_time, style = label.style_label_left, color = color.new(C_SELL, 20), textcolor = color.white, size = size.small)
+
+    // 5. Entry: the first bar in the order window that trades through a level.
+    //    A bar that breaks both sides is ambiguous and skips the day.
+    if not dayDone and pos == 0 and rel >= relRE and rel < relEE and rangeOk
+        bool up = high > rHi
+        bool dn = low < rLo
+        if up and dn
+            dayDone := true
+        else if up or dn
+            dayDone  := true
+            int side = up ? 1 : -1
+            entryPx  := side == 1 ? math.max(open, rHi) : math.min(open, rLo)
+            slPx     := side == 1 ? rLo : rHi
+            riskPx   := math.abs(entryPx - slPx)
+            tpPx     := entryPx + side * tpR * riskPx
+            entryBar := bar_index
+            nTrades  += 1
+            evBuy    := side == 1
+            evSell   := side == -1
+            if showTrades
+                int endTs = tsOf(relEX)
+                tpBox := box.new(time, math.max(entryPx, tpPx), endTs, math.min(entryPx, tpPx), xloc = xloc.bar_time,
+                  border_color = color.new(C_BUY, 50), bgcolor = color.new(C_BUY, 82),
+                  text = "TP " + fmtPx(tpPx) + "  (" + str.tostring(tpR, "#.#") + "R)", text_size = size.small,
+                  text_color = color.white, text_halign = text.align_right, text_valign = side == 1 ? text.align_top : text.align_bottom)
+                slBox := box.new(time, math.max(entryPx, slPx), endTs, math.min(entryPx, slPx), xloc = xloc.bar_time,
+                  border_color = color.new(C_SELL, 50), bgcolor = color.new(C_SELL, 82),
+                  text = "SL " + fmtPx(slPx), text_size = size.small,
+                  text_color = color.white, text_halign = text.align_right, text_valign = side == 1 ? text.align_bottom : text.align_top)
+                label.new(time, entryPx, (side == 1 ? "BUY " : "SELL ") + fmtPx(entryPx) + "\n" + str.format_time(time, "HH:mm", dispTz),
+                  xloc = xloc.bar_time, style = side == 1 ? label.style_label_up : label.style_label_down,
+                  color = side == 1 ? C_BUY : C_SELL, textcolor = color.white, size = size.small)
+            // Same-bar exits on the entry bar: SL first; TP only if the bar closed beyond it.
+            if (side == 1 and low <= slPx) or (side == -1 and high >= slPx)
+                exitPx := slPx
+                exitT  := time
+                evSL   := true
+            else if (side == 1 and close >= tpPx) or (side == -1 and close <= tpPx)
+                exitPx := tpPx
+                exitT  := time
+                evTP   := true
+            pos := side
+
+    // 6. Book the exit.
+    if (evTP or evSL or evTime) and pos != 0
+        exitR := pos * (exitPx - entryPx) / riskPx - costBp / 10000.0 * entryPx / riskPx
+        sumR  += exitR
+        nWin  += exitR > 0 ? 1 : 0
+        nTP   += evTP ? 1 : 0
+        nSL   += evSL ? 1 : 0
+        nTime += evTime ? 1 : 0
+        peakR := math.max(peakR, sumR)
+        maxDD := math.max(maxDD, peakR - sumR)
+        if showTrades
+            if not na(tpBox)
+                box.set_right(tpBox, exitT)
+            if not na(slBox)
+                box.set_right(slBox, exitT)
+            string why = evTP ? "TP" : evSL ? "SL" : "TIME"
+            label.new(exitT, exitPx, why + " " + fmtR(exitR), xloc = xloc.bar_time,
+              style = pos == 1 ? (evSL ? label.style_label_up : label.style_label_down) : (evSL ? label.style_label_down : label.style_label_up),
+              color = color.new(exitR >= 0 ? C_BUY : C_SELL, 30), textcolor = color.white, size = size.tiny)
+        pos := 0
+
+// ── Hidden plots for alert placeholders and the data window ────────────────
+plot(pos != 0 ? entryPx : na, "Entry", display = display.data_window)
+plot(pos != 0 ? tpPx : na, "TP", display = display.data_window)
+plot(pos != 0 ? slPx : na, "SL", display = display.data_window)
+plot(planned and not dayDone ? rHi : na, "Buy stop", display = display.data_window)
+plot(planned and not dayDone ? rLo : na, "Sell stop", display = display.data_window)
+
+// ── Dashboard ───────────────────────────────────────────────────────────────
+var table dash = table.new(position.top_right, 2, 10, bgcolor = color.new(#131722, 10), border_color = color.new(#787b86, 60), border_width = 1)
+
+row(int r, string k, string v, color bg = na) =>
+    table.cell(dash, 0, r, k, text_color = C_TXT, text_size = size.small, text_halign = text.align_left)
+    table.cell(dash, 1, r, v, text_color = color.white, text_size = size.small, text_halign = text.align_left, bgcolor = bg)
+
+if showTable and barstate.islast
+    color none = color.new(#131722, 100)
+    bool tfOk = timeframe.isintraday and tfMin >= 1 and tfMin <= 15
+    string hm = "HH:mm"
+    string plan = not cfgOk ? "check session inputs" : pos == 1 ? "LONG " + fmtPx(entryPx) : pos == -1 ? "SHORT " + fmtPx(entryPx) :
+      planned and not dayDone ? "BUY STOP " + fmtPx(rHi) + " / SELL STOP " + fmtPx(rLo) : dayDone ? "done for today" : "building range"
+    row(0, "XAUUSD Asian range breakout", tfOk ? "M" + str.tostring(tfMin, "#") : "use M5 or M15", tfOk ? none : color.new(C_SELL, 40))
+    row(1, "Asian range (" + dispTz + ")", str.format_time(tsOf(relRS), hm, dispTz) + " - " + str.format_time(tsOf(relRE), hm, dispTz))
+    row(2, "Orders live until", str.format_time(tsOf(relEE), hm, dispTz))
+    row(3, "Time exit", str.format_time(tsOf(relEX), hm, dispTz))
+    row(4, "Today", plan, pos == 1 ? color.new(C_BUY, 40) : pos == -1 ? color.new(C_SELL, 40) : none)
+    row(5, "Open trade SL / TP", pos != 0 ? fmtPx(slPx) + " / " + fmtPx(tpPx) : "-")
+    row(6, "Trades on this chart", str.tostring(nTrades) + "  (TP " + str.tostring(nTP) + ", SL " + str.tostring(nSL) + ", time " + str.tostring(nTime) + ")")
+    row(7, "Win rate / avg", nTrades > 0 ? str.tostring(100.0 * nWin / math.max(1, nTP + nSL + nTime), "#") + "%  /  " + fmtR(sumR / math.max(1, nTP + nSL + nTime)) : "-")
+    row(8, "Total / max drawdown", fmtR(sumR) + "  /  " + str.tostring(maxDD, "#.0") + "R", sumR >= 0 ? color.new(C_BUY, 60) : color.new(C_SELL, 60))
+    row(9, "Backtest 2009-17 / 2018-26", "+0.065R / +0.020R per trade (2018-26 not significant)")
+
+// ── Alerts ──────────────────────────────────────────────────────────────────
+alertcondition(evPlan, "Plan ready (place both stop orders)", 'XAUUSD plan: BUY STOP {{plot("Buy stop")}} / SELL STOP {{plot("Sell stop")}} (SL = the other level)')
+alertcondition(evBuy, "BUY filled", 'XAUUSD BUY at {{plot("Entry")}} | SL {{plot("SL")}} | TP {{plot("TP")}}')
+alertcondition(evSell, "SELL filled", 'XAUUSD SELL at {{plot("Entry")}} | SL {{plot("SL")}} | TP {{plot("TP")}}')
+alertcondition(evTP, "TP hit", 'XAUUSD take profit hit')
+alertcondition(evSL, "SL hit", 'XAUUSD stop loss hit')
+alertcondition(evTime, "Time exit", 'XAUUSD: close the open trade (time exit)')
+
+string msg = ""
+if evTP or evSL or evTime
+    msg += (evTP ? "TP hit" : evSL ? "SL hit" : "Time exit") + " at " + fmtPx(exitPx) + " (" + fmtR(exitR) + "). "
+if evPlan
+    float pRisk = rHi - rLo
+    msg += "Plan: BUY STOP " + fmtPx(rHi) + " (SL " + fmtPx(rLo) + ", TP " + fmtPx(rHi + tpR * pRisk) + ") / SELL STOP " + fmtPx(rLo) + " (SL " + fmtPx(rHi) + ", TP " + fmtPx(rLo - tpR * pRisk) + "). Cancel at " + str.format_time(tsOf(relEE), "HH:mm", dispTz) + ". "
+if evBuy or evSell
+    msg += (evBuy ? "BUY" : "SELL") + " filled at " + fmtPx(entryPx) + ", SL " + fmtPx(slPx) + ", TP " + fmtPx(tpPx) + ". "
+if str.length(msg) > 0
+    alert(syminfo.ticker + " " + str.format_time(time_close, "HH:mm", dispTz) + ": " + msg, alert.freq_once_per_bar_close)

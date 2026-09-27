@@ -5,3 +5,6 @@ test_*.pine
 cfg_*.json
 pine_*.json
 mirror_*.json
+xau_*.json
+xau_test.pine
+*.log

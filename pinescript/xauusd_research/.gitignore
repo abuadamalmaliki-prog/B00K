@@ -1,0 +1,4 @@
+data/
+*.parquet
+*_utc.json
+__pycache__/
