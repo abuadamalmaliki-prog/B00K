@@ -1,0 +1,7 @@
+node_modules/
+package-lock.json
+candles.json
+test_*.pine
+cfg_*.json
+pine_*.json
+mirror_*.json

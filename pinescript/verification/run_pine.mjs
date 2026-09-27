@@ -1,0 +1,12 @@
+import { PineTS } from 'pinets';
+import fs from 'fs';
+const [,, candlesPath, pinePath, outPath] = process.argv;
+const candles = JSON.parse(fs.readFileSync(candlesPath, 'utf8'));
+const src = fs.readFileSync(pinePath, 'utf8');
+const pineTS = new PineTS(candles, 'TEST', 'D');
+const ctx = await pineTS.run(src);
+const out = {};
+for (const [k, v] of Object.entries(ctx.plots)) out[k] = v.data.map(d => (d && typeof d === 'object' && 'value' in d) ? d.value : d);
+fs.writeFileSync(outPath, JSON.stringify(out));
+console.log('plots:', Object.keys(out).join(' | '));
+console.log('lengths:', Object.values(out).map(a => a.length).join(','));

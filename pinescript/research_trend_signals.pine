@@ -1,0 +1,300 @@
+//@version=6
+// ─────────────────────────────────────────────────────────────────────────────
+// Research Trend Signals (Buy / Sell / TP / SL)
+//
+// Every rule in this indicator comes from one of four papers:
+//
+// [1] Lempérière, Deremble, Seager, Potters & Bouchaud (2014),
+//     "Two centuries of trend following", arXiv:1404.3274.
+//     -> BUY / SELL. Trend signal s = (p(t) - EMA_n of prices up to t-1) / sigma_n,
+//        where sigma_n is the EMA of absolute price changes (Eq. 1), and the
+//        fitted saturation tanh(s / s*) with s* ~ 0.89 (Eq. 3).
+// [2] Avellaneda & Stoikov (2008), "High-frequency trading in a limit order
+//     book", Quantitative Finance 8(3), 217-224.
+//     -> TP. The optimal exit quote for inventory q = +1 (long) or -1 (short):
+//        reservation price r = s - q*gamma*sigma^2*(T-t) (Eq. 29) plus or minus
+//        half the optimal spread gamma*sigma^2*(T-t) + (2/gamma)*ln(1 + gamma/k) (Eq. 30).
+// [3] Goldberg, Kennedy & Miu (2010), "Central bank dollar swap lines and
+//     overseas dollar funding costs", NBER Working Paper 15763.
+//     -> Funding-stress filter. The LIBOR-OIS spread the paper tracks no longer
+//        exists, so the default gauge is the St. Louis Fed Financial Stress
+//        Index (FRED:STLFSI4), which is built from funding spreads. Above 1.0 it
+//        marks Aug 2007 - Jul 2009, the episode the paper covers.
+// [4] Borio (2012), "The financial cycle and macroeconomics: what have we
+//     learnt?", BIS Working Paper 395.
+//     -> Financial-cycle filter. The gap of (log) price from a one-sided
+//        Hodrick-Prescott trend, the BIS real-time method, with the 15-25 %
+//        danger zone for property-price gaps (Graph 3). The one-sided HP filter
+//        is the Kalman filter of Meyer-Gohde (2010), as implemented in hp1() of
+//        github.com/alexandrumonahov/hpfilter (CC BY-SA 4.0).
+//
+// SL uses paper [1]'s own unit of risk: a multiple of sigma_n.
+// Signals and exits are evaluated on closed bars only, so nothing repaints.
+// This is an indicator, not a strategy: the dashboard statistics ignore costs.
+// ─────────────────────────────────────────────────────────────────────────────
+indicator("Research Trend Signals (Buy/Sell/TP/SL)", shorttitle = "RTS", overlay = true)
+
+// ── Inputs ──────────────────────────────────────────────────────────────────
+G_TREND  = "Buy / Sell · Lempérière et al. (2014)"
+G_TP     = "Take profit · Avellaneda & Stoikov (2008)"
+G_SL     = "Stop loss"
+G_CYCLE  = "Financial-cycle filter · Borio (2012, BIS)"
+G_STRESS = "Funding-stress filter · Goldberg, Kennedy & Miu (2010, NBER)"
+G_VIEW   = "Display"
+
+CYCLE_OFF  = "Off"
+CYCLE_BUY  = "Block BUY in boom zone"
+CYCLE_BOTH = "Block BUY in boom, SELL in bust"
+STRESS_OFF  = "Off"
+STRESS_BUY  = "Block BUY in stress"
+STRESS_BOTH = "Block BUY and SELL in stress"
+
+int trendLen = input.int(50, "Trend horizon n (bars)", minval = 2, maxval = 5000, group = G_TREND,
+  tooltip = "Timescale of the EMA reference price and of sigma_n (EMA decay 1/n). The paper used n = 5 months on monthly bars and found the effect robust from 2.5 to 10 months, while very short trends (a few days) have weakened since 1990. On a daily chart that range is roughly 50 to 210 bars.")
+float sStar = input.float(0.89, "Saturation s*", minval = 0.05, step = 0.01, group = G_TREND,
+  tooltip = "Fitted saturation of the trend signal (Eq. 3 of the paper, s* ~ 0.89). Conviction = tanh(s / s*), between -1 and +1.")
+float minConv = input.float(0.5, "Minimum conviction to signal", minval = 0.0, maxval = 0.95, step = 0.05, group = G_TREND,
+  tooltip = "BUY prints when tanh(s / s*) crosses above this level, SELL when it crosses below its negative. 0 reproduces the paper's pure sign(s) rule; a higher value adds a dead band against whipsaw.")
+
+float asGamma = input.float(0.0141, "Risk aversion γ (per bar σ)", minval = 0.0001, step = 0.001, group = G_TP,
+  tooltip = "The paper's simulation value gamma = 0.1 re-expressed in units of one bar's volatility: 0.1 x sigma x sqrt(dt) = 0.1 x 2 x sqrt(0.005) = 0.0141. Higher = more risk averse = closer take profit.")
+float asK = input.float(0.212, "Order-arrival decay k (per bar σ)", minval = 0.001, step = 0.01, group = G_TP,
+  tooltip = "The paper's k = 1.5 in the same units: 1.5 x 2 x sqrt(0.005) = 0.212. Smaller k = fills are likely further from the mid price = further take profit.")
+int asHorizon = input.int(50, "Horizon T − t at entry (bars)", minval = 1, maxval = 500, group = G_TP,
+  tooltip = "Holding horizon left when the position opens. A longer horizon carries more inventory risk, which lowers the reservation price of a long (Eq. 29) and pulls the take profit closer.")
+
+float slMult = input.float(3.0, "Stop distance (× σn)", minval = 0.1, step = 0.1, group = G_SL,
+  tooltip = "Paper [1] sizes every position by 1 / sigma_n, so sigma_n (the EMA of absolute bar-to-bar changes) is its unit of risk. The stop sits this many sigma_n from the entry price.")
+
+string cycleMode = input.string(CYCLE_BUY, "Mode", options = [CYCLE_OFF, CYCLE_BUY, CYCLE_BOTH], group = G_CYCLE,
+  tooltip = "Borio: peaks of the financial cycle, measured as large positive gaps from a one-sided HP trend, precede busts. BUY signals in the boom zone are skipped.")
+int cyclePeriod = input.int(2000, "Trend cut-off period (bars)", minval = 20, maxval = 100000, group = G_CYCLE,
+  tooltip = "Sets the HP smoothing: lambda = 1 / (16 sin^4(pi / period)). The BIS credit gap uses lambda = 400,000 on quarterly data, a cut-off of about 158 quarters (40 years). 2000 daily bars is about 8 years. The first quarter of this period is used to warm up the filter.")
+float gapThr = input.float(20.0, "Boom-zone gap (%)", minval = 0.5, step = 0.5, group = G_CYCLE,
+  tooltip = "BIS danger zone for real property-price gaps: 15-25 %. 20 % is the midpoint. The bust zone is the same gap below the trend.")
+
+string stressMode = input.string(STRESS_BUY, "Mode", options = [STRESS_OFF, STRESS_BUY, STRESS_BOTH], group = G_STRESS,
+  tooltip = "Goldberg, Kennedy & Miu: dollar funding shortages drive a scramble for liquidity. BUY signals during funding stress are skipped.")
+string stressSym = input.symbol("FRED:STLFSI4", "Stress index", group = G_STRESS,
+  tooltip = "Default: St. Louis Fed Financial Stress Index (weekly). It reads the last completed value, so it never repaints. If the symbol cannot be loaded the filter switches itself off.")
+float stressThr = input.float(1.0, "Stress threshold", step = 0.1, group = G_STRESS,
+  tooltip = "STLFSI4: 0 = average conditions. It was above 1.0 in about 8 % of weeks since 1993, in episodes such as 1998, 2001-02, Aug 2007 - Jul 2009, 2010-11, early 2016, Mar-May 2020 and Mar 2023. If you choose another gauge (for example TVC:VIX) set a threshold on its scale.")
+
+bool showRef      = input.bool(true, "Trend reference (EMA)", group = G_VIEW)
+bool showCycle    = input.bool(false, "Financial-cycle trend (HP)", group = G_VIEW)
+bool showLevels   = input.bool(true, "Entry / TP / SL lines", group = G_VIEW)
+bool showBlocked  = input.bool(true, "Mark signals a filter removed", group = G_VIEW)
+bool shadeRegimes = input.bool(true, "Shade boom-zone and stress bars", group = G_VIEW)
+bool showTable    = input.bool(true, "Dashboard", group = G_VIEW)
+
+// ── [1] Trend signal (Lempérière et al. 2014) ───────────────────────────────
+// Numerically safe tanh: never overflows, and returns na for na.
+tanhSafe(float x) =>
+    float e = math.exp(-2.0 * math.abs(x))
+    math.sign(x) * (1.0 - e) / (1.0 + e)
+
+float dp      = ta.change(close)
+float emaRef  = ta.rma(close, trendLen)                   // EMA with decay 1/n
+float refPx   = emaRef[1]                                  // reference excludes p(t)
+float sigAbs  = ta.rma(math.abs(dp), trendLen)            // sigma_n: EMA of |dp|
+float sigRms  = math.sqrt(ta.rma(dp * dp, trendLen))      // sigma for [2]: RMS of dp
+float sSig    = sigAbs > 0 ? (close - refPx) / sigAbs : na
+float conv    = tanhSafe(sSig / sStar)
+bool  rawBuy  = ta.crossover(conv, minConv)
+bool  rawSell = ta.crossunder(conv, -minConv)
+
+// ── [2] Take-profit distance (Avellaneda & Stoikov 2008) ────────────────────
+// For q = +1 the ask is r + spread/2 = s - gamma*sigma^2*tau/2 + (1/gamma)*ln(1 + gamma/k);
+// for q = -1 the bid mirrors it. With gamma and k expressed per bar sigma, the
+// distance from the mid price in units of sigma is:
+float asUnitsRaw = (1.0 / asGamma) * math.log(1.0 + asGamma / asK) - asGamma * asHorizon / 2.0
+float asUnits    = math.max(asUnitsRaw, 0.5)
+bool  asFloored  = asUnitsRaw < 0.5
+
+// ── [4] Financial-cycle gap: one-sided HP filter via Kalman (Borio 2012) ────
+// State (trend[t+1], trend[t]); transition [[2, -1], [1, 0]]; observation noise 1;
+// trend-curvature noise 1 / lambda. Same recursion as hp1() (Hamilton 1994, ch. 13).
+float hpLambda = 1.0 / (16.0 * math.pow(math.sin(math.pi / cyclePeriod), 4))
+float logPx    = close > 0 ? math.log(close) : na     // na restarts the filter below
+var float hx1  = na
+var float hx2  = na
+var float hp11 = na
+var float hp12 = na
+var float hp22 = na
+if na(hx1)
+    hx1  := logPx
+    hx2  := logPx
+    hp11 := 1.0e5
+    hp12 := 0.0
+    hp22 := 1.0e5
+float hS   = hp11 + 1.0
+float hk1  = (2.0 * hp11 - hp12) / hS
+float hk2  = hp11 / hS
+float hv   = logPx - hx1
+float hA   = 2.0 - hk1
+float hB   = 1.0 - hk2
+float nx1  = 2.0 * hx1 - hx2 + hk1 * hv
+float nx2  = hx1 + hk2 * hv
+float n11  = hA * hA * hp11 - 2.0 * hA * hp12 + hp22 + 1.0 / hpLambda + hk1 * hk1
+float n12  = hB * (hA * hp11 - hp12) + hk1 * hk2
+float n22  = hB * hB * hp11 + hk2 * hk2
+hx1  := nx1
+hx2  := nx2
+hp11 := n11
+hp12 := n12
+hp22 := n22
+float hpTrend = hx2
+float gapPct  = 100.0 * (logPx - hpTrend)
+bool  gapReady = bar_index >= math.round(cyclePeriod / 4.0)
+bool  boomZone = gapReady and gapPct >= gapThr
+bool  bustZone = gapReady and gapPct <= -gapThr
+
+// ── [3] Funding stress (Goldberg, Kennedy & Miu 2010) ───────────────────────
+// Last completed value only ([1] with lookahead on), on a daily or higher timeframe.
+string stressTf  = timeframe.in_seconds() >= 86400 ? timeframe.period : "1D"
+float  stressVal = request.security(stressSym, stressTf, close[1], lookahead = barmerge.lookahead_on, ignore_invalid_symbol = true)
+bool   inStress  = not na(stressVal) and stressVal > stressThr
+
+bool blockBuy  = (cycleMode != CYCLE_OFF and boomZone) or (stressMode != STRESS_OFF and inStress)
+bool blockSell = (cycleMode == CYCLE_BOTH and bustZone) or (stressMode == STRESS_BOTH and inStress)
+
+// ── Trade state: BUY / SELL / TP / SL ───────────────────────────────────────
+var int   pos      = 0          // +1 long, -1 short, 0 flat
+var float entryPx  = na
+var float tpPx     = na
+var float slPx     = na
+var float riskPx   = na
+var int   entryBar = na
+var int   nTrades  = 0
+var int   nTP      = 0
+var int   nSL      = 0
+var int   nExit    = 0
+var float sumR     = 0.0
+
+bool  evBuy       = false
+bool  evSell      = false
+bool  evTP        = false
+bool  evSL        = false
+bool  evExit      = false
+bool  evBlockBuy  = false
+bool  evBlockSell = false
+float exitPx      = na
+
+if barstate.isconfirmed
+    // 1. Stop and target, from the bar after entry. The stop is checked first,
+    //    the pessimistic reading of a bar that touched both. A gap through a
+    //    level fills at the open.
+    if pos != 0 and bar_index > entryBar
+        bool hitSL = pos == 1 ? low <= slPx : high >= slPx
+        bool hitTP = pos == 1 ? high >= tpPx : low <= tpPx
+        if hitSL
+            exitPx := pos == 1 ? math.min(open, slPx) : math.max(open, slPx)
+            evSL   := true
+        else if hitTP
+            exitPx := pos == 1 ? math.max(open, tpPx) : math.min(open, tpPx)
+            evTP   := true
+    // 2. An opposite signal closes the trade at the close, even when a filter
+    //    then blocks the new entry: the trend it was riding has reversed.
+    if pos != 0 and not evSL and not evTP and ((pos == 1 and rawSell) or (pos == -1 and rawBuy))
+        exitPx := close
+        evExit := true
+    if evSL or evTP or evExit
+        sumR  += (exitPx - entryPx) * pos / riskPx
+        nSL   += evSL ? 1 : 0
+        nTP   += evTP ? 1 : 0
+        nExit += evExit ? 1 : 0
+        pos   := 0
+    // 3. New entries at the close of the signal bar.
+    if pos == 0 and sigRms > 0
+        if rawBuy
+            if blockBuy
+                evBlockBuy := true
+            else
+                pos   := 1
+                evBuy := true
+        else if rawSell
+            if blockSell
+                evBlockSell := true
+            else
+                pos    := -1
+                evSell := true
+        if evBuy or evSell
+            entryPx  := close
+            entryBar := bar_index
+            riskPx   := slMult * sigAbs
+            slPx     := close - pos * riskPx
+            tpPx     := close + pos * asUnits * sigRms
+            nTrades  += 1
+
+// ── Plots ───────────────────────────────────────────────────────────────────
+color C_BUY  = #089981
+color C_SELL = #f23645
+color C_ENT  = #787b86
+
+plot(showRef ? refPx : na, "Trend reference (EMA)", conv >= 0 ? color.new(C_BUY, 40) : color.new(C_SELL, 40), 2)
+plot(showCycle and gapReady ? math.exp(hpTrend) : na, "Financial-cycle trend (HP)", color.new(color.orange, 20), 1)
+plot(pos != 0 ? entryPx : na, "Entry", C_ENT, 1, plot.style_linebr, display = showLevels ? display.all : display.none)
+plot(pos != 0 ? tpPx : na, "TP", C_BUY, 2, plot.style_linebr, display = showLevels ? display.all : display.none)
+plot(pos != 0 ? slPx : na, "SL", C_SELL, 2, plot.style_linebr, display = showLevels ? display.all : display.none)
+
+plotshape(evBuy, "BUY", shape.labelup, location.belowbar, C_BUY, text = "BUY", textcolor = color.white, size = size.small)
+plotshape(evSell, "SELL", shape.labeldown, location.abovebar, C_SELL, text = "SELL", textcolor = color.white, size = size.small)
+plotshape(evTP ? exitPx : na, "TP hit", shape.circle, location.absolute, C_BUY, text = "TP", textcolor = C_BUY, size = size.tiny)
+plotshape(evSL ? exitPx : na, "SL hit", shape.xcross, location.absolute, C_SELL, text = "SL", textcolor = C_SELL, size = size.tiny)
+plotshape(evExit ? exitPx : na, "Signal exit", shape.square, location.absolute, C_ENT, text = "EXIT", textcolor = C_ENT, size = size.tiny)
+plotshape(showBlocked and evBlockBuy, "BUY removed by filter", shape.xcross, location.belowbar, color.new(C_ENT, 20), size = size.tiny)
+plotshape(showBlocked and evBlockSell, "SELL removed by filter", shape.xcross, location.abovebar, color.new(C_ENT, 20), size = size.tiny)
+
+bgcolor(shadeRegimes and cycleMode != CYCLE_OFF and boomZone ? color.new(color.orange, 88) : na, title = "Boom zone")
+bgcolor(shadeRegimes and stressMode != STRESS_OFF and inStress ? color.new(color.purple, 88) : na, title = "Funding stress")
+
+// ── Dashboard ───────────────────────────────────────────────────────────────
+var table dash = table.new(position.top_right, 2, 8, bgcolor = color.new(#131722, 15), border_color = color.new(C_ENT, 60), border_width = 1)
+
+row(int r, string k, string v, color bg) =>
+    table.cell(dash, 0, r, k, text_color = color.white, text_size = size.small, text_halign = text.align_left)
+    table.cell(dash, 1, r, v, text_color = color.white, text_size = size.small, text_halign = text.align_left, bgcolor = bg)
+
+fmtPx(float v) =>
+    str.tostring(v, format.mintick)
+
+if showTable and barstate.islast
+    color none   = color.new(#131722, 100)
+    color okBg   = color.new(C_BUY, 55)
+    color badBg  = color.new(C_SELL, 55)
+    string posTxt = pos == 1 ? "LONG" : pos == -1 ? "SHORT" : "FLAT"
+    string lvlTxt = pos != 0 ? fmtPx(entryPx) + " / " + fmtPx(tpPx) + " / " + fmtPx(slPx) : "-"
+    string sTxt   = na(sSig) ? "warming up" : str.tostring(sSig, "#.##") + "  (" + str.tostring(conv * 100.0, "#") + "%)"
+    string gapTxt = gapReady ? str.tostring(gapPct, "#.#") + "%" + (boomZone ? "  BOOM ZONE" : bustZone ? "  BUST ZONE" : "") : "warming up"
+    string strTxt = na(stressVal) ? "n/a" : str.tostring(stressVal, "#.##") + (inStress ? "  STRESS" : "  normal")
+    string tpTxt  = str.tostring(asUnits, "#.##") + " σ" + (asFloored ? "  (floored: lower γ or horizon)" : "")
+    row(0, "Trend s  (conviction)", sTxt, na(conv) ? none : conv >= 0 ? okBg : badBg)
+    row(1, "Position", posTxt, pos == 1 ? okBg : pos == -1 ? badBg : none)
+    row(2, "Entry / TP / SL", lvlTxt, none)
+    row(3, "TP distance (A-S)", tpTxt, asFloored ? badBg : none)
+    row(4, "Cycle gap (BIS)", gapTxt, boomZone or bustZone ? badBg : none)
+    row(5, "Funding stress", strTxt, inStress ? badBg : none)
+    row(6, "Trades  TP / SL / exit", str.tostring(nTrades) + "   " + str.tostring(nTP) + " / " + str.tostring(nSL) + " / " + str.tostring(nExit), none)
+    row(7, "Net R (no costs)", str.tostring(sumR, "#.#") + " R", sumR >= 0 ? okBg : badBg)
+
+// ── Alerts ──────────────────────────────────────────────────────────────────
+alertcondition(evBuy, "BUY", 'BUY {{ticker}} ({{interval}}) at {{close}} | TP {{plot("TP")}} | SL {{plot("SL")}}')
+alertcondition(evSell, "SELL", 'SELL {{ticker}} ({{interval}}) at {{close}} | TP {{plot("TP")}} | SL {{plot("SL")}}')
+alertcondition(evTP, "TP hit", 'TP hit on {{ticker}} ({{interval}})')
+alertcondition(evSL, "SL hit", 'SL hit on {{ticker}} ({{interval}})')
+alertcondition(evExit, "Signal exit", 'Opposite signal closed the trade on {{ticker}} ({{interval}}) at {{close}}')
+
+// One alert() per bar that carries every event of the bar, with its prices.
+string msg = ""
+if evSL
+    msg += "SL hit at " + fmtPx(exitPx) + ". "
+if evTP
+    msg += "TP hit at " + fmtPx(exitPx) + ". "
+if evExit
+    msg += "Opposite signal: exit at " + fmtPx(exitPx) + ". "
+if evBuy
+    msg += "BUY at " + fmtPx(entryPx) + ", TP " + fmtPx(tpPx) + ", SL " + fmtPx(slPx) + ". "
+if evSell
+    msg += "SELL at " + fmtPx(entryPx) + ", TP " + fmtPx(tpPx) + ", SL " + fmtPx(slPx) + ". "
+if str.length(msg) > 0
+    alert(syminfo.ticker + " (" + timeframe.period + "): " + msg, alert.freq_once_per_bar_close)

@@ -1,0 +1,8 @@
+{
+  "name": "rts-verification",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "pinets": "0.10.0"
+  }
+}
