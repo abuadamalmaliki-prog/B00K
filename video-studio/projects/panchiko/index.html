@@ -8,7 +8,12 @@
 <script type="importmap">
   { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/",
+      "troika-three-text": "https://cdn.jsdelivr.net/npm/troika-three-text@0.52.4/dist/troika-three-text.esm.js",
+      "troika-three-utils": "https://cdn.jsdelivr.net/npm/troika-three-utils@0.52.4/dist/troika-three-utils.esm.js",
+      "troika-worker-utils": "https://cdn.jsdelivr.net/npm/troika-worker-utils@0.52.0/dist/troika-worker-utils.esm.js",
+      "webgl-sdf-generator": "https://cdn.jsdelivr.net/npm/webgl-sdf-generator@1.1.1/dist/webgl-sdf-generator.mjs",
+      "bidi-js": "https://cdn.jsdelivr.net/npm/bidi-js@1.0.3/dist/bidi.mjs"
   } }
 </script>
 <style>
@@ -17,6 +22,9 @@
   /* Location card: a quiet lower-left caption, like the first frame of a film. */
   .card { position: absolute; left: 64px; bottom: 150px; opacity: 0; color: #f1ede4;
     font: 500 34px/1.2 'Inter', sans-serif; letter-spacing: .08em; text-shadow: 0 2px 12px rgba(0,0,0,.6); }
+  .fine { position: absolute; left: 0; right: 0; bottom: 84px; text-align: center; opacity: 0; color: rgba(255,255,255,.8);
+    font: 500 17px 'Inter', sans-serif; letter-spacing: .04em; text-shadow: 0 1px 6px rgba(0,0,0,.5); }
+  #flash { position: absolute; inset: 0; background: #f4f8ff; opacity: 0; }
   .wm { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); padding: 7px 16px; border-radius: 999px;
     background: rgba(7,8,12,.35); border: 1px solid rgba(255,255,255,.18); white-space: pre;
     font: 400 20px/1 'IBM Plex Mono', monospace; letter-spacing: .06em; color: #fff; }
@@ -26,19 +34,25 @@
 <body>
 <div id="stage">
   <div class="card" id="card"></div>
+  <div id="flash"></div>
+  <div class="fine" id="fine"></div>
   <div class="wm"><b>Instagram:</b> ihvyone_1   ·   <b>Tiktok:</b> rapidfirequestion</div>
 </div>
 <script type="module">
   import * as THREE from 'three';
+  import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
   import copy from './src/copy.js';
   import sync from './src/sync.js';
-  import { applyCamera, cameraAt, doorAt, gradeAt, bodyPoseAt, useSync, footfalls, CUE, VFOV } from './src/camera.js';
+  import { applyCamera, doorAt, gradeAt, bodyPoseAt, useSync, footfalls, CUE, VFOV } from './src/camera.js';
+  import { shotAt, T } from './src/shots.js';
   import { createStore } from './src/store.js';
   import { createBody } from './src/body.js';
+  import { createField, terrainHeight } from './src/field.js';
   import { createLook } from './src/look.js';
   import { createRenderer } from './src/eng.js';
 
   const W = 1080, H = 1350;
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
   Studio.setup({
     width: W, height: H, fps: 60, duration: sync.WINDOW.duration,
     audio: [{ src: 'media/song.mp4', from: sync.WINDOW.start, duration: sync.WINDOW.duration, fadeIn: 0.02 }],
@@ -50,42 +64,169 @@
   scene.background = new THREE.Color(0x06080d);
   scene.fog = new THREE.FogExp2(0x1a1e26, 0.026);
   const camera = new THREE.PerspectiveCamera(VFOV, W / H, 0.03, 80);
+  const field = createField({ renderer });
 
-  // Loading is registered with Studio.wait and every frame awaits it, so rendering never
-  // starts on a half-built world.
+  // ---- props in the hands ----------------------------------------------------------------------
+  const texLoader = new THREE.TextureLoader();
+  const srgb = (t) => { t.colorSpace = THREE.SRGBColorSpace; return t; };
+  function canvasTex(w, h, draw) {
+    const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
+    return srgb(new THREE.CanvasTexture(c));
+  }
+  // The back of the case: the four track titles and nothing else — no surnames.
+  const caseBack = canvasTex(512, 452, (g, w) => {
+    g.fillStyle = '#e9e6de'; g.fillRect(0, 0, w, 452);
+    g.fillStyle = '#111'; g.font = '800 40px Inter, Arial, sans-serif'; g.fillText(copy.panchiko.caseBack.heading, 36, 70);
+    g.font = '500 24px Inter, Arial, sans-serif';
+    copy.panchiko.caseBack.tracks.forEach((tr, i) => {
+      g.textAlign = 'left'; g.fillText(`${tr.n}. ${tr.title}`, 36, 140 + i * 48);
+      g.textAlign = 'right'; g.fillText(tr.len, w - 36, 140 + i * 48);
+    });
+  });
+
+  function heroCase(cover) {
+    // A jewel case: the user's cover image, as supplied, on the front; the track list on the back.
+    const g = new THREE.Group();
+    const shell = new THREE.MeshPhysicalMaterial({ color: 0x0c0c0e, roughness: 0.15, clearcoat: 1, clearcoatRoughness: 0.05 });
+    const box = new THREE.Mesh(new THREE.BoxGeometry(0.142, 0.125, 0.0104), shell);
+    const front = new THREE.Mesh(new THREE.PlaneGeometry(0.12, 0.12), new THREE.MeshStandardMaterial({ map: cover, roughness: 0.25 }));
+    front.position.set(0.008, 0, 0.0054);
+    const back = new THREE.Mesh(new THREE.PlaneGeometry(0.136, 0.12), new THREE.MeshStandardMaterial({ map: caseBack, roughness: 0.4 }));
+    back.position.z = -0.0054; back.rotation.y = Math.PI;
+    g.add(box, front, back);
+    return g;
+  }
+
+  let lcdText = null;
+  const lcdCanvas = document.createElement('canvas'); lcdCanvas.width = 256; lcdCanvas.height = 64;
+  const lcdTex = srgb(new THREE.CanvasTexture(lcdCanvas));
+  function setLcd(text) {
+    if (text === lcdText) return;
+    lcdText = text;
+    const g = lcdCanvas.getContext('2d');
+    g.fillStyle = '#8fa58a'; g.fillRect(0, 0, 256, 64);
+    g.fillStyle = '#1d261c'; g.font = '700 38px "IBM Plex Mono", monospace'; g.fillText(text, 14, 46);
+    lcdTex.needsUpdate = true;
+  }
+  const lid = new THREE.Group();
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.0012, 64),
+    new THREE.MeshPhysicalMaterial({ color: 0xd9dde2, metalness: 1, roughness: 0.12, iridescence: 1, iridescenceIOR: 1.8, iridescenceThicknessRange: [250, 800] }));
+  function cdPlayer() {
+    // An invented 2000s portable CD player (copy.player): silver shell, hinged lid, LCD.
+    const g = new THREE.Group();
+    const shellMat = new THREE.MeshStandardMaterial({ color: 0xaeb3ba, metalness: 0.7, roughness: 0.35 });
+    const base = new THREE.Mesh(new THREE.CylinderGeometry(0.068, 0.068, 0.024, 64), shellMat);
+    const well = new THREE.Mesh(new THREE.CylinderGeometry(0.062, 0.062, 0.002, 64), new THREE.MeshStandardMaterial({ color: 0x1a1b1e, roughness: 0.6 }));
+    well.position.y = 0.0121;
+    disc.position.y = 0.0135;
+    const lidMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.068, 0.068, 0.006, 64), shellMat);
+    lidMesh.position.set(0, 0.003, 0.068); lid.add(lidMesh); lid.position.set(0, 0.012, -0.068);
+    const lcd = new THREE.Mesh(new THREE.PlaneGeometry(0.05, 0.0125), new THREE.MeshBasicMaterial({ map: lcdTex }));
+    lcd.rotation.x = -Math.PI / 2; lcd.position.set(0, 0.0125, 0.045);
+    g.add(base, well, disc, lid, lcd);
+    return g;
+  }
+
+  // ---- 3D type in the field (troika SDF text) --------------------------------------------------
+  const FONT = 'https://cdn.jsdelivr.net/npm/@fontsource/inter@5.1.0/files/inter-latin-800-normal.woff';
+  const FONT_LIGHT = 'https://cdn.jsdelivr.net/npm/@fontsource/inter@5.1.0/files/inter-latin-400-normal.woff';
+  const texts = { groups: [], cards: [], title: null, sub: null };
+  async function makeText(str, size, font = FONT, opts = {}) {
+    const { Text } = await import('troika-three-text');
+    const t = new Text();
+    Object.assign(t, { text: str, font, fontSize: size, anchorX: 'center', anchorY: 'bottom', color: 0xffffff, letterSpacing: 0.02, ...opts });
+    t.material.toneMapped = false;
+    await new Promise((res) => t.sync(res));
+    field.scene.add(t);
+    return t;
+  }
+  async function buildTexts() {
+    // The EP title, one group per beat, standing in the grass in a shallow arc.
+    const groups = copy.cards.titleRise.groups;
+    for (let i = 0; i < groups.length; i++) {
+      const x = (i - (groups.length - 1) / 2) * 3.0, z = -62 - 2.2 * Math.cos((i / (groups.length - 1) - 0.5) * Math.PI);
+      const t = await makeText(groups[i], 2.5, FONT, { outlineWidth: '1.5%', outlineColor: 0x1d2a38, outlineOpacity: 0.35 });
+      t.userData.base = V(x, terrainHeight(x, z) - 0.2, z);
+      t.userData.beat = sync.beats[copy.cards.titleRise.beatN[i] - 1];
+      texts.groups.push(t);
+    }
+    for (const c of copy.cards.end) {
+      const t = await makeText(c.line2 ? `${c.line1}\n${c.line2}` : c.line1, 1.7, FONT_LIGHT,
+        { textAlign: 'center', lineHeight: 1.3, outlineWidth: '4%', outlineColor: 0x1b2633, outlineOpacity: 0.45 });
+      t.userData.t = c.t;
+      texts.cards.push(t);
+    }
+    texts.title = await makeText(copy.cards.title.main, 5.0, FONT, { letterSpacing: 0.08, outlineWidth: '1%', outlineColor: 0x1d2a38, outlineOpacity: 0.3 });
+    texts.sub = await makeText(`${copy.cards.title.sub}  ·  ${copy.cards.title.year}`, 1.6, FONT_LIGHT, { letterSpacing: 0.12 });
+  }
+
+  function textsAt(t, cam) {
+    const k = (a, b) => Studio.progress(t, a, b);
+    for (const g of texts.groups) {
+      const up = Studio.ease.out(k(g.userData.beat - 0.05, g.userData.beat + 0.45));
+      const down = Studio.ease.in(k(T.title - 0.4, T.title + 0.6));
+      g.visible = up > 0 && down < 1;
+      g.position.copy(g.userData.base).add(V(0, -6.5 + 6.7 * up - 7 * down, 0));
+      g.quaternion.copy(cam.quaternion);
+    }
+    texts.cards.forEach((c, i) => {
+      const next = texts.cards[i + 1]?.userData.t ?? T.title;
+      const o = k(c.userData.t, c.userData.t + 0.35) * (1 - k(next - 0.3, next));
+      c.visible = o > 0.001; c.fillOpacity = o; c.outlineOpacity = 0.45 * o;
+      c.position.set(0, terrainHeight(0, -54) + 11 + 0.3 * o, -54);
+      c.quaternion.copy(cam.quaternion);
+    });
+    const ti = Studio.ease.out(k(T.title, T.title + 0.7));
+    for (const [txt, y] of [[texts.title, 8.5], [texts.sub, 6.6]]) {
+      txt.visible = ti > 0.001; txt.fillOpacity = ti;
+      txt.position.set(0, terrainHeight(0, -55) + y - 1.5 * (1 - ti), -55);
+      txt.quaternion.copy(cam.quaternion);
+    }
+  }
+
+  // ---- world ----------------------------------------------------------------------------------------
   const ready = Studio.wait(Promise.all([
     createStore({ renderer }), createBody({ renderer }), createBody({ renderer }),
-  ]).then(([store, body, worker]) => {
+    texLoader.loadAsync('media/cover.webp').then(srgb),
+    new RGBELoader().loadAsync('assets/env/kloofendal_48d_partly_cloudy_puresky_2k.hdr'),
+    field.ready, buildTexts(),
+  ]).then(([store, body, worker, cover, skyHdr]) => {
     scene.add(store.root, body.root, worker.root);
     scene.add(new THREE.HemisphereLight(0xdfe8ff, 0x20242a, 0.25));
-    // The same CC0 rig dresses the shop assistant.
     worker.hideHead(false); worker.outfit.jacket.set(0x1f3b2d); worker.outfit.jeans.set(0x17181b);
-    window.__film = { store, body, worker, camera, scene };            // for debugging from render scripts
-    return { store, body, worker };
+    skyHdr.mapping = THREE.EquirectangularReflectionMapping;
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const skyEnv = pmrem.fromEquirectangular(skyHdr).texture; pmrem.dispose();
+    field.scene.add(new THREE.HemisphereLight(0xcfe3ff, 0x4a5a2a, 0.9));
+    const sun = new THREE.DirectionalLight(0xfff1dc, 2.2); sun.position.copy(field.sun).multiplyScalar(50); field.scene.add(sun);
+    const hero = heroCase(cover), player = cdPlayer();
+    body.anchors.case.add(hero, player);
+    player.rotation.x = Math.PI / 2;
+    window.__film = { store, body, worker, camera, scene, field };      // for debugging from render scripts
+    return { store, body, worker, hero, player, skyEnv };
   }));
 
-  // People are driven like the viewer: an eye position plus where they look.
-  const eyeOf = (x, y, z) => { const c = new THREE.PerspectiveCamera(); c.position.set(x, y, z); return c; };
-  const workerEye = eyeOf(-3.02, 1.62, -2.05);
-  const COUNTER_WORK = new THREE.Vector3(-2.55, 1.08, -2.1), DOORWAY = new THREE.Vector3(0.1, 1.5, 0);
-  function peopleAt(t, worker) {
-    // The assistant sorts a case at the till; the door's bell makes them look up, then back down.
+  // The shop assistant is driven like the viewer: an eye position plus where they look.
+  const workerEye = new THREE.PerspectiveCamera(); workerEye.position.set(-3.02, 1.62, -2.05);
+  const COUNTER_WORK = V(-2.55, 1.08, -2.1), DOORWAY = V(0.1, 1.5, 0);
+  function workerAt(t, worker) {
+    // Sorting a case at the till; the door's bell makes them look up, then back down.
     const look = Studio.progress(t, CUE.release, CUE.release + 0.5) * (1 - Studio.progress(t, CUE.release + 1.9, CUE.release + 2.5));
     const target = COUNTER_WORK.clone().lerp(DOORWAY, Studio.ease.inOut(look));
     target.x += 0.02 * Math.sin(t * 1.3); target.y += 0.015 * Math.sin(t * 0.9 + 1);
     workerEye.lookAt(target);
-    worker.update(t, { cam: workerEye, walk: 0, step: 0, holdCase: 1 - 0.6 * look, caseAt: new THREE.Vector3(-2.67, 1.16, -2.08), env: 'shop' });
+    worker.update(t, { cam: workerEye, walk: 0, step: 0, holdCase: 1 - 0.6 * look, caseAt: V(-2.67, 1.16, -2.08), env: 'shop' });
   }
 
-  // Handheld phone: small unsteady hand + a jolt through the camera on every heel strike.
+  // Handheld phone: a small unsteady hand + a jolt through the camera on every heel strike.
   const shake = new THREE.Quaternion(), shakeE = new THREE.Euler(0, 0, 0, 'YXZ');
-  function handheld(t) {
+  function handheld(t, steps) {
     const n = (f, ph) => Math.sin(2 * Math.PI * f * t + ph);
     let yaw = 0.0035 * n(1.7, 0.3) + 0.0022 * n(3.1, 1.2) + 0.0012 * n(6.3, 2.1);
     let pitch = 0.003 * n(1.3, 0.9) + 0.002 * n(2.9, 2.4) + 0.001 * n(7.1, 0.5);
     let roll = 0.004 * n(0.9, 1.7) + 0.002 * n(2.3, 0.2);
     let drop = 0;
-    for (const f of footfalls) {
+    for (const f of steps) {
       const dt = t - f.t;
       if (dt < 0 || dt > 0.45) continue;
       const j = f.weight * Math.exp(-dt * 12) * Math.sin(Math.min(1, dt * 30) * Math.PI * 0.5);
@@ -96,33 +237,67 @@
     camera.quaternion.multiply(shake);
     camera.updateMatrixWorld();
   }
+  // Field footfalls: one per beat while walking.
+  const fieldSteps = sync.beats.filter((b) => b >= T.slam && b < T.stop).map((b, i) => ({ t: b, side: i % 2 ? 'R' : 'L', weight: 0.8 }));
 
-  // How much the camera moves (for the phone's motion smear).
-  function motionAt(t) {
-    const a = cameraAt(t), b = cameraAt(t + 1 / 60);
-    const turn = (Math.abs(Math.atan2(Math.sin(b.yaw - a.yaw), Math.cos(b.yaw - a.yaw))) + Math.abs(b.pitch - a.pitch)) * 60;
-    return Math.min(1.5, turn * 0.6 + (a.speed || 0) * 0.35);
+  const prevQ = new THREE.Quaternion(), prevP = new THREE.Vector3();
+  function motionOf() {
+    // Rotation (rad/s) + travel (m/s) since the last frame, for the phone's motion smear.
+    const ang = 2 * Math.acos(Math.min(1, Math.abs(prevQ.dot(camera.quaternion)))) * 60;
+    const mv = prevP.distanceTo(camera.position) * 60;
+    prevQ.copy(camera.quaternion); prevP.copy(camera.position);
+    return Math.min(1.5, ang * 0.6 + mv * 0.35);
   }
-  const look = createLook(renderer, W, H);
 
-  const card = document.getElementById('card');
+  const look = createLook(renderer, W, H);
+  const card = document.getElementById('card'), flashEl = document.getElementById('flash'), fine = document.getElementById('fine');
   card.textContent = copy.cards.opening.text;
+  fine.textContent = copy.cards.finePrint;
 
   async function frame(t) {
-    const { store, body, worker } = await ready;
-    applyCamera(camera, t);
-    store.update(t, { door: doorAt(t), flicker: sync.pulse(t, sync.fillHits, 0.06) });
-    body.update(t, { cam: camera, ...bodyPoseAt(t) });
-    peopleAt(t, worker);
-    handheld(t);
-
-    // "Nottingham · 2016" rises in after the first bar and leaves before the door.
+    const { store, body, worker, hero, player, skyEnv } = await ready;
+    let world = scene, grade, exposure;
+    if (t < CUE.end) {
+      // Shots 1–2: the street and the walk in (camera.js).
+      applyCamera(camera, t);
+      camera.near = 0.03; camera.far = 80; camera.updateProjectionMatrix();
+      store.update(t, { door: doorAt(t), flicker: sync.pulse(t, sync.fillHits, 0.06) });
+      body.update(t, { cam: camera, ...bodyPoseAt(t) });
+      hero.visible = player.visible = false;
+      handheld(t, footfalls);
+      const g = gradeAt(t);
+      grade = g.grade; exposure = (1 + (g.exposure - 1) * 2.2) * (1 + 0.35 * g.grade.street);
+      flashEl.style.opacity = '0';
+    } else {
+      // Shots 3–10 (shots.js).
+      const s = shotAt(t);
+      camera.position.copy(s.pos); camera.lookAt(s.look);
+      if (s.scene === 'field') {
+        world = field.scene;
+        if (body.root.parent !== field.scene) { field.scene.add(body.root); body.setEnv(skyEnv, 1); }
+        camera.near = 0.05; camera.far = 6000;
+        field.update(t, camera);
+        textsAt(t, camera);
+        grade = { field: 1 }; exposure = 1.0;
+      } else {
+        if (body.root.parent !== scene) scene.add(body.root);
+        camera.near = 0.03; camera.far = 80;
+        store.update(t, { door: 0, flicker: sync.pulse(t, sync.fillHits, 0.06) });
+        grade = { store: 1 }; exposure = 1.0;
+      }
+      camera.updateProjectionMatrix(); camera.updateMatrixWorld();
+      body.update(t, { cam: camera, ...s.pose });
+      hero.visible = !!s.hero.show; hero.rotation.y = Math.PI * (s.hero.flip ?? 0);
+      player.visible = !!s.player.show;
+      if (s.player.show) { lid.rotation.x = -1.9 * s.player.lid; disc.rotation.y = -s.player.spin * 20; setLcd(copy.player.lcd[s.player.lcd] ?? ''); }
+      handheld(t, s.scene === 'field' ? fieldSteps : []);
+      flashEl.style.opacity = String(s.flash);
+    }
+    workerAt(t, worker);
+    // Location card and the closing fine print.
     card.style.opacity = String(Studio.progress(t, 0.6, 1.3) * (1 - Studio.progress(t, 3.2, 3.8)));
-
-    // Phone auto-exposure: lifts the dark street, over-exposes stepping into the light, then settles.
-    const g = gradeAt(t);
-    const exposure = (1 + (g.exposure - 1) * 2.2) * (1 + 0.35 * g.grade.street);
-    look.render(scene, camera, { ...g, exposure, motion: motionAt(t) }, t);
+    fine.style.opacity = String(Studio.progress(t, T.title + 0.8, T.title + 1.4) * (1 - Studio.progress(t, T.end - 0.25, T.end)));
+    look.render(world, camera, { grade, exposure, motion: motionOf(), fade: Studio.progress(t, T.end - 0.2, T.end) }, t);
   }
 
   Studio.onFrame(async (t) => {
