@@ -52,11 +52,14 @@ float costBp = input.float(1.0, "Round-trip cost for chart stats (bp)", minval =
   tooltip = "Spread + commission + slippage per trade, in basis points of price. 1 bp is about 0.30 USD at 3000 USD gold. Used only for the statistics in the dashboard.")
 
 string dispTz    = input.string("Asia/Kuala_Lumpur", "Show times in", group = G_V,
-  tooltip = "IANA time zone for labels and the dashboard, e.g. Asia/Kuala_Lumpur, Asia/Singapore, Europe/London, UTC.")
+  tooltip = "IANA time zone for the dashboard, e.g. Asia/Kuala_Lumpur, Asia/Singapore, Europe/London, UTC.")
+int keepDays     = input.int(1, "Draw the last N days", minval = 1, maxval = 30, group = G_V,
+  tooltip = "1 = today only (clean). Older drawings are deleted automatically.")
 bool showRange   = input.bool(true, "Asian range box", group = G_V)
-bool showPlan    = input.bool(true, "Pending BUY STOP / SELL STOP plan", group = G_V)
-bool showTrades  = input.bool(true, "Trade boxes with TP and SL", group = G_V)
-bool showTable   = input.bool(true, "Dashboard", group = G_V)
+bool showPlan    = input.bool(true, "BUY STOP / SELL STOP lines", group = G_V)
+bool showTrades  = input.bool(true, "Trade zones (TP green, SL red)", group = G_V)
+string dashMode  = input.string("Compact", "Dashboard", options = ["Compact", "Full", "Off"], group = G_V)
+string dashPos   = input.string("Top right", "Dashboard position", options = ["Top right", "Bottom right", "Bottom left", "Top left"], group = G_V)
 
 color C_BUY   = #089981
 color C_SELL  = #f23645
@@ -108,14 +111,6 @@ var float sumR     = 0.0
 var float peakR    = 0.0
 var float maxDD    = 0.0
 
-var box   rangeBox = na
-var box   tpBox    = na
-var box   slBox    = na
-var line  buyLine  = na
-var line  sellLine = na
-var label buyLbl   = na
-var label sellLbl  = na
-
 bool  evPlan  = false
 bool  evBuy   = false
 bool  evSell  = false
@@ -127,10 +122,55 @@ float exitR   = na
 int   exitT   = na
 
 fmtPx(float v) =>
-    str.tostring(v, format.mintick)
+    str.tostring(v, "#.00")
 
 fmtR(float r) =>
-    (r >= 0 ? "+" : "") + str.tostring(r, "#.00") + "R"
+    (r >= 0 ? "+" : "") + str.tostring(r, "#.0") + "R"
+
+// ── Drawings: kept per day, older days deleted ──────────────────────────────
+var int dayNo = 0
+var array<box>   gBox    = array.new<box>()
+var array<int>   gBoxDay = array.new<int>()
+var array<line>  gLine   = array.new<line>()
+var array<int>   gLineDay = array.new<int>()
+var array<label> gLbl    = array.new<label>()
+var array<int>   gLblDay = array.new<int>()
+var box   rangeBox = na
+var box   tpBox    = na
+var box   slBox    = na
+var label tpLbl    = na
+var label slLbl    = na
+var line  buyLine  = na
+var line  sellLine = na
+var label buyLbl   = na
+var label sellLbl  = na
+var int   tradeDay = 0
+
+keepBox(box b, int d) =>
+    array.push(gBox, b)
+    array.push(gBoxDay, d)
+    b
+
+keepLine(line l, int d) =>
+    array.push(gLine, l)
+    array.push(gLineDay, d)
+    l
+
+keepLbl(label l, int d) =>
+    array.push(gLbl, l)
+    array.push(gLblDay, d)
+    l
+
+prune(int oldest) =>
+    while array.size(gBox) > 0 and array.get(gBoxDay, 0) < oldest
+        box.delete(array.shift(gBox))
+        array.shift(gBoxDay)
+    while array.size(gLine) > 0 and array.get(gLineDay, 0) < oldest
+        line.delete(array.shift(gLine))
+        array.shift(gLineDay)
+    while array.size(gLbl) > 0 and array.get(gLblDay, 0) < oldest
+        label.delete(array.shift(gLbl))
+        array.shift(gLblDay)
 
 if barstate.isconfirmed and cfgOk
     // 1. A new trading day: close anything left from the previous day at its last close.
@@ -144,6 +184,8 @@ if barstate.isconfirmed and cfgOk
         rCnt    := 0
         dayDone := false
         planned := false
+        dayNo   += 1
+        prune(dayNo - keepDays + 1)
 
     // 2. Manage an open trade, from the bar after entry: time exit at the open,
     //    then SL before TP (pessimistic when a bar touches both). Gaps fill at the open.
@@ -168,9 +210,8 @@ if barstate.isconfirmed and cfgOk
         rCnt += 1
         if showRange
             if rCnt == 1
-                rangeBox := box.new(time, rHi, tsOf(relEE), rLo, xloc = xloc.bar_time, border_color = color.new(C_RANGE, 40),
-                  bgcolor = color.new(C_RANGE, 90), text = "Asian range", text_size = size.small,
-                  text_color = color.new(C_RANGE, 20), text_halign = text.align_left, text_valign = text.align_top)
+                rangeBox := keepBox(box.new(time, rHi, tsOf(relRE), rLo, xloc = xloc.bar_time,
+                  border_color = color.new(C_RANGE, 60), bgcolor = color.new(C_RANGE, 92)), dayNo)
             else if not na(rangeBox)
                 box.set_top(rangeBox, rHi)
                 box.set_bottom(rangeBox, rLo)
@@ -184,13 +225,12 @@ if barstate.isconfirmed and cfgOk
         planned := true
         evPlan  := true
         if showPlan
-            float bRisk = rHi - rLo
-            buyLine  := line.new(tsOf(relRE), rHi, tsOf(relEE), rHi, xloc = xloc.bar_time, color = C_BUY, style = line.style_dashed, width = 1)
-            sellLine := line.new(tsOf(relRE), rLo, tsOf(relEE), rLo, xloc = xloc.bar_time, color = C_SELL, style = line.style_dashed, width = 1)
-            buyLbl   := label.new(tsOf(relEE), rHi, "BUY STOP " + fmtPx(rHi) + "\nSL " + fmtPx(rLo) + "  TP " + fmtPx(rHi + tpR * bRisk),
-              xloc = xloc.bar_time, style = label.style_label_left, color = color.new(C_BUY, 20), textcolor = color.white, size = size.small)
-            sellLbl  := label.new(tsOf(relEE), rLo, "SELL STOP " + fmtPx(rLo) + "\nSL " + fmtPx(rHi) + "  TP " + fmtPx(rLo - tpR * bRisk),
-              xloc = xloc.bar_time, style = label.style_label_left, color = color.new(C_SELL, 20), textcolor = color.white, size = size.small)
+            buyLine  := keepLine(line.new(tsOf(relRE), rHi, tsOf(relEE), rHi, xloc = xloc.bar_time, color = C_BUY, style = line.style_dashed), dayNo)
+            sellLine := keepLine(line.new(tsOf(relRE), rLo, tsOf(relEE), rLo, xloc = xloc.bar_time, color = C_SELL, style = line.style_dashed), dayNo)
+            buyLbl   := keepLbl(label.new(tsOf(relEE), rHi, "BUY STOP " + fmtPx(rHi), xloc = xloc.bar_time, style = label.style_label_left,
+              color = color.new(C_BUY, 25), textcolor = color.white, size = size.tiny), dayNo)
+            sellLbl  := keepLbl(label.new(tsOf(relEE), rLo, "SELL STOP " + fmtPx(rLo), xloc = xloc.bar_time, style = label.style_label_left,
+              color = color.new(C_SELL, 25), textcolor = color.white, size = size.tiny), dayNo)
 
     // 5. Entry: the first bar in the order window that trades through a level.
     //    A bar that breaks both sides is ambiguous and skips the day.
@@ -207,22 +247,29 @@ if barstate.isconfirmed and cfgOk
             riskPx   := math.abs(entryPx - slPx)
             tpPx     := entryPx + side * tpR * riskPx
             entryBar := bar_index
+            tradeDay := dayNo
             nTrades  += 1
             evBuy    := side == 1
             evSell   := side == -1
+            // The order that filled stays; the other one is cancelled, so remove it.
+            if showPlan
+                line.delete(side == 1 ? sellLine : buyLine)
+                label.delete(side == 1 ? sellLbl : buyLbl)
+                line.set_x2(side == 1 ? buyLine : sellLine, time)
+                label.delete(side == 1 ? buyLbl : sellLbl)
             if showTrades
                 int endTs = tsOf(relEX)
-                tpBox := box.new(time, math.max(entryPx, tpPx), endTs, math.min(entryPx, tpPx), xloc = xloc.bar_time,
-                  border_color = color.new(C_BUY, 50), bgcolor = color.new(C_BUY, 82),
-                  text = "TP " + fmtPx(tpPx) + "  (" + str.tostring(tpR, "#.#") + "R)", text_size = size.small,
-                  text_color = color.white, text_halign = text.align_right, text_valign = side == 1 ? text.align_top : text.align_bottom)
-                slBox := box.new(time, math.max(entryPx, slPx), endTs, math.min(entryPx, slPx), xloc = xloc.bar_time,
-                  border_color = color.new(C_SELL, 50), bgcolor = color.new(C_SELL, 82),
-                  text = "SL " + fmtPx(slPx), text_size = size.small,
-                  text_color = color.white, text_halign = text.align_right, text_valign = side == 1 ? text.align_bottom : text.align_top)
-                label.new(time, entryPx, (side == 1 ? "BUY " : "SELL ") + fmtPx(entryPx) + "\n" + str.format_time(time, "HH:mm", dispTz),
-                  xloc = xloc.bar_time, style = side == 1 ? label.style_label_up : label.style_label_down,
-                  color = side == 1 ? C_BUY : C_SELL, textcolor = color.white, size = size.small)
+                tpBox := keepBox(box.new(time, math.max(entryPx, tpPx), endTs, math.min(entryPx, tpPx), xloc = xloc.bar_time,
+                  border_color = color.new(C_BUY, 70), bgcolor = color.new(C_BUY, 85)), dayNo)
+                slBox := keepBox(box.new(time, math.max(entryPx, slPx), endTs, math.min(entryPx, slPx), xloc = xloc.bar_time,
+                  border_color = color.new(C_SELL, 70), bgcolor = color.new(C_SELL, 85)), dayNo)
+                tpLbl := keepLbl(label.new(endTs, tpPx, "TP " + fmtPx(tpPx), xloc = xloc.bar_time, style = label.style_label_left,
+                  color = color.new(C_BUY, 25), textcolor = color.white, size = size.tiny), dayNo)
+                slLbl := keepLbl(label.new(endTs, slPx, "SL " + fmtPx(slPx), xloc = xloc.bar_time, style = label.style_label_left,
+                  color = color.new(C_SELL, 25), textcolor = color.white, size = size.tiny), dayNo)
+                keepLbl(label.new(time, entryPx, side == 1 ? "BUY" : "SELL", xloc = xloc.bar_time,
+                  style = side == 1 ? label.style_label_up : label.style_label_down,
+                  color = side == 1 ? C_BUY : C_SELL, textcolor = color.white, size = size.tiny), dayNo)
             // Same-bar exits on the entry bar: SL first; TP only if the bar closed beyond it.
             if (side == 1 and low <= slPx) or (side == -1 and high >= slPx)
                 exitPx := slPx
@@ -245,14 +292,13 @@ if barstate.isconfirmed and cfgOk
         peakR := math.max(peakR, sumR)
         maxDD := math.max(maxDD, peakR - sumR)
         if showTrades
-            if not na(tpBox)
-                box.set_right(tpBox, exitT)
-            if not na(slBox)
-                box.set_right(slBox, exitT)
-            string why = evTP ? "TP" : evSL ? "SL" : "TIME"
-            label.new(exitT, exitPx, why + " " + fmtR(exitR), xloc = xloc.bar_time,
-              style = pos == 1 ? (evSL ? label.style_label_up : label.style_label_down) : (evSL ? label.style_label_down : label.style_label_up),
-              color = color.new(exitR >= 0 ? C_BUY : C_SELL, 30), textcolor = color.white, size = size.tiny)
+            box.set_right(tpBox, exitT)
+            box.set_right(slBox, exitT)
+            label.set_x(tpLbl, exitT)
+            label.set_x(slLbl, exitT)
+            keepLbl(label.new(exitT, exitPx, fmtR(exitR), xloc = xloc.bar_time,
+              style = exitR >= 0 ? label.style_label_down : label.style_label_up,
+              color = color.new(exitR >= 0 ? C_BUY : C_SELL, 20), textcolor = color.white, size = size.tiny), tradeDay)
         pos := 0
 
 // ── Hidden plots for alert placeholders and the data window ────────────────
@@ -262,29 +308,33 @@ plot(pos != 0 ? slPx : na, "SL", display = display.data_window)
 plot(planned and not dayDone ? rHi : na, "Buy stop", display = display.data_window)
 plot(planned and not dayDone ? rLo : na, "Sell stop", display = display.data_window)
 
-// ── Dashboard ───────────────────────────────────────────────────────────────
-var table dash = table.new(position.top_right, 2, 10, bgcolor = color.new(#131722, 10), border_color = color.new(#787b86, 60), border_width = 1)
+// ── Dashboard (small; Compact = 3 rows) ─────────────────────────────────────
+dashPosition = dashPos == "Top right" ? position.top_right : dashPos == "Bottom right" ? position.bottom_right :
+  dashPos == "Bottom left" ? position.bottom_left : position.top_left
+var table dash = table.new(dashPosition, 2, 6, bgcolor = color.new(#131722, 20), border_color = color.new(#787b86, 70), border_width = 1)
 
 row(int r, string k, string v, color bg = na) =>
-    table.cell(dash, 0, r, k, text_color = C_TXT, text_size = size.small, text_halign = text.align_left)
-    table.cell(dash, 1, r, v, text_color = color.white, text_size = size.small, text_halign = text.align_left, bgcolor = bg)
+    table.cell(dash, 0, r, k, text_color = C_TXT, text_size = size.tiny, text_halign = text.align_left)
+    table.cell(dash, 1, r, v, text_color = color.white, text_size = size.tiny, text_halign = text.align_left, bgcolor = bg)
 
-if showTable and barstate.islast
+if dashMode != "Off" and barstate.islast
     color none = color.new(#131722, 100)
     bool tfOk = timeframe.isintraday and tfMin >= 1 and tfMin <= 15
     string hm = "HH:mm"
-    string plan = not cfgOk ? "check session inputs" : pos == 1 ? "LONG " + fmtPx(entryPx) : pos == -1 ? "SHORT " + fmtPx(entryPx) :
-      planned and not dayDone ? "BUY STOP " + fmtPx(rHi) + " / SELL STOP " + fmtPx(rLo) : dayDone ? "done for today" : "building range"
-    row(0, "XAUUSD Asian range breakout", tfOk ? "M" + str.tostring(tfMin, "#") : "use M5 or M15", tfOk ? none : color.new(C_SELL, 40))
-    row(1, "Asian range (" + dispTz + ")", str.format_time(tsOf(relRS), hm, dispTz) + " - " + str.format_time(tsOf(relRE), hm, dispTz))
-    row(2, "Orders live until", str.format_time(tsOf(relEE), hm, dispTz))
-    row(3, "Time exit", str.format_time(tsOf(relEX), hm, dispTz))
-    row(4, "Today", plan, pos == 1 ? color.new(C_BUY, 40) : pos == -1 ? color.new(C_SELL, 40) : none)
-    row(5, "Open trade SL / TP", pos != 0 ? fmtPx(slPx) + " / " + fmtPx(tpPx) : "-")
-    row(6, "Trades on this chart", str.tostring(nTrades) + "  (TP " + str.tostring(nTP) + ", SL " + str.tostring(nSL) + ", time " + str.tostring(nTime) + ")")
-    row(7, "Win rate / avg", nTrades > 0 ? str.tostring(100.0 * nWin / math.max(1, nTP + nSL + nTime), "#") + "%  /  " + fmtR(sumR / math.max(1, nTP + nSL + nTime)) : "-")
-    row(8, "Total / max drawdown", fmtR(sumR) + "  /  " + str.tostring(maxDD, "#.0") + "R", sumR >= 0 ? color.new(C_BUY, 60) : color.new(C_SELL, 60))
-    row(9, "Backtest 2009-17 / 2018-26", "+0.065R / +0.020R per trade (2018-26 not significant)")
+    int closed = nTP + nSL + nTime
+    string status = not cfgOk ? "semak input masa" : not tfOk ? "guna M5 atau M15" :
+      pos == 1 ? "LONG " + fmtPx(entryPx) + "  SL " + fmtPx(slPx) + "  TP " + fmtPx(tpPx) :
+      pos == -1 ? "SHORT " + fmtPx(entryPx) + "  SL " + fmtPx(slPx) + "  TP " + fmtPx(tpPx) :
+      planned and not dayDone ? "BUY STOP " + fmtPx(rHi) + " / SELL STOP " + fmtPx(rLo) : dayDone ? "selesai hari ini" : "julat Asia sedang terbentuk"
+    color stBg = pos == 1 ? color.new(C_BUY, 40) : pos == -1 ? color.new(C_SELL, 40) : not tfOk ? color.new(C_SELL, 40) : none
+    row(0, "Status", status, stBg)
+    row(1, "Masa", "order " + str.format_time(tsOf(relRE), hm, dispTz) + " · batal " + str.format_time(tsOf(relEE), hm, dispTz) + " · tutup " + str.format_time(tsOf(relEX), hm, dispTz))
+    row(2, "Chart", str.tostring(nTrades) + " trade · " + (closed > 0 ? str.tostring(100.0 * nWin / closed, "#") : "0") + "% menang · " + fmtR(sumR),
+      sumR >= 0 ? color.new(C_BUY, 65) : color.new(C_SELL, 65))
+    if dashMode == "Full"
+        row(3, "TP / SL / masa", str.tostring(nTP) + " / " + str.tostring(nSL) + " / " + str.tostring(nTime))
+        row(4, "Drawdown maks", str.tostring(maxDD, "#.0") + "R")
+        row(5, "Backtest", "2009-17 +0.065R, 2018-26 +0.020R setiap trade")
 
 // ── Alerts ──────────────────────────────────────────────────────────────────
 alertcondition(evPlan, "Plan ready (place both stop orders)", 'XAUUSD plan: BUY STOP {{plot("Buy stop")}} / SELL STOP {{plot("Sell stop")}} (SL = the other level)')
