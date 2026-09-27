@@ -199,7 +199,7 @@ export function handAt(t) {
 const SHOPFRONT_LOOK = V3(-0.55, 1.95, 0);
 const PLATE_LOOK = V3(0.12, 1.4, 0);                      // glance down at the plate as the hand meets it
 const THROUGH_DOOR = V3(0.05, 1.5, -8);
-const LEFT_RACKS = V3(-2.3, 1.55, -3.0);
+const LEFT_RACKS = V3(-2.7, 1.45, -2.3);                 // the counter: the assistant looking up at the bell
 const AHEAD_IN = V3(0.45, 1.45, -9);
 const windowPan = (t) => {                                // scans the display as we walk
   const k = smooth(CUE.lookWindow, CUE.lookDoor, t);

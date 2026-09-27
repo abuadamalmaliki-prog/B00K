@@ -380,5 +380,7 @@ export async function createBody({ renderer, eyeHeight = 1.66 } = {}) {
     root.updateMatrixWorld(true);
   }
 
-  return { root, update, anchors, setEnv, hideHead, bones, envs, scale: S };
+  // outfit: the clothing colours (THREE.Color), so the same rig can dress other people in the shop.
+  const outfit = { jacket: U.uJacket.value, jeans: U.uJeans.value, shoe: U.uShoe.value };
+  return { root, update, anchors, setEnv, hideHead, bones, envs, outfit, scale: S };
 }

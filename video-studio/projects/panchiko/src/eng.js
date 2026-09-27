@@ -154,8 +154,8 @@ export function createPost(renderer, width, height, opts = {}) {
       if (ldr) {
         pass(om, ldr);
         fx.uniforms.tIn.value = ldr.texture; fx.uniforms.uGrain.value = u.uGrain.value; fx.uniforms.uSeed.value = u.uSeed.value;
-        pass(fx, null);
-      } else pass(om, null);
+        pass(fx, p.target ?? null);
+      } else pass(om, p.target ?? null);
       renderer.autoClear = prevAuto;
     },
   };

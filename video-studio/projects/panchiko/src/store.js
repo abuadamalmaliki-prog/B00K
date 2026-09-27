@@ -21,6 +21,7 @@
  */
 import * as THREE from 'three';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import copy from './copy.js';
 import { DOOR, WINDOW, BIN } from './camera.js';
@@ -222,6 +223,53 @@ class Bucket {
   }
 }
 
+const texLoader = new THREE.TextureLoader();
+/** A Poly Haven PBR set (diff / nor_gl / arm) from assets/tex, tiled `repeat` times. */
+async function pbr(name, res, repeat) {
+  const load = async (kind, srgb) => {
+    const t = await texLoader.loadAsync(`${ASSETS}tex/${name}_${kind}_${res}.jpg`);
+    if (srgb) t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(repeat[0], repeat[1]); t.anisotropy = 1;
+    return t;
+  };
+  const [map, normalMap, arm] = await Promise.all([load('diff', true), load('nor_gl', false), load('arm', false)]);
+  return { map, normalMap, roughnessMap: arm };
+}
+
+async function prop(name, env) {
+  const gltf = await new GLTFLoader().loadAsync(`${ASSETS}props/${name}/${name}_1k.gltf`);
+  gltf.scene.traverse((o) => { if (o.isMesh) { o.material.envMap = env; o.material.envMapIntensity = 0.7; } });
+  return gltf.scene;
+}
+
+/** Soft contact shadow: a dark patch that fades out, laid on the floor. */
+let blobTex = null;
+function aoBlob(w, d, strength = 0.55) {
+  blobTex ??= texture(canvas(256, 256, (g, s) => {
+    const r = g.createRadialGradient(s / 2, s / 2, s * 0.12, s / 2, s / 2, s / 2);
+    r.addColorStop(0, '#fff'); r.addColorStop(1, '#000');
+    g.fillStyle = r; g.fillRect(0, 0, s, s);
+  }), { srgb: false });
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w, d), new THREE.MeshBasicMaterial({ color: 0x000000, alphaMap: blobTex, transparent: true, opacity: strength, depthWrite: false }));
+  m.rotation.x = -PI / 2;
+  return m;
+}
+
+/** Rain on glass: bright beads and a few runs, drawn once; the texture scrolls down slowly. */
+function dropsTexture(R) {
+  const t = texture(canvas(512, 1024, (g, w, h) => {
+    for (let i = 0; i < 900; i++) {
+      const x = R() * w, y = R() * h, r = 0.8 + R() * R() * 2.6;
+      g.fillStyle = `rgba(210,225,240,${0.25 + R() * 0.45})`; g.beginPath(); g.arc(x, y, r, 0, PI * 2); g.fill();
+      g.fillStyle = 'rgba(255,255,255,.9)'; g.fillRect(x - r * 0.3, y - r * 0.4, Math.max(1, r * 0.4), Math.max(1, r * 0.3));
+    }
+    g.strokeStyle = 'rgba(200,215,235,.35)';
+    for (let i = 0; i < 26; i++) { g.lineWidth = 1 + R() * 2; const x = R() * w, y = R() * h; g.beginPath(); g.moveTo(x, y); g.lineTo(x + (R() - 0.5) * 12, y + 80 + R() * 220); g.stroke(); }
+  }));
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  return t;
+}
+
 async function loadEnv(renderer, file) {
   const hdr = await new RGBELoader().loadAsync(ASSETS + 'env/' + file);
   hdr.mapping = THREE.EquirectangularReflectionMapping;
@@ -249,14 +297,14 @@ export async function createStore({ renderer }) {
   const covers = coverAtlas(R);
   const PLAIN_DARK = [0.001, 0.001, 0.0005, 0.0005];      // the dark first pixel of the spine atlas
 
-  const shopStd = (o) => new THREE.MeshStandardMaterial({ envMap: shopEnv, envMapIntensity: 0.72, ...o });
-  const streetStd = (o) => new THREE.MeshStandardMaterial({ envMap: streetEnv, envMapIntensity: 0.9, ...o });
+  const shopStd = (o) => new THREE.MeshStandardMaterial({ envMap: shopEnv, envMapIntensity: 0.42, ...o });
+  const streetStd = (o) => new THREE.MeshStandardMaterial({ envMap: streetEnv, envMapIntensity: 1.3, ...o });
 
   // ---- exterior: street, facade, window, sign, lamp, rain -----------------------------------
-  const pave = pavementTexture();
-  pave.repeat.set(8, 7);
+  // Wet asphalt: the photo texture's roughness, pushed glossy (it's raining), so lights streak in it.
+  const asphalt = await pbr('asphalt_02', '2k', [5, 4.5]);
   const street = new THREE.Mesh(new THREE.PlaneGeometry(18, 16),
-    streetStd({ map: pave, roughness: 0.28, metalness: 0.0, color: 0x9aa0a8, envMapIntensity: 1.4 }));
+    streetStd({ ...asphalt, roughness: 0.42, metalness: 0.0, color: 0x8f959c, envMapIntensity: 1.6, normalScale: new THREE.Vector2(0.6, 0.6) }));
   street.rotation.x = -PI / 2; street.position.set(-0.5, 0, 8.0);
   exterior.add(street);
 
@@ -306,8 +354,13 @@ export async function createStore({ renderer }) {
   lampPole.position.set(4.3, 2.2, 3.4); exterior.add(lampPole);
   const lampHead = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.12, 0.26), new THREE.MeshBasicMaterial({ color: new THREE.Color(6, 3.2, 1.1) }));
   lampHead.position.set(4.05, 4.35, 3.4); exterior.add(lampHead);
-  const lamp = new THREE.PointLight(0xffa25a, 18, 14, 2); lamp.position.set(4.0, 4.1, 3.4); root.add(lamp);
-  const spill = new THREE.PointLight(0xcfe8ff, 6, 7, 2); spill.position.set(-1.6, 1.8, 0.9); root.add(spill);
+  const lamp = new THREE.PointLight(0xffa25a, 45, 16, 2); lamp.position.set(4.0, 4.1, 3.4); root.add(lamp);
+  const lamp2Head = lampHead.clone(); lamp2Head.position.set(-6.2, 4.35, 6.0); exterior.add(lamp2Head);
+  const lamp2Pole = lampPole.clone(); lamp2Pole.position.set(-6.45, 2.2, 6.0); exterior.add(lamp2Pole);
+  const lamp2 = new THREE.PointLight(0xffa25a, 38, 16, 2); lamp2.position.set(-6.2, 4.1, 6.0); root.add(lamp2);
+  // The shop's glow falling out onto the wet pavement.
+  const spill = new THREE.PointLight(0xd8f0ff, 22, 8, 2); spill.position.set(-2.2, 1.7, 0.9); root.add(spill);
+  const spill2 = new THREE.PointLight(0xd8f0ff, 12, 7, 2); spill2.position.set(1.9, 1.7, 0.9); root.add(spill2);
 
   // Wet-ground reflections: additive streaks under the bright things.
   const streak = streakTexture();
@@ -320,15 +373,35 @@ export async function createStore({ renderer }) {
   addStreak(1.85, 2.1, 3.2, new THREE.Color(0.5, 0.58, 0.56));
   addStreak(-0.7, 7.0, 2.2, new THREE.Color(0.18, 0.2, 0.26), 0.35); // fascia
   addStreak(4.05, 0.7, 5.5, new THREE.Color(1.1, 0.55, 0.2), 1.0);   // lamp
+  addStreak(-6.2, 0.8, 6.0, new THREE.Color(0.9, 0.45, 0.16), 2.0);  // far lamp
 
   // Rain: thin streaks falling through the street, positions a pure function of t.
-  const RAIN = 1400;
-  const rain = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.0045, 0.3),
-    new THREE.MeshBasicMaterial({ color: 0xa9bccc, transparent: true, opacity: 0.32, depthWrite: false, blending: THREE.AdditiveBlending }), RAIN);
+  const RAIN = 3800;
+  const rain = new THREE.InstancedMesh(new THREE.PlaneGeometry(0.006, 0.42),
+    new THREE.MeshBasicMaterial({ color: 0xb4c6d6, transparent: true, opacity: 0.42, depthWrite: false, blending: THREE.AdditiveBlending }), RAIN);
   rain.frustumCulled = false;
   const drops = Array.from({ length: RAIN }, () => [-4.8 + R() * 9.6, R() * 5.5, 0.15 + R() * 8.5, 6.5 + R() * 2]);
   const dm = new THREE.Matrix4(), dq = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, 0, 0.09)), ds = new THREE.Vector3(1, 1, 1), dp = new THREE.Vector3();
   exterior.add(rain);
+
+  // Splashes: tiny rings that open and fade where drops hit the pavement.
+  const SPLASH = 520;
+  const ringTex = texture(canvas(64, 64, (g) => { g.strokeStyle = '#fff'; g.lineWidth = 5; g.beginPath(); g.arc(32, 32, 24, 0, PI * 2); g.stroke(); }), { srgb: false });
+  const splashes = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1).rotateX(-PI / 2),
+    new THREE.MeshBasicMaterial({ map: ringTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, color: 0xffffff }), SPLASH);
+  splashes.frustumCulled = false;
+  const splashData = Array.from({ length: SPLASH }, () => [-4.6 + R() * 9.2, 0.15 + R() * 7.5, R(), 0.35 + R() * 0.45]);
+  const splashColor = new THREE.Color();
+  for (let i = 0; i < SPLASH; i++) splashes.setColorAt(i, splashColor.setRGB(0, 0, 0));
+  exterior.add(splashes);
+
+  // Drops beading and running on the shop glass (windows and door), street side.
+  const drops2 = dropsTexture(R);
+  const dropsMat = new THREE.MeshBasicMaterial({ map: drops2, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending });
+  for (const [x0, x1] of [[WINDOW.x0, WINDOW.x1], [0.7, 3.0]]) {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(x1 - x0, WINDOW.y1 - WINDOW.y0), dropsMat);
+    m.position.set((x0 + x1) / 2, (WINDOW.y0 + WINDOW.y1) / 2, 0.02); exterior.add(m);
+  }
 
   // ---- door: hinge on the left jamb, swings inward ------------------------------------------
   const doorHinge = new THREE.Group();
@@ -349,13 +422,18 @@ export async function createStore({ renderer }) {
   const hours = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.15),
     new THREE.MeshBasicMaterial({ map: lettering([copy.sign.hours], { w: 1024, h: 256, size: 70 }), transparent: true, depthWrite: false }));
   hours.scale.setScalar(0.55); hours.position.set(DOOR.width * 0.62, 0.95, 0.03); door.add(hours);
+  const doorDrops = new THREE.Mesh(new THREE.PlaneGeometry(DOOR.width - 0.14, DOOR.height - 0.31), dropsMat);
+  doorDrops.material = dropsMat.clone(); doorDrops.material.opacity = 0.3;
+  doorDrops.position.set(DOOR.width / 2, (DOOR.height + 0.13) / 2, 0.035); door.add(doorDrops);
   doorHinge.add(door);
   root.add(doorHinge);
 
   // ---- interior ------------------------------------------------------------------------------
   const Z_BACK = -9.2, X_L = -4.6, X_R = 3.9, CEIL = 2.8;
-  const floorMap = floorTexture(); floorMap.repeat.set(8.5 / 0.6, 9.2 / 0.6);
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(X_R - X_L, -Z_BACK), shopStd({ map: floorMap, roughness: 0.22 }));
+  // Worn polished concrete: scuffed, patchy, a soft sheen under the tubes.
+  const concrete = await pbr('concrete_floor_worn_001', '2k', [3, 3.2]);
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(X_R - X_L, -Z_BACK),
+    shopStd({ ...concrete, color: 0xb9bdb4, roughness: 0.75, normalScale: new THREE.Vector2(0.5, 0.5) }));
   floor.rotation.x = -PI / 2; floor.position.set((X_L + X_R) / 2, 0.002, Z_BACK / 2); interior.add(floor);
 
   const shell = new Bucket();
@@ -373,6 +451,10 @@ export async function createStore({ renderer }) {
   // One tube near the back flickers on the song's fills.
   const flickerTube = new THREE.Mesh(box(1.2, 0.03, 0.3), new THREE.MeshBasicMaterial({ color: new THREE.Color(3.4, 3.7, 3.5) }));
   flickerTube.position.set(2.5, CEIL - 0.03, -8.2); interior.add(flickerTube);
+  // Pools of cool light under the tubes, so the room falls off toward the walls and corners.
+  for (const [x, z, i] of [[-1.75, -2.8, 7], [-0.2, -5.6, 6], [2.45, -6.4, 5], [0.9, -3.2, 5], [-3.3, -6.8, 4]]) {
+    const l = new THREE.PointLight(0xe6f4ff, i, 5.5, 2); l.position.set(x, CEIL - 0.25, z); root.add(l);
+  }
 
   // CD racks: double-sided gondolas, CDs spine-out on four tiers.
   const rackMat = shopStd({ color: 0x1c1f24, roughness: 0.55, metalness: 0.3 });
@@ -393,7 +475,7 @@ export async function createStore({ renderer }) {
       }
     }
   };
-  gondola(-1.75, -1.3, -7.2);
+  gondola(-1.75, -3.2, -7.2);                                                 // starts deep, so the counter is in view
   gondola(2.45, -5.0, -8.0);
   // Wall shelves: DVDs and Blu-rays face-out down the left wall; new releases face-out on the back wall.
   const faceOut = (px, pz, rotY, rows, span, w, h) => {
@@ -424,10 +506,10 @@ export async function createStore({ renderer }) {
   // Hanging section signs over the aisles.
   copy.sections.slice(0, 4).forEach((s, i) => {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 0.28),
-      new THREE.MeshBasicMaterial({ map: lettering([s.label], { w: 1024, h: 220, size: 120, color: '#1c2a3f' }), color: 0xffffff }));
+      new THREE.MeshBasicMaterial({ map: lettering([s.label], { w: 1024, h: 220, size: 120, color: '#1c2a3f' }), transparent: true }));
     const back = new THREE.Mesh(new THREE.PlaneGeometry(1.34, 0.32), new THREE.MeshBasicMaterial({ color: 0xf4f1e8 }));
     const g = new THREE.Group(); g.add(back, m); m.position.z = 0.002;
-    g.position.set([-1.75, -1.75, 2.45, -3.6][i], 2.32, [-2.4, -5.6, -6.2, -3.0][i]);
+    g.position.set([-1.75, -1.75, 2.45, -3.6][i], 2.32, [-3.9, -6.2, -6.2, -4.6][i]);
     interior.add(g);
   });
 
@@ -439,8 +521,9 @@ export async function createStore({ renderer }) {
   const till = new THREE.Mesh(box(0.34, 0.22, 0.3), shopStd({ color: 0x2a2a2a, roughness: 0.4 }));
   till.position.set(0, 1.15, 0.3); counter.add(till);
   const pay = new THREE.Mesh(new THREE.PlaneGeometry(0.6, 0.16), new THREE.MeshBasicMaterial({ map: lettering([copy.misc.counter], { w: 512, h: 140, size: 80, color: '#f4ead2' }), color: 0xffffff }));
-  pay.position.set(-0.31, 0.8, 0); pay.rotation.y = -PI / 2; counter.add(pay);
-  counter.position.set(3.1, 0, -2.0);
+  pay.position.set(0.31, 0.8, 0); pay.rotation.y = PI / 2; counter.add(pay);
+  // Left of the entrance, where the glance at the racks passes over it.
+  counter.position.set(-2.45, 0, -2.0);
   interior.add(counter);
 
   // Display window: stepped risers with face-out cases looking at the street.
@@ -485,6 +568,24 @@ export async function createStore({ renderer }) {
   bin.add(binSign);
   interior.add(bin);
 
+  // Contact shadows: where things meet the floor, the light can't reach.
+  const blob = (w, d, x, z, rotY = 0, k = 0.55) => { const m = aoBlob(w, d, k); m.position.set(x, 0.006, z); m.rotation.z = -rotY; interior.add(m); };
+  blob(1.3, 4.6, -1.75, -5.2); blob(1.2, 3.6, 2.45, -6.5);
+  blob(1.5, 1.1, BIN.x, BIN.z, BIN.rotY, 0.65); blob(1.1, 2.2, -2.45, -2.0, 0, 0.6);
+  blob(3.8, 1.4, -2.45, -0.55, 0, 0.45);
+  blob(0.7, 8.6, X_L + 0.3, -4.6, 0, 0.5); blob(0.7, 8.6, X_R - 0.3, -4.6, 0, 0.45); blob(8.4, 0.7, -0.35, Z_BACK + 0.3, 0, 0.5);
+
+  // Real props (Poly Haven, CC0): the till on the counter, a wet-floor sign by the door
+  // (it's raining), a crate of unsorted stock next to the bin.
+  const [register, wetSign, crate] = await Promise.all([
+    prop('CashRegister_01', shopEnv), prop('WetFloorSign_01', shopEnv), prop('plastic_crate_02', shopEnv),
+  ]);
+  register.position.set(-2.5, 1.04, -1.55); register.rotation.y = PI / 2; interior.add(register);
+  till.visible = false;
+  wetSign.position.set(-1.0, 0, -0.95); wetSign.rotation.y = 0.5; interior.add(wetSign);
+  crate.position.set(1.95, 0, -4.35); crate.rotation.y = 0.3; interior.add(crate);
+  blob(0.7, 0.5, 1.95, -4.35, 0.3, 0.6);
+
   root.updateMatrixWorld(true);
 
   let lastT = null;
@@ -500,6 +601,16 @@ export async function createStore({ renderer }) {
         rain.setMatrixAt(i, dm);
       }
       rain.instanceMatrix.needsUpdate = true;
+      for (let i = 0; i < SPLASH; i++) {
+        const [x, z, ph, per] = splashData[i];
+        const k = ((t / per + ph) % 1 + 1) % 1;
+        dp.set(x, 0.008, z); ds.setScalar(0.015 + 0.1 * k);
+        dm.compose(dp, new THREE.Quaternion(), ds); splashes.setMatrixAt(i, dm);
+        splashes.setColorAt(i, splashColor.setScalar(0.5 * (1 - k) * (1 - k)));
+      }
+      ds.setScalar(1);
+      splashes.instanceMatrix.needsUpdate = true; splashes.instanceColor.needsUpdate = true;
+      drops2.offset.y = t * 0.035;
       const f = ctx.flicker ?? 0;
       flickerTube.material.color.setRGB(3.4 * (1 - 0.85 * f), 3.7 * (1 - 0.85 * f), 3.5 * (1 - 0.85 * f));
       lastT = t;
