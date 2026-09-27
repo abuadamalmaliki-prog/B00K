@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 
+const stripe = require('./stripe-setup');
 const PORT = process.env.PORT || 3000;
 const DATA_DIR = path.join(__dirname, 'data');
 const INVOICES_FILE = path.join(DATA_DIR, 'invoices.json');
@@ -166,6 +167,23 @@ async function handleAPI(req, res) {
       overdueAmount: overdue,
       recentInvoices: invoices.slice(-5).reverse(),
     });
+  }
+
+  // POST /api/checkout — create Stripe checkout for an invoice
+  if (method === 'POST' && segments[1] === 'checkout') {
+    const body = await parseBody(req);
+    const invoices = readJSON(INVOICES_FILE);
+    const inv = invoices.find(i => i.id === body.invoiceId);
+    if (!inv) return sendJSON(res, 404, { error: 'Invoice not found' });
+    const session = await stripe.createCheckoutSession(body.invoiceId, inv);
+    return sendJSON(res, 200, session);
+  }
+
+  // POST /api/subscribe — create Stripe subscription checkout
+  if (method === 'POST' && segments[1] === 'subscribe') {
+    const body = await parseBody(req);
+    const session = await stripe.createSubscriptionCheckout(body.plan);
+    return sendJSON(res, 200, session);
   }
 
   sendJSON(res, 404, { error: 'Not found' });
