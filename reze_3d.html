@@ -1,0 +1,515 @@
+<title>REZE</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@400;700&display=swap');
+:root { padding: 0 !important; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: #000; color-scheme: dark; }
+#c { width: 100%; height: 100%; display: block; }
+#ui {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 12px; z-index: 10;
+  background: rgba(10,8,20,0.85); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08); border-radius: 40px;
+  padding: 8px 20px;
+}
+#playBtn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: linear-gradient(135deg, #ff3344, #ff6b35);
+  border: none; cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  box-shadow: 0 0 20px rgba(255,51,68,0.4);
+  transition: transform 0.15s;
+}
+#playBtn:hover { transform: scale(1.1); }
+#playBtn svg { width: 18px; height: 18px; fill: #fff; margin-left: 2px; }
+#playBtn.playing svg { margin-left: 0; }
+#tc {
+  font-family: 'JetBrains Mono', monospace; font-size: 13px;
+  color: rgba(255,255,255,0.7); min-width: 90px; text-align: center;
+  letter-spacing: 1px;
+}
+.ui-btn {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.5); font-size: 12px; transition: all 0.15s;
+}
+.ui-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.ui-btn.active { background: rgba(255,51,68,0.2); border-color: #ff3344; color: #ff3344; }
+#title-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 20; pointer-events: none; opacity: 0; transition: opacity 0.8s;
+}
+#title-overlay.show { opacity: 1; }
+#title-text {
+  font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px, 15vw, 180px);
+  color: #fff; letter-spacing: 0.15em;
+  text-shadow: 0 0 60px rgba(255,51,68,0.6), 0 0 120px rgba(255,107,53,0.3);
+  -webkit-text-stroke: 1px rgba(255,255,255,0.15);
+}
+#title-sub {
+  font-family: 'JetBrains Mono', monospace; font-size: clamp(10px, 2vw, 16px);
+  color: rgba(255,255,255,0.4); letter-spacing: 6px; text-transform: uppercase;
+  margin-top: -8px;
+}
+#loading {
+  position: fixed; inset: 0; background: #000;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  z-index: 100; transition: opacity 0.6s;
+}
+#loading.hide { opacity: 0; pointer-events: none; }
+#load-text {
+  font-family: 'JetBrains Mono', monospace; font-size: 12px;
+  color: rgba(255,255,255,0.4); letter-spacing: 3px; text-transform: uppercase;
+  margin-bottom: 20px;
+}
+#load-bar {
+  width: 200px; height: 2px; background: rgba(255,255,255,0.1); border-radius: 1px; overflow: hidden;
+}
+#load-fill {
+  width: 0%; height: 100%; background: linear-gradient(90deg, #ff3344, #ff6b35);
+  transition: width 0.3s;
+}
+#mode-label {
+  position: fixed; top: 16px; right: 16px; z-index: 10;
+  font-family: 'JetBrains Mono', monospace; font-size: 10px;
+  color: rgba(255,255,255,0.25); letter-spacing: 2px; text-transform: uppercase;
+}
+</style>
+
+<div id="loading"><div id="load-text">Loading</div><div id="load-bar"><div id="load-fill"></div></div></div>
+<canvas id="c"></canvas>
+<div id="title-overlay"><div id="title-text">REZE</div><div id="title-sub">Chainsaw Man</div></div>
+<div id="ui">
+  <button class="ui-btn" onclick="prevScene()" title="Previous view">◂</button>
+  <button id="playBtn" onclick="togglePlay()"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></button>
+  <button class="ui-btn" onclick="nextScene()" title="Next view">▸</button>
+  <span id="tc">00:00:00</span>
+  <button class="ui-btn" id="fxBtn" onclick="toggleFx()" title="Toggle effects">FX</button>
+  <button class="ui-btn" id="glitchBtn" onclick="toggleGlitch()" title="Glitch mode">G</button>
+</div>
+<div id="mode-label">3D Viewport</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const VIDEO_URL = '/_blob/bf5db2275006485794b279891b1e2457';
+
+const BEATS = [0.209,0.905,1.602,2.298,2.995,3.692,4.365,5.062,5.758,6.455,7.152,7.848,8.544,9.241,9.938,10.634,11.308,12.004,12.701,13.397,14.094,14.791,15.487,16.161,16.857,17.554,18.25,18.947,19.644,20.34,21.014,21.71,22.407,23.103,23.8,24.497,25.193,25.89,26.563,27.26,27.956,28.653,29.35,30.046,30.743,31.439,32.113,32.809,33.506,34.203,34.876,35.596,36.292,36.989,37.662,38.359];
+
+let scene, camera, renderer, clock;
+let videoEl, videoTex;
+let mainScreen, floatingPanels = [], particles;
+let playing = false;
+let fxEnabled = true, glitchEnabled = false;
+let currentScene = 0;
+const sceneCount = 4;
+let beatIndex = 0;
+let beatPulse = 0;
+let titleVisible = true;
+let mouseX = 0, mouseY = 0;
+
+function init() {
+  clock = new THREE.Clock();
+
+  scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x050510, 0.015);
+
+  camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 200);
+  camera.position.set(0, 0, 8);
+
+  renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true, alpha: false });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.1;
+
+  videoEl = document.createElement('video');
+  videoEl.crossOrigin = 'anonymous';
+  videoEl.loop = true;
+  videoEl.muted = true;
+  videoEl.playsInline = true;
+  videoEl.preload = 'auto';
+  videoEl.src = VIDEO_URL;
+
+  const loadFill = document.getElementById('load-fill');
+  let fakeProgress = 0;
+  const progressInterval = setInterval(() => {
+    fakeProgress = Math.min(fakeProgress + Math.random() * 15, 90);
+    loadFill.style.width = fakeProgress + '%';
+  }, 200);
+
+  videoEl.addEventListener('canplaythrough', () => {
+    clearInterval(progressInterval);
+    loadFill.style.width = '100%';
+    setTimeout(() => {
+      document.getElementById('loading').classList.add('hide');
+      document.getElementById('title-overlay').classList.add('show');
+      setTimeout(() => { document.getElementById('title-overlay').classList.remove('show'); titleVisible = false; }, 3000);
+    }, 400);
+  }, { once: true });
+
+  videoEl.addEventListener('error', () => {
+    clearInterval(progressInterval);
+    document.getElementById('load-text').textContent = 'Video unavailable — showing demo';
+    loadFill.style.width = '100%';
+    setTimeout(() => document.getElementById('loading').classList.add('hide'), 800);
+  });
+
+  videoEl.load();
+
+  videoTex = new THREE.VideoTexture(videoEl);
+  videoTex.minFilter = THREE.LinearFilter;
+  videoTex.magFilter = THREE.LinearFilter;
+  videoTex.format = THREE.RGBAFormat;
+  videoTex.colorSpace = THREE.SRGBColorSpace;
+
+  buildScene();
+
+  window.addEventListener('resize', onResize);
+  window.addEventListener('mousemove', e => {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+  window.addEventListener('keydown', e => {
+    if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+  });
+
+  animate();
+}
+
+function buildScene() {
+  while (scene.children.length) scene.remove(scene.children[0]);
+
+  const ambLight = new THREE.AmbientLight(0x111122, 0.5);
+  scene.add(ambLight);
+
+  const spotL = new THREE.SpotLight(0xff3344, 2, 40, Math.PI / 5, 0.5);
+  spotL.position.set(-8, 6, 8);
+  scene.add(spotL);
+
+  const spotR = new THREE.SpotLight(0x4a9eff, 1.5, 40, Math.PI / 5, 0.5);
+  spotR.position.set(8, 4, 6);
+  scene.add(spotR);
+
+  const backLight = new THREE.PointLight(0xff6b35, 1, 30);
+  backLight.position.set(0, -3, -5);
+  scene.add(backLight);
+
+  // Main curved screen
+  const curveGeom = new THREE.PlaneGeometry(12, 6.75, 64, 1);
+  const positions = curveGeom.attributes.position;
+  for (let i = 0; i < positions.count; i++) {
+    const x = positions.getX(i);
+    const curve = Math.cos((x / 6) * Math.PI * 0.35) * 1.5 - 1.5;
+    positions.setZ(i, curve);
+  }
+  curveGeom.computeVertexNormals();
+
+  const screenMat = new THREE.MeshStandardMaterial({
+    map: videoTex,
+    emissive: new THREE.Color(0xffffff),
+    emissiveMap: videoTex,
+    emissiveIntensity: 0.6,
+    roughness: 0.3,
+    metalness: 0.1,
+  });
+
+  mainScreen = new THREE.Mesh(curveGeom, screenMat);
+  mainScreen.position.set(0, 0, -2);
+  scene.add(mainScreen);
+
+  // Frame glow
+  const frameMat = new THREE.MeshBasicMaterial({ color: 0xff3344, transparent: true, opacity: 0.15 });
+  const frameGeom = new THREE.PlaneGeometry(12.4, 7.1);
+  const framePositions = frameGeom.attributes.position;
+  for (let i = 0; i < framePositions.count; i++) {
+    const x = framePositions.getX(i);
+    framePositions.setZ(i, Math.cos((x / 6.2) * Math.PI * 0.35) * 1.5 - 1.7);
+  }
+  const frame = new THREE.Mesh(frameGeom, frameMat);
+  frame.position.copy(mainScreen.position);
+  scene.add(frame);
+
+  // Floating side panels
+  floatingPanels = [];
+  const panelPositions = [
+    { x: -7, y: 2.5, z: 1, rx: 0, ry: 0.4, s: 0.45 },
+    { x: 7, y: -1.5, z: 0, rx: 0, ry: -0.4, s: 0.5 },
+    { x: -6, y: -2.8, z: 2, rx: 0.1, ry: 0.3, s: 0.35 },
+    { x: 6.5, y: 3, z: 1, rx: -0.1, ry: -0.35, s: 0.4 },
+    { x: 0, y: -3.5, z: 3, rx: 0.3, ry: 0, s: 0.3 },
+  ];
+
+  panelPositions.forEach((p, i) => {
+    const g = new THREE.PlaneGeometry(4 * p.s * (16/9), 4 * p.s);
+    const m = new THREE.MeshStandardMaterial({
+      map: videoTex,
+      emissive: new THREE.Color(0xffffff),
+      emissiveMap: videoTex,
+      emissiveIntensity: 0.35,
+      transparent: true,
+      opacity: 0.7,
+      roughness: 0.2,
+      metalness: 0.4,
+    });
+    const mesh = new THREE.Mesh(g, m);
+    mesh.position.set(p.x, p.y, p.z);
+    mesh.rotation.set(p.rx, p.ry, 0);
+    mesh.userData = { origPos: { ...p }, phase: i * 1.2 };
+    scene.add(mesh);
+    floatingPanels.push(mesh);
+  });
+
+  // Particle system
+  const pCount = 1500;
+  const pGeom = new THREE.BufferGeometry();
+  const pPositions = new Float32Array(pCount * 3);
+  const pColors = new Float32Array(pCount * 3);
+  const pSizes = new Float32Array(pCount);
+
+  for (let i = 0; i < pCount; i++) {
+    pPositions[i * 3] = (Math.random() - 0.5) * 40;
+    pPositions[i * 3 + 1] = (Math.random() - 0.5) * 25;
+    pPositions[i * 3 + 2] = (Math.random() - 0.5) * 30 - 5;
+
+    const colorChoice = Math.random();
+    if (colorChoice < 0.4) {
+      pColors[i * 3] = 1; pColors[i * 3 + 1] = 0.2; pColors[i * 3 + 2] = 0.27;
+    } else if (colorChoice < 0.7) {
+      pColors[i * 3] = 1; pColors[i * 3 + 1] = 0.42; pColors[i * 3 + 2] = 0.21;
+    } else {
+      pColors[i * 3] = 0.29; pColors[i * 3 + 1] = 0.62; pColors[i * 3 + 2] = 1;
+    }
+    pSizes[i] = Math.random() * 3 + 0.5;
+  }
+
+  pGeom.setAttribute('position', new THREE.BufferAttribute(pPositions, 3));
+  pGeom.setAttribute('color', new THREE.BufferAttribute(pColors, 3));
+  pGeom.setAttribute('size', new THREE.BufferAttribute(pSizes, 1));
+
+  const pMat = new THREE.ShaderMaterial({
+    uniforms: {
+      time: { value: 0 },
+      beatPulse: { value: 0 },
+    },
+    vertexShader: `
+      attribute float size;
+      varying vec3 vColor;
+      uniform float time;
+      uniform float beatPulse;
+      void main() {
+        vColor = color;
+        vec3 pos = position;
+        pos.y += sin(time * 0.3 + position.x * 0.5) * 0.5;
+        pos.x += cos(time * 0.2 + position.z * 0.3) * 0.3;
+        pos.z += sin(time * 0.15 + position.y * 0.4) * 0.4;
+        vec4 mvPos = modelViewMatrix * vec4(pos, 1.0);
+        gl_PointSize = size * (1.0 + beatPulse * 2.0) * (200.0 / -mvPos.z);
+        gl_Position = projectionMatrix * mvPos;
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vColor;
+      uniform float beatPulse;
+      void main() {
+        float d = length(gl_PointCoord - 0.5);
+        if (d > 0.5) discard;
+        float alpha = smoothstep(0.5, 0.1, d) * (0.4 + beatPulse * 0.5);
+        gl_FragColor = vec4(vColor * (1.0 + beatPulse * 0.5), alpha);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    vertexColors: true,
+    blending: THREE.AdditiveBlending,
+  });
+
+  particles = new THREE.Points(pGeom, pMat);
+  scene.add(particles);
+
+  // Ground reflective plane
+  const groundGeom = new THREE.PlaneGeometry(60, 60);
+  const groundMat = new THREE.MeshStandardMaterial({
+    color: 0x080818,
+    roughness: 0.15,
+    metalness: 0.9,
+    transparent: true,
+    opacity: 0.6,
+  });
+  const ground = new THREE.Mesh(groundGeom, groundMat);
+  ground.rotation.x = -Math.PI / 2;
+  ground.position.y = -5;
+  scene.add(ground);
+
+  // Grid lines on ground
+  const gridHelper = new THREE.GridHelper(60, 60, 0x1a1a40, 0x0d0d25);
+  gridHelper.position.y = -4.98;
+  gridHelper.material.transparent = true;
+  gridHelper.material.opacity = 0.3;
+  scene.add(gridHelper);
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+
+  const t = clock.getElapsedTime();
+  const dt = clock.getDelta();
+  const vt = videoEl.currentTime || 0;
+
+  // Beat detection
+  beatPulse *= 0.88;
+  while (beatIndex < BEATS.length && vt >= BEATS[beatIndex]) {
+    beatPulse = 1.0;
+    beatIndex++;
+  }
+  if (vt < 0.1) beatIndex = 0;
+
+  // Camera scenes
+  const camTargets = [
+    () => { // Wide front
+      camera.position.lerp(new THREE.Vector3(mouseX * 1.5, mouseY * 0.8 + 0.5, 8 + beatPulse * -0.8), 0.03);
+      camera.lookAt(0, 0, -1);
+    },
+    () => { // Orbit
+      const angle = t * 0.15;
+      const r = 10;
+      camera.position.lerp(new THREE.Vector3(Math.sin(angle) * r, 2 + mouseY, Math.cos(angle) * r), 0.03);
+      camera.lookAt(0, 0, -2);
+    },
+    () => { // Close-up
+      camera.position.lerp(new THREE.Vector3(mouseX * 0.5, mouseY * 0.3, 3.5 + beatPulse * -0.5), 0.03);
+      camera.lookAt(0, 0, -2);
+    },
+    () => { // Dutch angle
+      const tilt = Math.sin(t * 0.3) * 0.08;
+      camera.position.lerp(new THREE.Vector3(3 + mouseX, 2 + mouseY * 0.5, 7), 0.03);
+      camera.lookAt(0, 0, -1);
+      camera.rotation.z = tilt + beatPulse * 0.05;
+    },
+  ];
+
+  camTargets[currentScene % camTargets.length]();
+
+  // Beat shake
+  if (beatPulse > 0.1) {
+    camera.position.x += (Math.random() - 0.5) * beatPulse * 0.08;
+    camera.position.y += (Math.random() - 0.5) * beatPulse * 0.06;
+  }
+
+  // Main screen animation
+  if (mainScreen) {
+    mainScreen.material.emissiveIntensity = 0.5 + beatPulse * 0.4;
+    mainScreen.scale.setScalar(1 + beatPulse * 0.02);
+  }
+
+  // Floating panels
+  floatingPanels.forEach((panel, i) => {
+    const d = panel.userData;
+    panel.position.y = d.origPos.y + Math.sin(t * 0.5 + d.phase) * 0.3;
+    panel.position.x = d.origPos.x + Math.cos(t * 0.3 + d.phase) * 0.2;
+    panel.rotation.z = Math.sin(t * 0.4 + d.phase) * 0.05;
+    panel.material.opacity = 0.5 + beatPulse * 0.3;
+    panel.material.emissiveIntensity = 0.25 + beatPulse * 0.3;
+
+    if (fxEnabled) {
+      const uvOffset = Math.sin(t + i) * 0.1;
+      panel.material.map.offset.x = uvOffset * 0.05;
+    }
+  });
+
+  // Particles
+  if (particles) {
+    particles.rotation.y = t * 0.02;
+    particles.material.uniforms.time.value = t;
+    particles.material.uniforms.beatPulse.value = beatPulse;
+  }
+
+  // Glitch effect
+  if (glitchEnabled && beatPulse > 0.5) {
+    mainScreen.position.x = (Math.random() - 0.5) * 0.15;
+    mainScreen.material.color.setHex(Math.random() > 0.5 ? 0xff3344 : 0x4a9eff);
+    setTimeout(() => {
+      if (mainScreen) {
+        mainScreen.position.x = 0;
+        mainScreen.material.color.setHex(0xffffff);
+      }
+    }, 50);
+  }
+
+  // Lights pulse
+  scene.children.forEach(child => {
+    if (child.isSpotLight || child.isPointLight) {
+      child.intensity = child.userData.baseIntensity
+        ? child.userData.baseIntensity * (1 + beatPulse * 0.5)
+        : child.intensity;
+    }
+  });
+  scene.traverse(child => {
+    if (child.isSpotLight && !child.userData.baseIntensity) {
+      child.userData.baseIntensity = child.intensity;
+    }
+    if (child.isPointLight && !child.userData.baseIntensity) {
+      child.userData.baseIntensity = child.intensity;
+    }
+  });
+
+  // Update timecode
+  if (playing) {
+    const m = Math.floor(vt / 60);
+    const s = Math.floor(vt % 60);
+    const ms = Math.floor((vt % 1) * 100);
+    document.getElementById('tc').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}:${String(ms).padStart(2,'0')}`;
+  }
+
+  renderer.render(scene, camera);
+}
+
+function togglePlay() {
+  playing = !playing;
+  const btn = document.getElementById('playBtn');
+  if (playing) {
+    videoEl.muted = false;
+    videoEl.play().catch(() => { videoEl.muted = true; videoEl.play(); });
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16" rx="1" fill="#fff"/><rect x="14" y="4" width="4" height="16" rx="1" fill="#fff"/></svg>';
+    btn.classList.add('playing');
+  } else {
+    videoEl.pause();
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="#fff"/></svg>';
+    btn.classList.remove('playing');
+  }
+}
+
+function nextScene() {
+  currentScene = (currentScene + 1) % sceneCount;
+  const labels = ['Wide', 'Orbit', 'Close-up', 'Dutch'];
+  document.getElementById('mode-label').textContent = labels[currentScene] + ' Viewport';
+}
+
+function prevScene() {
+  currentScene = (currentScene - 1 + sceneCount) % sceneCount;
+  const labels = ['Wide', 'Orbit', 'Close-up', 'Dutch'];
+  document.getElementById('mode-label').textContent = labels[currentScene] + ' Viewport';
+}
+
+function toggleFx() {
+  fxEnabled = !fxEnabled;
+  document.getElementById('fxBtn').classList.toggle('active', fxEnabled);
+  floatingPanels.forEach(p => { p.visible = fxEnabled; });
+  particles.visible = fxEnabled;
+}
+
+function toggleGlitch() {
+  glitchEnabled = !glitchEnabled;
+  document.getElementById('glitchBtn').classList.toggle('active', glitchEnabled);
+}
+
+function onResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+}
+
+document.getElementById('fxBtn').classList.add('active');
+init();
+</script>
