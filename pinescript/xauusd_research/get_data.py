@@ -14,8 +14,17 @@ for f in FILES:
     if not os.path.exists(p):
         print("downloading", f); urllib.request.urlretrieve(BASE + f, p)
 df = pd.concat([pd.read_csv(os.path.join("data", f), header=None, names=["d", "t", "o", "h", "l", "c", "v"]) for f in FILES], ignore_index=True)
-df["ts"] = pd.to_datetime(df["d"] + " " + df["t"], format="%Y.%m.%d %H:%M")
-df = df.drop(columns=["d", "t", "v"]).drop_duplicates("ts").sort_values("ts").reset_index(drop=True)
+raw = pd.to_datetime(df["d"] + " " + df["t"], format="%Y.%m.%d %H:%M")
+# The files' clock is New York local time up to 2018, but from 2019 it is London time minus
+# 5 hours: it then switches daylight saving on the European dates, so for ~3 weeks in March and
+# ~1 week around the end of October it is one hour behind New York (the 17:00 break shows at 16:00).
+# Convert both eras to true UTC, then to New York local time.
+pre = raw < pd.Timestamp("2019-01-01")
+utc = pd.Series(pd.NaT, index=raw.index, dtype="datetime64[ns, UTC]")
+utc[pre] = raw[pre].dt.tz_localize("America/New_York", ambiguous="NaT", nonexistent="NaT").dt.tz_convert("UTC")
+utc[~pre] = (raw[~pre] + pd.Timedelta(hours=5)).dt.tz_localize("Europe/London", ambiguous="NaT", nonexistent="NaT").dt.tz_convert("UTC")
+df["ts"] = utc.dt.tz_convert("America/New_York").dt.tz_localize(None)
+df = df.dropna(subset=["ts"]).drop(columns=["d", "t", "v"]).drop_duplicates("ts").sort_values("ts").reset_index(drop=True)
 df.to_parquet("m1_raw.parquet")
 m1 = df.set_index("ts")[["o", "h", "l", "c"]]
 for rule, name, step in (("5min", "m5", 300000), ("15min", "m15", 900000)):

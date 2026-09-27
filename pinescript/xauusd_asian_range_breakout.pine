@@ -10,11 +10,11 @@
 //   3. SL = the opposite side of the Asian range. TP = 3 x that risk.
 //   4. Anything still open is closed at 13:30 New York.
 //
-// Backtest (M5, 1 R risked per trade, net of 1 bp round-trip cost): 3711 trades,
-// 44 % winners, +0.044 R per trade, total +162 R, worst drawdown 53 R, 9 of 17
+// Backtest (M5, 1 R risked per trade, net of 1 bp round-trip cost): 3720 trades,
+// 44 % winners, +0.041 R per trade, total +153 R, worst drawdown 53 R, 9 of 17
 // full years positive. Settings were chosen on 2009-2017 (+0.065 R per trade,
-// t = 2.3). On 2018-2026, which was held out, it made only +0.020 R per trade
-// (t = 0.7): not statistically significant. Treat it as a small, uncertain edge.
+// t = 2.3). On 2018-2026, which was held out, it made only +0.015 R per trade
+// (t = 0.6): not statistically significant. Treat it as a small, uncertain edge.
 // Entering at the close of a breakout candle instead of with stop orders roughly
 // halves the edge, so use the pending orders this indicator draws.
 //
@@ -334,7 +334,7 @@ if dashMode != "Off" and barstate.islast
     if dashMode == "Full"
         row(3, "TP / SL / masa", str.tostring(nTP) + " / " + str.tostring(nSL) + " / " + str.tostring(nTime))
         row(4, "Drawdown maks", str.tostring(maxDD, "#.0") + "R")
-        row(5, "Backtest", "2009-17 +0.065R, 2018-26 +0.020R setiap trade")
+        row(5, "Backtest", "2009-17 +0.065R, 2018-26 +0.015R setiap trade")
 
 // ── Alerts ──────────────────────────────────────────────────────────────────
 alertcondition(evPlan, "Plan ready (place both stop orders)", 'XAUUSD plan: BUY STOP {{plot("Buy stop")}} / SELL STOP {{plot("Sell stop")}} (SL = the other level)')

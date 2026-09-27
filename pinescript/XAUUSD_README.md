@@ -9,7 +9,7 @@ File: [`xauusd_asian_range_breakout.pine`](xauusd_asian_range_breakout.pine)
 
 > **Read this first.** This is the only pattern, out of everything tested on 17
 > years of gold data, that held up after costs. Its edge is **small**. On the
-> held-out years 2018–2026 it made **+0.02 R per trade, which is not statistically
+> held-out years 2018–2026 it made **+0.015 R per trade, which is not statistically
 > significant**. Drawdowns reach 53 R. Forward-test it on a demo account before
 > risking money.
 
@@ -59,9 +59,11 @@ there on enough data, with costs, and keep only what survives.
 
 **Data:** 5.9 million one-minute XAUUSD bars, March 2009 – January 2026
 (HistData.com via the Hugging Face dataset `fokan/xauusd-2009-2026`), built into
-M5 and M15 bars. The data's clock is New York local time: the daily 17:00–18:00
-break and the 08:30 / 10:00 US data spikes sit at the same clock times in winter
-and summer. Costs: 1 bp of price per round trip (about 0.30 USD at 3000 USD
+M5 and M15 bars. The files' clock is New York time up to 2018, but from 2019 it is
+London time minus 5 hours: it switches daylight saving on the European dates, so for
+about four weeks a year it is an hour behind New York. All bars were converted to
+true New York time (after that, gold's 17:00–18:00 break sits at 17:00 on every day
+of every year). January–July 2023 is missing 30–40 % of its minutes. Costs: 1 bp of price per round trip (about 0.30 USD at 3000 USD
 gold), with 2 bp as a stress test. Settings were chosen on 2009–2017 only;
 2018–2026 was held out.
 
@@ -83,7 +85,7 @@ gold), with 2 bp as a stress test. Settings were chosen on 2009–2017 only;
 | Three bars in a row → reversal | Real and stable (t −5 to −9), but worth 0.1–0.3 bp against a ~1 bp cost. Not tradable. |
 | London fix drop (05:00 NY), 09:30 drop / 10:00 rebound | Strong in 2009–2014, faded since the 2015 fix reform. |
 | One session predicting the next (intraday momentum) | Nothing survives; signs flip between halves. |
-| London opening-range breakout | In-sample Sharpe 0.65–0.96; out of sample 0.40 (1R) and −0.05 (2R). |
+| London opening-range breakout | In-sample Sharpe 0.65–0.96; out of sample 0.24 (1R) and −0.26 (2R). |
 | COMEX opening-range breakout | No edge. |
 | **Asian-range breakout at London open** | **Positive in every era, for both BUY and SELL. The only survivor.** |
 
@@ -93,39 +95,39 @@ eras, even in 2009–2013 when gold fell overall.
 
 **Choosing the settings without overfitting:** 120 variants of the breakout
 (exit time, TP multiple, stop placement, entry window) were all positive
-in-sample, and 84 % stayed positive out of sample. Picking the single best
-in-sample row would have been a mistake (its out-of-sample Sharpe was 0.09), so
+in-sample, and 78 % stayed positive out of sample. Picking the single best
+in-sample row would have been a mistake (its out-of-sample Sharpe was −0.06), so
 the settings were chosen by the average of each variant and its neighbours,
 in-sample only: SL at the other side of the range, entries until 08:20, TP 3R,
 time exit 13:30. Moving the range window anywhere from 18:05–20:00 to 02:00–03:00
-changes little (Sharpe 0.63–0.76 on a per-trade bp basis), so it is a plateau,
+changes little (Sharpe 0.56–0.74 on a per-trade bp basis), so it is a plateau,
 not a spike.
 
 ## Results (1 R risked per trade, net of 1 bp cost)
 
 | | M5 | M15 |
 |---|---|---|
-| Trades | 3,711 (~220 / year) | 3,761 |
+| Trades | 3,720 (~220 / year) | 3,767 |
 | Winners | 44 % | 44 % |
-| Average per trade, all years | +0.044 R (t = 2.25) | +0.045 R (t = 2.35) |
+| Average per trade, all years | +0.041 R (t = 2.13) | +0.043 R (t = 2.25) |
 | 2009–2017 (settings chosen here) | +0.065 R (t = 2.34) | +0.067 R (t = 2.43) |
-| **2018–2026 (held out)** | **+0.020 R (t = 0.74)** | **+0.021 R (t = 0.78)** |
-| Total | +162 R | +170 R |
+| **2018–2026 (held out)** | **+0.015 R (t = 0.55)** | **+0.017 R (t = 0.63)** |
+| Total | +153 R | +163 R |
 | Worst drawdown | 53 R | 53 R |
-| Years positive | 9 of 17 | 10 of 17 |
-| How trades end | time exit 56 %, SL 38 %, TP 6 % | about the same |
+| Years positive | 9 of 17 | 9 of 17 |
+| How trades end | time exit 55 %, SL 38 %, TP 6 % | about the same |
 
 Per year on M5 (R): 2009 +24, 2010 −5, 2011 −3, 2012 −7, 2013 +52, 2014 −4,
-2015 +41, 2016 +5, 2017 +24, 2018 +24, 2019 0, 2020 +18, 2021 −20, 2022 +25,
-2023 −20, 2024 +14, 2025 −6.
+2015 +41, 2016 +5, 2017 +24, 2018 +24, 2019 −3, 2020 +18, 2021 −20, 2022 +25,
+2023 −22, 2024 +13, 2025 −8.
 
 Two more findings:
-- Measured per trade in bp (the same lot size every trade instead of the same risk), the held-out result was better: Sharpe about 0.55. The profit concentrates on wide-range, volatile days, which fixed-risk sizing trades smaller.
+- Measured per trade in bp (the same lot size every trade instead of the same risk), the held-out result was better: Sharpe about 0.50. The profit concentrates on wide-range, volatile days, which fixed-risk sizing trades smaller.
 - At 2 bp cost the edge roughly halves.
 
 ## Limitations
 
-- The edge is small, and it is not statistically significant on the held-out years. Profit came mostly from a few strong years; recent years were mixed (2021 and 2023 each −20 R, 2025 −6 R).
+- The edge is small, and it is not statistically significant on the held-out years. Profit came mostly from a few strong years; recent years were mixed (2021 −20 R, 2023 −22 R, 2025 −8 R).
 - 44 % winners and a 53 R worst drawdown: at 0.5 % risk per trade that is about a 26 % account drawdown.
 - The test used HistData prices. Your broker's feed, spread at the London open and slippage on stop orders will differ.
 - The backtest fills stop orders exactly at the level (at the open when price gaps through), and counts a bar that touched both TP and SL as a loss.
@@ -134,7 +136,7 @@ Two more findings:
 ## How it was checked
 
 1. **TradingView compiler:** 0 errors, 0 warnings.
-2. **Mirror reproduces the research:** `verification/xau_mirror.py`, a line-by-line Python port of the indicator, reproduces the 17-year backtest exactly (3,711 trades, +162.2 R, 52.8 R drawdown on M5).
+2. **Mirror reproduces the research:** `verification/xau_mirror.py`, a line-by-line Python port of the indicator, reproduces the 17-year backtest exactly (3,720 trades, +153.3 R, 52.8 R drawdown on M5).
 3. **Real script on real data:** the actual `.pine` file was run in [PineTS](https://github.com/LuxAlgo/PineTS) on real gold bars and compared with the mirror bar by bar, on three slices:
    - M5, Feb – Apr 2024: the US daylight-saving switch and the three weeks when New York and London clocks are misaligned.
    - M5, Oct – Dec 2024: the switch back.
