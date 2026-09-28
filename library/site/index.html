@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Khizana · خزانة الكتب</title>
+<meta name="description" content="Search the 8,589 books of al-Maktaba al-Shamila and download any of them as one OpenITI mARkdown file with full metadata.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans+Arabic:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#f2f3ef; --surface:#fbfbf8; --surface-2:#e9ebe4; --line:#d3d7cc; --ink:#1b211f; --muted:#5d6661;
+  --accent:#0f5c56; --accent-2:#137068; --rubric:#a8322d; --on-accent:#f7faf8; --hl:#f6e7b0;
+  --ui:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --text:"Amiri","Noto Naskh Arabic","Traditional Arabic",serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#101513; --surface:#161d1a; --surface-2:#1d2622; --line:#2c3833; --ink:#e7ebe6; --muted:#9aa59f;
+    --accent:#5cc2b6; --accent-2:#7dd3c8; --rubric:#e58a7f; --on-accent:#0c1311; --hl:#4a4020; color-scheme:dark;}
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.6;padding-inline:16px;padding-block:0 40px}
+a{color:var(--accent)}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto}
+
+header.top{display:flex;align-items:flex-end;gap:16px;flex-wrap:wrap;padding-block:22px 14px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;gap:12px;margin-inline-end:auto;text-decoration:none;color:inherit}
+.brand b{font-family:var(--text);font-size:40px;line-height:1;color:var(--rubric);font-weight:700}
+.brand span{color:var(--muted);font-size:13px}
+.stats{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.search{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-block:18px 10px}
+.search input{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:12px 14px;font-size:18px;min-height:50px;width:100%}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filters select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 10px;min-height:38px;max-width:100%}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 14px;cursor:pointer;min-height:38px;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:inherit}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
+.btn.primary:hover{background:var(--accent-2)}
+.btn:disabled{opacity:.5;cursor:default}
+
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:24px;margin-top:14px;align-items:start}
+@media (max-width: 860px){.layout{grid-template-columns:minmax(0,1fr)}.cats{display:none}}
+.cats{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;border-inline-start:1px solid var(--line);padding-inline-start:12px}
+.cats h2,.side h2{font-size:12px;letter-spacing:.06em;color:var(--muted);margin:4px 0 8px;font-weight:600}
+.cats button{display:flex;justify-content:space-between;gap:8px;width:100%;border:0;background:none;text-align:start;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:14px}
+.cats button:hover{background:var(--surface-2)}
+.cats button[aria-pressed="true"]{background:var(--surface-2);color:var(--accent);font-weight:600}
+.cats small{color:var(--muted);font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:12px}
+
+.count{color:var(--muted);font-size:13px;margin-bottom:6px}
+.list{display:flex;flex-direction:column}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 16px;padding:12px 4px;border-bottom:1px solid var(--line);text-decoration:none;color:inherit}
+.item:hover{background:var(--surface)}
+.item .t{font-family:var(--text);font-size:20px;line-height:1.5;color:var(--ink)}
+.item .a{color:var(--muted);font-size:14px}
+.item .a b{color:var(--ink);font-weight:500}
+.item .m{grid-row:1 / span 2;grid-column:2;display:flex;flex-direction:column;align-items:flex-end;gap:4px;font-size:12px;color:var(--muted);text-align:end}
+.chip{border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:12px;white-space:nowrap;background:var(--surface)}
+.chip.d{border-color:transparent;background:var(--surface-2);color:var(--ink);font-family:var(--mono);direction:ltr}
+mark{background:var(--hl);color:inherit;border-radius:2px}
+.more{margin:16px auto;display:flex}
+.empty{padding:28px 8px;color:var(--muted)}
+
+/* book */
+.book{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:28px;margin-top:18px;align-items:start}
+@media (max-width: 960px){.book{grid-template-columns:minmax(0,1fr)}}
+.crumbs{font-size:13px;color:var(--muted);display:flex;gap:6px;flex-wrap:wrap}
+.crumbs a{color:var(--muted)}
+.book h1{font-family:var(--text);font-size:clamp(26px,4vw,38px);line-height:1.35;margin:8px 0 6px;text-wrap:balance;font-weight:700}
+.byline{font-size:16px;color:var(--muted);margin:0 0 14px}
+.byline a{color:var(--ink);font-weight:500}
+.dl{display:flex;gap:8px;flex-wrap:wrap;margin-block:10px 18px}
+.progress{font-size:13px;color:var(--muted);font-family:var(--mono);direction:ltr;text-align:right}
+.side{display:flex;flex-direction:column;gap:18px;position:sticky;top:12px}
+@media (max-width: 960px){.side{position:static}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+dl.meta{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 12px;margin:0;font-size:14px}
+dl.meta dt{color:var(--muted)}
+dl.meta dd{margin:0;overflow-wrap:anywhere}
+.uri{font-family:var(--mono);font-size:12px;direction:ltr;text-align:left;overflow-wrap:anywhere;background:var(--surface-2);padding:6px 8px;border-radius:6px;display:block}
+.betaka{font-family:var(--text);font-size:17px;line-height:1.8;white-space:pre-line;margin:0}
+.toc{max-height:60vh;overflow:auto;font-size:14px;padding-inline-start:0;margin:0;list-style:none}
+.toc li button{border:0;background:none;text-align:start;padding:3px 6px;cursor:pointer;border-radius:5px;width:100%;line-height:1.5}
+.toc li button:hover{background:var(--surface-2);color:var(--accent)}
+.reader{background:var(--surface);border:1px solid var(--line);border-radius:12px;min-height:300px}
+.reader .bar{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.reader .bar input{width:84px;border:1px solid var(--line);border-radius:6px;padding:4px 8px;background:var(--bg);font-family:var(--mono);direction:ltr;text-align:center}
+.reader .bar .pg{font-family:var(--mono);font-size:13px;color:var(--muted);direction:ltr}
+.page{padding:22px clamp(16px,4vw,40px) 30px;font-family:var(--text);font-size:21px;line-height:2.05}
+.page p{margin:0 0 .6em}
+.page .h{color:var(--rubric);font-weight:700;font-size:1.08em;margin:.9em 0 .4em}
+.page .q{color:var(--accent)}
+.page .fn{border-top:1px solid var(--line);margin-top:1.4em;padding-top:.8em;font-size:17px;color:var(--muted);line-height:1.9}
+.load{padding:40px 20px;text-align:center;color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin:0}
+footer{margin-top:40px;padding-top:14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#"><b>خِزانة</b><span>Khizana · مكتبة الشاملة بصيغة OpenITI</span></a>
+    <div class="stats" id="stats">جارٍ تحميل الفهرس…</div>
+  </header>
+
+  <section id="home">
+    <form class="search" id="searchForm" role="search">
+      <input id="q" type="search" placeholder="ابحث بعنوان الكتاب أو اسم المؤلف…" aria-label="بحث" autocomplete="off">
+      <button class="btn primary" type="submit">بحث</button>
+    </form>
+    <div class="filters">
+      <select id="fCat" aria-label="التصنيف"><option value="">كل التصنيفات</option></select>
+      <select id="fCent" aria-label="قرن الوفاة"><option value="">كل القرون</option></select>
+      <select id="fType" aria-label="نوع الكتاب"><option value="">كل الأنواع</option></select>
+      <select id="fSort" aria-label="الترتيب">
+        <option value="death">الأقدم وفاةً أولًا</option>
+        <option value="death-desc">الأحدث وفاةً أولًا</option>
+        <option value="title">العنوان (أ–ي)</option>
+        <option value="id">رقم الكتاب</option>
+      </select>
+    </div>
+    <div class="layout">
+      <nav class="cats" aria-label="التصنيفات"><h2>التصنيفات</h2><div id="cats"></div></nav>
+      <div>
+        <div class="count" id="count"></div>
+        <div class="list" id="list"></div>
+        <button class="btn more" id="more" hidden>عرض المزيد</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="bookView" hidden></section>
+
+  <footer>
+    النصوص من <a href="https://huggingface.co/datasets/AuthenticIlm/Shamela4_Full_DB" target="_blank" rel="noopener">Shamela4_Full_DB</a>
+    (المكتبة الشاملة، الإصدار الرابع). يُحوَّل كل كتاب في متصفحك إلى ملف
+    <a href="https://maximromanov.github.io/mARkdown/" target="_blank" rel="noopener">OpenITI mARkdown</a> واحد.
+    حقوق التحقيق والنشر محفوظة لأصحابها؛ للاستعمال الشخصي والبحثي.
+  </footer>
+</div>
+
+<script>
+'use strict';
+let CAT = null, BOOKS = [], CATS = {}, TYPES = [];
+const PAGE = 60;
+let shown = PAGE, results = [];
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const AR = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+
+/* Arabic search normalization: drop harakat/tatweel, fold hamza forms, ta marbuta, alif maqsura. */
+function norm(s){
+  return String(s || '').replace(/[ً-ٰٟـۖ-ۭ]/g, '')
+    .replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي')
+    .replace(/[^ء-يa-z0-9\s]/gi, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+/* ------------------------------------------------------------ catalog */
+async function loadCatalog(){
+  CAT = await (await fetch('catalog.json')).json();
+  const F = CAT.fields, ix = Object.fromEntries(F.map((f, i) => [f, i]));
+  BOOKS = CAT.books.map(r => {
+    const b = {}; F.forEach((f, i) => b[f] = r[i]);
+    b.n = norm(b.title + ' ' + b.author);
+    return b;
+  });
+  CAT.categories.forEach(([id, name, count]) => CATS[id] = {name, count});
+  TYPES = [...new Set(BOOKS.map(b => b.book_type).filter(Boolean))].sort();
+  const authors = new Set(BOOKS.map(b => b.author_id)).size;
+  $('stats').textContent = `${AR(BOOKS.length.toLocaleString('en'))} كتابًا · ${AR(authors.toLocaleString('en'))} مؤلفًا · ${AR(CAT.categories.length)} تصنيفًا`;
+  $('fCat').innerHTML += CAT.categories.map(([id, name, c]) => `<option value="${id}">${esc(name)} (${AR(c)})</option>`).join('');
+  const cent = b => !b.death_ah ? 0 : b.death_ah < 0 ? -1 : Math.ceil(b.death_ah / 100);
+  const cents = [...new Set(BOOKS.map(cent))].sort((a, b) => (a || 99) - (b || 99));
+  $('fCent').innerHTML += cents.map(c => `<option value="${c}">${c === -1 ? 'قبل الهجرة' : c ? 'القرن ' + AR(c) + ' هـ' : 'معاصر أو غير معروف'}</option>`).join('');
+  $('fType').innerHTML += TYPES.map(t => `<option>${esc(t)}</option>`).join('');
+  $('cats').innerHTML = `<button data-c="" aria-pressed="true"><span>الكل</span><small>${AR(BOOKS.length)}</small></button>` +
+    CAT.categories.map(([id, name, c]) => `<button data-c="${id}" aria-pressed="false"><span>${esc(name)}</span><small>${AR(c)}</small></button>`).join('');
+}
+
+function search(){
+  const q = norm($('q').value), terms = q ? q.split(' ') : [];
+  const cat = $('fCat').value, cent = $('fCent').value, type = $('fType').value, sort = $('fSort').value;
+  const author = route.author;
+  results = BOOKS.filter(b =>
+    (!cat || String(b.category_id) === cat) &&
+    (!cent || (cent === '0' ? !b.death_ah : cent === '-1' ? b.death_ah < 0 : b.death_ah > 0 && Math.ceil(b.death_ah / 100) === +cent)) &&
+    (!type || b.book_type === type) &&
+    (!author || b.author_id === author) &&
+    terms.every(t => b.n.includes(t)));
+  const D = b => b.death_ah || 99999;
+  if (sort === 'death') results.sort((a, b) => D(a) - D(b) || a.title.localeCompare(b.title, 'ar'));
+  else if (sort === 'death-desc') results.sort((a, b) => D(b) - D(a));
+  else if (sort === 'title') results.sort((a, b) => a.title.localeCompare(b.title, 'ar'));
+  else results.sort((a, b) => a.book_id - b.book_id);
+  shown = PAGE; drawList(terms);
+  document.querySelectorAll('#cats button').forEach(x => x.setAttribute('aria-pressed', x.dataset.c === cat));
+}
+function hl(text, terms){
+  if (!terms.length) return esc(text);
+  // highlight on the normalized form by walking the original string
+  const src = String(text), map = [], flat = [];
+  for (let i = 0; i < src.length; i++){ const n = norm(src[i]); if (n && n !== ' '){ flat.push(n); map.push(i); } }
+  const hay = flat.join(''), marks = new Array(src.length).fill(false);
+  for (const t of terms){ const tt = t.replace(/ /g, ''); let k = hay.indexOf(tt); while (k >= 0){ for (let j = k; j < k + tt.length; j++) marks[map[j]] = true; k = hay.indexOf(tt, k + 1); } }
+  let out = '', open = false;
+  for (let i = 0; i < src.length; i++){
+    if (marks[i] && !open){ out += '<mark>'; open = true; }
+    if (!marks[i] && open && src[i] !== ' '){ out += '</mark>'; open = false; }
+    out += esc(src[i]);
+  }
+  return out + (open ? '</mark>' : '');
+}
+function drawList(terms){
+  terms = terms || (norm($('q').value) ? norm($('q').value).split(' ') : []);
+  const a = route.author ? BOOKS.find(b => b.author_id === route.author) : null;
+  $('count').innerHTML = (a ? `كتب <b>${esc(a.author)}</b> · <a href="#">إلغاء</a> · ` : '') + `${AR(results.length.toLocaleString('en'))} نتيجة`;
+  if (!results.length){ $('list').innerHTML = '<div class="empty">لا نتائج. جرّب كلمة أقصر، أو اختر «كل التصنيفات».</div>'; $('more').hidden = true; return; }
+  $('list').innerHTML = results.slice(0, shown).map(b => `
+    <a class="item" href="#b/${b.book_id}">
+      <span class="t">${hl(b.title, terms)}</span>
+      <span class="a"><b>${hl(b.author, terms)}</b></span>
+      <span class="m"><span class="chip d">${b.death_ah ? dLabel(b.death_ah) : '—'}</span><span class="chip">${esc(CATS[b.category_id]?.name || '')}</span></span>
+    </a>`).join('');
+  $('more').hidden = shown >= results.length;
+}
+
+/* ------------------------------------------------------------ routing */
+const route = {author: null};
+function go(){
+  const h = location.hash.slice(1);
+  const mb = h.match(/^b\/(\d+)/), ma = h.match(/^a\/(\d+)/);
+  if (mb){ showBook(+mb[1]); return; }
+  $('bookView').hidden = true; $('home').hidden = false;
+  route.author = ma ? +ma[1] : null;
+  document.title = 'Khizana · خزانة الكتب';
+  search();
+}
+window.addEventListener('hashchange', go);
+
+/* ------------------------------------------------------------ book */
+const cache = {};
+function fileUrl(b, f){ return CAT.resolve + b.path.split('/').map(encodeURIComponent).join('/') + '/' + f; }
+async function fetchText(url, onProgress){
+  let r;
+  for (let i = 0; ; i++){
+    try { r = await fetch(url); if (r.ok || r.status === 404 || i === 2) break; }
+    catch (e) { if (i === 2) throw e; }
+    await new Promise(res => setTimeout(res, 800 * 2 ** i));
+  }
+  if (!r.ok) throw new Error(r.status + ' ' + r.statusText);
+  const total = +r.headers.get('content-length') || 0;
+  if (!r.body || !onProgress) return await r.text();
+  const reader = r.body.getReader(), chunks = []; let got = 0;
+  for (;;){ const {done, value} = await reader.read(); if (done) break; chunks.push(value); got += value.length; onProgress(got, total); }
+  const all = new Uint8Array(got); let o = 0; for (const c of chunks){ all.set(c, o); o += c.length; }
+  return new TextDecoder('utf-8').decode(all);
+}
+const jsonl = t => t.split('\n').filter(l => l.trim()).map(l => JSON.parse(l));
+const mb = n => (n / 1048576).toFixed(n > 10485760 ? 0 : 1) + ' MB';
+
+async function bookData(b, needPages, progress){
+  const c = cache[b.book_id] = cache[b.book_id] || {};
+  if (!c.meta){
+    const [meta, toc, man] = await Promise.all([
+      fetchText(fileUrl(b, 'book_metadata.json')).then(JSON.parse),
+      fetchText(fileUrl(b, 'toc.jsonl')).then(jsonl),
+      fetchText(fileUrl(b, 'manifest.json')).then(JSON.parse).catch(() => null)]);
+    Object.assign(c, {meta, toc, manifest: man});
+  }
+  if (needPages && !c.pages){
+    const t = await fetchText(fileUrl(b, 'pages.jsonl'), progress);
+    c.pages = jsonl(t).sort((x, y) => (x.sequence_num || 0) - (y.sequence_num || 0) || x.page_id - y.page_id);
+  }
+  return c;
+}
+
+let view = null;   // {b, data, idx}
+async function showBook(id){
+  const b = BOOKS.find(x => x.book_id === id);
+  $('home').hidden = true; $('bookView').hidden = false;
+  if (!b){ $('bookView').innerHTML = '<p class="empty">لم يُعثر على هذا الكتاب. <a href="#">العودة إلى الفهرس</a></p>'; return; }
+  document.title = b.title + ' · خزانة';
+  const cat = CATS[b.category_id]?.name || '';
+  $('bookView').innerHTML = `
+  <div class="book">
+    <div>
+      <div class="crumbs"><a href="#">الفهرس</a><span>›</span><a href="#" data-cat="${b.category_id}">${esc(cat)}</a></div>
+      <h1>${esc(b.title)}</h1>
+      <p class="byline">تأليف <a href="#a/${b.author_id}">${esc(b.author)}</a>${b.death_ah ? ` (ت ${dLabel(b.death_ah)})` : ''}</p>
+      <div class="dl">
+        <button class="btn primary" id="dlMd">تنزيل ملف واحد <bdi>.mARkdown</bdi></button>
+        <button class="btn" id="dlJson">تنزيل حزمة JSON</button>
+        <a class="btn" href="https://shamela.ws/book/${b.shamela_id}" target="_blank" rel="noopener">في الشاملة</a>
+      </div>
+      <div class="progress" id="prog"></div>
+      <div class="reader">
+        <div class="bar">
+          <button class="btn" id="prev" aria-label="الصفحة السابقة">→</button>
+          <input id="pgIn" inputmode="numeric" aria-label="رقم الصفحة في التسلسل">
+          <button class="btn" id="next" aria-label="الصفحة التالية">←</button>
+          <span class="pg" id="pgInfo"></span>
+          <button class="btn" id="open" style="margin-inline-start:auto">اقرأ الكتاب</button>
+        </div>
+        <div class="page" id="page"><div class="load">اضغط «اقرأ الكتاب» لتحميل النص وقراءته هنا.</div></div>
+      </div>
+    </div>
+    <aside class="side">
+      <div class="card"><h2>بطاقة الكتاب</h2><p class="betaka" id="betaka">…</p></div>
+      <div class="card"><h2>البيانات</h2>
+        <dl class="meta" id="meta"></dl>
+      </div>
+      <div class="card"><h2>الفهرس</h2><ul class="toc" id="toc"><li class="note">جارٍ التحميل…</li></ul></div>
+    </aside>
+  </div>`;
+  view = {b, data: null, idx: 0};
+  $('bookView').querySelector('[data-cat]').onclick = e => { e.preventDefault(); $('fCat').value = b.category_id; location.hash = ''; };
+  $('dlMd').onclick = () => download('md');
+  $('dlJson').onclick = () => download('json');
+  $('open').onclick = () => openReader(0);
+  $('prev').onclick = () => turn(-1);
+  $('next').onclick = () => turn(1);
+  $('pgIn').onchange = () => openReader(Math.max(0, (+$('pgIn').value || 1) - 1));
+  window.scrollTo(0, 0);
+  try {
+    const d = await bookData(b, false);
+    if (view.b !== b) return;
+    fillMeta(b, d);
+  } catch (e) {
+    $('betaka').textContent = 'تعذّر تحميل بيانات الكتاب من Hugging Face (' + e.message + ').';
+  }
+}
+function fillMeta(b, d){
+  const m = d.meta;
+  $('betaka').textContent = (m.betaka_text || '').replace(/\r/g, '\n');
+  const authors = (m.authors || []).map(a => `${esc(a.name_ar)}${deathAH(a.death_hijri) ? ' (ت ' + dLabel(deathAH(a.death_hijri)) + ')' : ''}${a.role && a.role !== 'author' ? ' · ' + esc(a.role) : ''}`).join('<br>');
+  const pages = d.manifest ? (d.manifest.page_count ?? d.manifest.files?.find(f => f.path === 'pages.jsonl')?.rows) : null;
+  const size = d.manifest?.files?.find(f => f.path === 'pages.jsonl')?.bytes;
+  $('meta').innerHTML = [
+    ['المؤلف', authors || esc(b.author)],
+    ['التصنيف', esc(CATS[b.category_id]?.name)],
+    ['النوع', esc(m.book_type_label || b.book_type)],
+    ['الصفحات', pages ? AR(pages) : '—'],
+    ['حجم النص', size ? mb(size) : '—'],
+    ['رقم الشاملة', `<a href="https://shamela.ws/book/${b.shamela_id}" target="_blank" rel="noopener">${b.shamela_id}</a>`],
+    ['معرّف OpenITI', `<span class="uri">${esc(bookURI(m))}</span>`],
+  ].map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+  const lv = tocLevels(d.toc);
+  $('toc').innerHTML = d.toc.length ? d.toc.map(t => `<li><button data-p="${t.page_id}" style="padding-inline-start:${(lv[t.title_id] - 1) * 14 + 6}px">${esc(t.title_text)}</button></li>`).join('') : '<li class="note">لا فهرس لهذا الكتاب.</li>';
+  $('toc').onclick = async e => {
+    const btn = e.target.closest('button[data-p]'); if (!btn) return;
+    await openReader(null, +btn.dataset.p);
+    document.querySelector('.reader').scrollIntoView({behavior: 'smooth', block: 'start'});
+  };
+}
+async function openReader(idx, pageId){
+  const b = view.b;
+  try {
+    const d = await bookData(b, true, (got, tot) => $('prog').textContent = `downloading text ${mb(got)}${tot ? ' / ' + mb(tot) : ''}`);
+    $('prog').textContent = '';
+    view.data = d;
+    if (pageId != null){ const k = d.pages.findIndex(p => p.page_id >= pageId); idx = k < 0 ? 0 : k; }
+    view.idx = Math.min(Math.max(0, idx), d.pages.length - 1);
+    drawPage();
+  } catch (e) { $('prog').textContent = 'تعذّر تحميل النص: ' + e.message; }
+}
+function turn(d){ if (!view.data) return openReader(0); view.idx = Math.min(Math.max(0, view.idx + d), view.data.pages.length - 1); drawPage(); }
+function drawPage(){
+  const d = view.data, p = d.pages[view.idx];
+  const byS = Object.fromEntries(d.toc.map(t => [t.shamela_title_id, t]));
+  let body = (p.body || '').replace(SPAN, (_, n, inner) => `\r\u0001${clean(inner).trim()}\r`);
+  const paras = clean(body).split(/\r\n|\r|\n/).map(s => s.trim()).filter(Boolean);
+  const fn = clean(p.footnotes || '').split(/\r\n|\r|\n/).map(s => s.trim()).filter(Boolean);
+  const fmt = s => esc(s).replace(/﴿[^﴾]*﴾/g, m => `<span class="q">${m}</span>`);
+  $('page').innerHTML = paras.map(s => s[0] === '\u0001' ? `<p class="h">${fmt(s.slice(1))}</p>` : `<p>${fmt(s)}</p>`).join('') +
+    (fn.length ? `<div class="fn">${fn.map(s => `<p>${fmt(s)}</p>`).join('')}</div>` : '');
+  $('pgIn').value = view.idx + 1;
+  $('pgInfo').textContent = `/ ${d.pages.length}  ·  ${p.part ? 'vol ' + p.part + ' · ' : ''}p. ${p.page_num ?? '—'}`;
+}
+document.addEventListener('keydown', e => {
+  if ($('bookView').hidden || !view?.data || /INPUT|SELECT/.test(document.activeElement.tagName)) return;
+  if (e.key === 'ArrowLeft') turn(1); if (e.key === 'ArrowRight') turn(-1);
+});
+
+/* ------------------------------------------------------------ OpenITI conversion (mirrors shamela2openiti.py) */
+const SPAN = /<span[^>]*data-type=['"]title['"][^>]*id=['"]?toc-(\d+)['"]?[^>]*>([\s\S]*?)<\/span>/g;
+const TX = document.createElement('textarea');
+function unescapeHTML(s){ TX.innerHTML = s; return TX.value; }
+function clean(s){
+  s = String(s || '').replace(/<img[^>]*>/gi, ' [صورة] ').replace(/<hr\s*\/?>/gi, '\r')
+    .replace(/<\/(p|div|tr|li|table)>|<br\s*\/?>/gi, '\r').replace(/<\/t[dh]>/gi, ' | ').replace(/<[^>]+>/g, '');
+  return unescapeHTML(s);
+}
+function paragraphs(s){ return clean(s).split(/\r\n|\r|\n/).map(l => l.replace(/[ \t ]+/g, ' ').trim()).filter(Boolean); }
+// negative = years before the Hijra (e.g. -76 for Imru' al-Qays, d. 545 CE); 99999 = living/unknown
+function deathAH(v){ return v == null || v >= 9999 || v === 0 ? null : v; }
+const dLabel = d => d < 0 ? AR(-d) + ' ق هـ' : AR(d) + ' هـ';
+const dLabelLatin = d => d < 0 ? (-d) + ' ق هـ' : d + ' هـ';
+const TR = {'ا':'a','أ':'a','إ':'i','آ':'a','ٱ':'a','ء':'','ؤ':'u','ئ':'y','ب':'b','ت':'t','ث':'th','ج':'j','ح':'h','خ':'kh','د':'d','ذ':'dh','ر':'r','ز':'z','س':'s','ش':'sh','ص':'s','ض':'d','ط':'t','ظ':'z','ع':'c','غ':'gh','ف':'f','ق':'q','ك':'k','ل':'l','م':'m','ن':'n','ه':'h','ة':'a','و':'w','ي':'y','ى':'a'};
+const WD = {'ابن':'Ibn','بن':'b','أبو':'Abu','ابو':'Abu','أبي':'Abi','عبد':'Cabd','الله':'Allah','محمد':'Muhammad','أحمد':'Ahmad','علي':'Cali','عمر':'Cumar','عثمان':'Cuthman','تيمية':'Taymiyya','القيم':'Qayyim'};
+function translit(text, max){
+  const words = String(text || '').replace(/[ً-ٰٟـ]/g, '').match(/[ء-يٱ]+|[A-Za-z0-9]+/g) || [];
+  const out = [];
+  for (let w of words){
+    if (WD[w]){ out.push(WD[w]); } else {
+      if (w.startsWith('ال') && w.length > 3) w = w.slice(2);
+      const t = [...w].map(c => TR[c] ?? (/[A-Za-z0-9]/.test(c) ? c : '')).join('');
+      if (t) out.push(t[0].toUpperCase() + t.slice(1));
+    }
+    if (out.length >= max) break;
+  }
+  return out.join('') || 'Unknown';
+}
+function bookURI(m){
+  const d = Math.max(deathAH(m.main_author_death_hijri) || 0, 0);
+  const title = (m.title_ar || '').split(/\s[-–]\s|\(|ط\s/)[0];
+  return `${String(d).padStart(4, '0')}${translit(m.main_author_name_ar, 2)}.${translit(title, 3)}.Shamela${String(m.shamela_id).padStart(7, '0')}-ara1`;
+}
+function tocLevels(toc){
+  const by = Object.fromEntries(toc.map(t => [t.title_id, t])), lv = {};
+  for (const t of toc){ let n = 1, p = t.parent_id; const seen = new Set(); while (p in by && !seen.has(p)){ seen.add(p); n++; p = by[p].parent_id; } lv[t.title_id] = Math.min(n, 6); }
+  return lv;
+}
+function volume(part){ if (part == null || part === '' || part === 0) return 1; const m = String(part).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).match(/\d+/); return m ? +m[0] : 1; }
+const pad = (n, w) => String(n).padStart(w, '0');
+
+function toMarkdown(d){
+  const {meta, toc, pages, manifest} = d, lv = tocLevels(toc);
+  const byS = {}, byPage = {}; toc.forEach(t => { byS[t.shamela_title_id] = t; (byPage[t.page_id] = byPage[t.page_id] || []).push(t); });
+  const uri = bookURI(meta), out = ['######OpenITI#', '', '#META# Header#Begin#'];
+  const m = (k, v) => { if (v !== null && v !== undefined && v !== '') out.push(`#META# ${k}# ${v}`); };
+  m('000.BookURI', uri); m('000.BookTitle', meta.title_ar); m('000.Source', `https://shamela.ws/book/${meta.shamela_id}`);
+  m('000.ShamelaID', meta.shamela_id); m('000.DatasetBookID', meta.book_id);
+  for (const a of meta.authors || []){ const dd = deathAH(a.death_hijri); m(`010.Author.${a.role || 'author'}`, `${a.name_ar}${dd ? ` (ت ${dLabelLatin(dd)})` : ''} [author_id ${a.author_id}]`); }
+  m('010.AuthorDiedAH', deathAH(meta.main_author_death_hijri)); m('020.Category', meta.category_name_ar); m('020.BookType', meta.book_type_label);
+  m('020.Printed', meta.printed ? 'yes' : 'no'); m('020.Volumes', meta.volume_count_observed || null);
+  m('030.PageCount', pages.length); m('030.TocCount', toc.length);
+  paragraphs(meta.betaka_text || '').forEach((l, i) => m(`040.Card${pad(i + 1, 2)}`, l));
+  if (manifest){ m('090.Extracted', manifest.extracted_at); m('090.Snapshot', manifest.snapshot_id); (manifest.files || []).forEach(f => m(`090.SHA256.${f.path}`, f.sha256)); }
+  m('090.ConvertedBy', 'B00K library/shamela2openiti.py');
+  out.push('#META# Header#End#', '');
+  const done = new Set();
+  const heading = t => out.push('', `### ${'|'.repeat(lv[t.title_id] || 1)} ${t.title_text.trim()}`, '');
+  for (const p of pages){
+    const body = p.body || '';
+    const inline = new Set([...body.matchAll(SPAN)].map(x => +x[1]));
+    for (const t of byPage[p.page_id] || []) if (!inline.has(t.shamela_title_id) && !done.has(t.title_id)){ heading(t); done.add(t.title_id); }
+    let pos = 0;
+    for (const mt of body.matchAll(SPAN)){
+      paragraphs(body.slice(pos, mt.index)).forEach(x => out.push('# ' + x));
+      const t = byS[+mt[1]];
+      if (t && !done.has(t.title_id)){ heading(t); done.add(t.title_id); } else out.push('', '### | ' + clean(mt[2]).trim(), '');
+      pos = mt.index + mt[0].length;
+    }
+    paragraphs(body.slice(pos)).forEach(x => out.push('# ' + x));
+    const fn = paragraphs(p.footnotes || '');
+    if (fn.length){ out.push('# ____________________'); fn.forEach(x => out.push('# ' + x)); }
+    out.push(`PageV${pad(volume(p.part), 2)}P${pad(p.page_num || 0, 3)}`, '');
+  }
+  return {uri, text: out.join('\n') + '\n'};
+}
+
+async function download(kind){
+  const b = view.b, btn = kind === 'md' ? $('dlMd') : $('dlJson');
+  btn.disabled = true;
+  try {
+    const d = await bookData(b, true, (got, tot) => $('prog').textContent = `downloading text ${mb(got)}${tot ? ' / ' + mb(tot) : ''}`);
+    $('prog').textContent = 'building file…';
+    await new Promise(r => setTimeout(r, 20));
+    let name, blob;
+    if (kind === 'md'){
+      const {uri, text} = toMarkdown(d);
+      name = uri + '.mARkdown'; blob = new Blob([text], {type: 'text/markdown;charset=utf-8'});
+    } else {
+      name = bookURI(d.meta) + '.json';
+      blob = new Blob([JSON.stringify({metadata: d.meta, manifest: d.manifest, toc: d.toc, pages: d.pages})], {type: 'application/json'});
+    }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+    $('prog').textContent = `saved ${name} (${mb(blob.size)})`;
+  } catch (e) { $('prog').textContent = 'تعذّر التنزيل: ' + e.message; }
+  btn.disabled = false;
+}
+
+/* ------------------------------------------------------------ wiring */
+let tq = 0;
+$('q').addEventListener('input', () => { clearTimeout(tq); tq = setTimeout(search, 120); });
+$('searchForm').addEventListener('submit', e => { e.preventDefault(); search(); });
+['fCat', 'fCent', 'fType', 'fSort'].forEach(id => $(id).addEventListener('change', search));
+$('more').onclick = () => { shown += PAGE * 2; drawList(); };
+$('cats').addEventListener('click', e => { const b = e.target.closest('button[data-c]'); if (!b) return; $('fCat').value = b.dataset.c; if (location.hash) location.hash = ''; else search(); });
+loadCatalog().then(go).catch(e => { $('stats').textContent = 'تعذّر تحميل الفهرس (catalog.json).'; });
+</script>
+</body>
+</html>
