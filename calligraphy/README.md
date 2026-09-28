@@ -1,4 +1,16 @@
-# Orthodox Shahada — Thuluth-style composition
+# Orthodox Shahada — Thuluth
+
+**Profile picture (1:1, WhatsApp-circle safe):** `pfp.png`, built by `python3 pfp.py`, set in
+**ae_Tholoth**, a real Thuluth font (Arabeyes, GPL with font-embedding exception;
+Debian `fonts-arabeyes`). ae_Tholoth has no wasla or dagger-alif glyphs, so `pfp.py` switches to
+the standard modern fully-voweled spelling (ا, إِلَهَ, اللَّهُ). Pass any other font path as the
+first argument.
+
+![pfp](pfp.png)
+
+---
+
+The portrait below was the first attempt (Amiri, Naskh):
 
 ![composition](orthodox-shahada-thuluth.png)
 
