@@ -1,0 +1,1043 @@
+<title>Mihbara</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Reem+Kufi:wght@500;700&display=swap">
+<style>
+:root{
+  --desk:#e7e3da; --panel:#faf8f3; --panel-2:#f1ede4; --line:#d9d2c3; --ink:#1a2233; --muted:#5f6778;
+  --lapis:#1b2d5c; --lapis-2:#2a4380; --gold:#b8892e; --gold-soft:#e6c77c; --focus:#2a4380;
+  --danger:#9d2b2b; --chip:#ece6d8; --on-accent:#fdf9ef;
+  --ui:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --display:"Reem Kufi","IBM Plex Sans Arabic",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --desk:#0a0f1c; --panel:#121a2c; --panel-2:#18223a; --line:#2a3553; --ink:#e9e4d6; --muted:#9aa3b8;
+    --lapis:#8fa9e6; --lapis-2:#b3c6f2; --gold:#e0b65a; --gold-soft:#f1d796; --focus:#e0b65a;
+    --danger:#e38484; --chip:#1f2a45; --on-accent:#0a0f1c; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --desk:#0a0f1c; --panel:#121a2c; --panel-2:#18223a; --line:#2a3553; --ink:#e9e4d6; --muted:#9aa3b8;
+  --lapis:#8fa9e6; --lapis-2:#b3c6f2; --gold:#e0b65a; --gold-soft:#f1d796; --focus:#e0b65a;
+  --danger:#e38484; --chip:#1f2a45; --on-accent:#0a0f1c; color-scheme:dark;
+}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--desk);color:var(--ink);font-family:var(--ui);font-size:14px;line-height:1.45;padding-inline:16px;padding-block:0 24px}
+*{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding-block:14px 12px;max-width:1280px;margin:0 auto}
+.brand{display:flex;align-items:baseline;gap:10px;margin-inline-end:auto}
+.brand b{font-family:var(--display);font-size:26px;font-weight:700;color:var(--gold);line-height:1}
+.brand span{font-family:var(--display);font-size:17px;letter-spacing:.02em}
+.brand small{color:var(--muted);font-size:12px}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:7px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;min-height:36px}
+.btn:hover{border-color:var(--gold)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--lapis);border-color:var(--lapis);color:var(--on-accent);font-weight:600}
+.btn.primary:hover{background:var(--lapis-2)}
+.btn.warn{color:var(--danger)}
+.btn.sm{min-height:30px;padding:4px 10px;font-size:13px}
+
+.studio{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;max-width:1280px;margin:0 auto;align-items:start}
+@media (max-width: 900px){.studio{grid-template-columns:minmax(0,1fr)}}
+
+.stage{position:sticky;top:env(safe-area-inset-top,0px);display:flex;flex-direction:column;gap:10px;z-index:2;background:var(--desk);padding-block:4px}
+@media (max-width: 900px){.stage{position:static}}
+.modes{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:transparent;padding:7px 14px;cursor:pointer;min-height:36px}
+.seg button[aria-pressed="true"]{background:var(--lapis);color:var(--on-accent);font-weight:600}
+.seg button+button{border-inline-start:1px solid var(--line)}
+.status{color:var(--muted);font-size:12px;margin-inline-start:auto;font-family:var(--mono)}
+.canvas-wrap{width:min(100%, calc((100vh - 170px) * var(--ar,1)));min-width:min(100%, 300px);aspect-ratio:var(--ar,1);max-width:100%;margin:0 auto;box-shadow:0 1px 0 var(--line),0 18px 40px -24px rgba(0,0,0,.55);border-radius:4px;overflow:hidden;background:#0b1226;touch-action:none;position:relative}
+.canvas-wrap svg{display:block;width:100%;height:100%;user-select:none;-webkit-user-select:none}
+.canvas-wrap.photo-mode{cursor:move}
+.hint{color:var(--muted);font-size:12.5px}
+
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--line);background:var(--panel-2)}
+.tabs button{flex:1 0 auto;border:0;background:transparent;padding:11px 12px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;font-weight:500}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--gold)}
+.pane{padding:16px;display:flex;flex-direction:column;gap:14px}
+.pane h3{margin:0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.group{display:flex;flex-direction:column;gap:8px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.row > *{min-width:0}
+label.f{display:grid;grid-template-columns:92px minmax(0,1fr) 52px;align-items:center;gap:8px;font-size:13px}
+label.f output{font-family:var(--mono);font-size:12px;color:var(--muted);text-align:end;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--gold)}
+select,input[type=text],input[type=number]{border:1px solid var(--line);background:var(--panel);border-radius:7px;padding:6px 8px;min-height:34px;width:100%}
+input[type=color]{width:42px;height:32px;border:1px solid var(--line);border-radius:6px;background:var(--panel);padding:2px}
+textarea{width:100%;min-height:110px;border:1px solid var(--line);border-radius:8px;background:var(--panel);padding:10px;font-family:"Amiri","IBM Plex Sans Arabic",serif;font-size:20px;line-height:1.9;resize:vertical}
+.ar{direction:rtl;text-align:right}
+.itemtext{font-size:22px;font-family:"IBM Plex Sans Arabic",serif;direction:rtl}
+.marks{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:6px}
+.marks button{border:1px solid var(--line);background:var(--panel-2);border-radius:7px;min-height:42px;font-size:24px;cursor:pointer;line-height:1}
+.marks button small{display:block;font-size:10px;color:var(--muted);font-family:var(--ui);margin-top:2px}
+.marks button:hover{border-color:var(--gold)}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.card{border:1px solid var(--line);border-radius:10px;background:var(--panel-2);padding:10px;cursor:pointer;text-align:start;display:flex;flex-direction:column;gap:4px}
+.card:hover{border-color:var(--gold)}
+.card b{font-size:14px}
+.card span{font-size:12px;color:var(--muted)}
+.fontlist{display:grid;gap:6px}
+.fontopt{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;border:1px solid var(--line);border-radius:9px;padding:8px 10px;background:var(--panel-2);cursor:pointer;text-align:start;gap:8px}
+.fontopt[aria-pressed="true"]{border-color:var(--gold);box-shadow:inset 0 0 0 1px var(--gold)}
+.fontopt svg{height:34px;width:100%;max-width:180px;justify-self:end}
+.fontopt b{font-size:13px}
+.fontopt span{display:block;font-size:11.5px;color:var(--muted)}
+.note{font-size:12.5px;color:var(--muted);margin:0}
+.empty{border:1px dashed var(--line);border-radius:10px;padding:14px;color:var(--muted);font-size:13px}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatch{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);cursor:pointer;position:relative}
+.swatch[aria-pressed="true"]{outline:2px solid var(--gold);outline-offset:2px}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--panel);padding:10px 16px;border-radius:10px;font-size:13px;z-index:20;max-width:calc(100% - 32px)}
+.overlay{position:fixed;inset:0;background:rgba(5,8,16,.82);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:16px;z-index:30}
+.overlay img{max-height:75vh;max-width:100%;border-radius:6px}
+.overlay p{color:#e9e4d6;margin:0;text-align:center}
+.loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#e6c77c;font-family:var(--display);font-size:18px;background:#0b1226}
+.kbd{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:4px;padding:0 4px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="top">
+  <div class="brand"><b>مِحْبَرَة</b><span>Mihbara</span><small>Arabic calligraphy studio</small></div>
+  <button class="btn" id="undo" title="Undo (Ctrl+Z)">↶ Undo</button>
+  <button class="btn" id="redo" title="Redo (Ctrl+Shift+Z)">↷ Redo</button>
+  <button class="btn primary" id="quickExport">Save PNG</button>
+</header>
+
+<main class="studio">
+  <section class="stage" aria-label="Canvas">
+    <div class="modes">
+      <div class="seg" role="group" aria-label="What dragging moves">
+        <button id="mWords" aria-pressed="true">Words</button>
+        <button id="mLetters" aria-pressed="false">Letters &amp; marks</button>
+        <button id="mPhoto" aria-pressed="false">Photo</button>
+      </div>
+      <span class="status" id="status"></span>
+    </div>
+    <div class="canvas-wrap" id="wrap">
+      <svg id="art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080"></svg>
+      <div class="loading" id="loading">Loading fonts…</div>
+    </div>
+    <p class="hint" id="hint">Drag a word to move it. Two fingers pinch to resize and rotate. Switch to <b>Letters &amp; marks</b> to move a single letter or haraka.</p>
+  </section>
+
+  <aside class="panel">
+    <nav class="tabs" role="tablist" id="tabs">
+      <button role="tab" data-tab="text" aria-selected="true">Text</button>
+      <button role="tab" data-tab="arrange" aria-selected="false">Arrange</button>
+      <button role="tab" data-tab="letters" aria-selected="false">Letters</button>
+      <button role="tab" data-tab="style" aria-selected="false">Style</button>
+      <button role="tab" data-tab="bg" aria-selected="false">Background</button>
+      <button role="tab" data-tab="export" aria-selected="false">Export</button>
+    </nav>
+
+    <!-- TEXT -->
+    <div class="pane" data-pane="text">
+      <div class="group">
+        <h3>Your text</h3>
+        <textarea id="src" class="ar" dir="rtl" lang="ar" spellcheck="false" aria-label="Arabic text"></textarea>
+        <p class="note">Each line becomes a line of the composition. Tap a mark below to add it at the cursor.</p>
+        <div class="marks" id="srcMarks"></div>
+        <div class="row"><button class="btn sm" id="aiTashkeel" hidden>Add full tashkeel with Claude</button></div>
+      </div>
+      <div class="group">
+        <h3>Script</h3>
+        <div class="fontlist" id="fontlist"></div>
+      </div>
+      <div class="group">
+        <h3>Compose</h3>
+        <div class="cards" id="layouts"></div>
+        <p class="note">Composing replaces the words on the canvas with a fresh layout of your text.</p>
+      </div>
+    </div>
+
+    <!-- ARRANGE -->
+    <div class="pane" data-pane="arrange" hidden>
+      <div id="noItem" class="empty">Tap a word on the canvas to select it.</div>
+      <div id="itemCtl" class="group" hidden>
+        <h3>Selected word</h3>
+        <input type="text" id="itemText" class="itemtext" dir="rtl" lang="ar" aria-label="Text of selected word">
+        <div class="marks" id="itemMarks"></div>
+        <label class="f">Script <select id="itemFont"></select><span></span></label>
+        <label class="f">Size <input type="range" id="itemSize" min="20" max="900" step="1"><output id="oSize"></output></label>
+        <label class="f">Rotate <input type="range" id="itemRot" min="-180" max="180" step="1"><output id="oRot"></output></label>
+        <label class="f">Stretch <input type="range" id="itemSx" min="0.5" max="2.5" step="0.01"><output id="oSx"></output></label>
+        <label class="f">Bend <input type="range" id="itemBend" min="-300" max="300" step="1"><output id="oBend"></output></label>
+        <p class="note">Bend curves the word along a circle: positive arches over the top, negative smiles along the bottom.</p>
+        <div class="row">
+          <button class="btn sm" id="itemFlip">Mirror</button>
+          <button class="btn sm" id="itemCenter">Center</button>
+          <button class="btn sm" id="itemUp">Bring forward</button>
+          <button class="btn sm" id="itemDown">Send back</button>
+          <button class="btn sm" id="itemDup">Duplicate</button>
+          <button class="btn sm warn" id="itemDel">Delete</button>
+        </div>
+      </div>
+      <div class="group">
+        <h3>Add</h3>
+        <div class="row"><button class="btn sm" id="addWord">Add a word</button><button class="btn sm" id="splitWords">Split selection into words</button></div>
+      </div>
+    </div>
+
+    <!-- LETTERS -->
+    <div class="pane" data-pane="letters" hidden>
+      <div id="noGlyph" class="empty">Switch to <b>Letters &amp; marks</b> above the canvas, then tap a letter, dot or haraka.</div>
+      <div id="glyphCtl" class="group" hidden>
+        <h3>Selected piece</h3>
+        <div class="row"><button class="btn sm" id="gPrev">‹ Previous</button><span id="gName" class="status" style="margin:0"></span><button class="btn sm" id="gNext">Next ›</button></div>
+        <label class="f">Move x <input type="range" id="gDx" min="-1500" max="1500" step="1"><output id="oDx"></output></label>
+        <label class="f">Move y <input type="range" id="gDy" min="-1500" max="1500" step="1"><output id="oDy"></output></label>
+        <label class="f">Scale <input type="range" id="gS" min="0.3" max="3" step="0.01"><output id="oS"></output></label>
+        <label class="f">Rotate <input type="range" id="gR" min="-180" max="180" step="1"><output id="oR"></output></label>
+        <div class="row"><button class="btn sm" id="gReset">Reset this piece</button><button class="btn sm" id="gResetAll">Reset whole word</button></div>
+      </div>
+      <label class="row" style="gap:8px"><input type="checkbox" id="keepMarks" checked> Harakat move with their letter</label>
+      <div class="group">
+        <h3>Kashida</h3>
+        <p class="note">Put the cursor in the word's text (Arrange tab) and add a tatweel ـ to stretch the joint after a letter. Add it after the letter's haraka.</p>
+      </div>
+    </div>
+
+    <!-- STYLE -->
+    <div class="pane" data-pane="style" hidden>
+      <div class="group"><h3>Presets</h3><div class="cards" id="presets"></div></div>
+      <div class="group">
+        <h3>Ink</h3>
+        <div class="row"><label class="row" style="gap:6px"><input type="checkbox" id="useGold"> Gold leaf</label><input type="color" id="inkColor" aria-label="Ink color"></div>
+        <div class="row"><label class="row" style="gap:6px"><input type="checkbox" id="useMarkColor"> Harakat in their own color</label><input type="color" id="markColor" aria-label="Harakat color"></div>
+        <label class="f">Weight <input type="range" id="weight" min="0" max="14" step="0.5"><output id="oWeight"></output></label>
+        <label class="f">Outline <input type="range" id="outline" min="0" max="20" step="0.5"><output id="oOutline"></output></label>
+        <div class="row"><span style="width:92px;font-size:13px">Outline color</span><input type="color" id="outlineColor" aria-label="Outline color"></div>
+        <label class="row" style="gap:6px"><input type="checkbox" id="shadow"> Soft shadow</label>
+      </div>
+    </div>
+
+    <!-- BACKGROUND -->
+    <div class="pane" data-pane="bg" hidden>
+      <div class="group">
+        <h3>Canvas</h3>
+        <div class="seg" role="group" aria-label="Canvas shape" id="aspect">
+          <button data-ar="1080x1080">1:1 profile</button><button data-ar="1080x1350">4:5 post</button><button data-ar="1080x1920">9:16 story</button>
+        </div>
+        <div class="row"><span style="width:92px;font-size:13px">Colors</span><input type="color" id="bg1" aria-label="Background center"><input type="color" id="bg2" aria-label="Background edge"></div>
+        <label class="f">Pattern <select id="pattern"><option value="none">None</option><option value="dots">Gold dots</option><option value="stars">Eight-point stars</option></select><span></span></label>
+        <label class="f">Frame <select id="frame"><option value="none">None</option><option value="rings">Gold rings</option><option value="square">Gold border</option></select><span></span></label>
+      </div>
+      <div class="group">
+        <h3>Photo</h3>
+        <div class="row"><label class="btn sm" for="photoIn">Choose photo…</label><input type="file" id="photoIn" accept="image/*" hidden><button class="btn sm warn" id="photoDel">Remove photo</button></div>
+        <label class="f">Window <select id="mask"><option value="circle">Circle</option><option value="arch">Arch</option><option value="full">Full canvas</option></select><span></span></label>
+        <label class="f">Window size <input type="range" id="maskSize" min="80" max="1100" step="1"><output id="oMask"></output></label>
+        <label class="f">Photo zoom <input type="range" id="photoZoom" min="200" max="4000" step="1"><output id="oZoom"></output></label>
+        <label class="f">Opacity <input type="range" id="photoOp" min="0" max="1" step="0.01"><output id="oOp"></output></label>
+        <p class="note">Switch to <b>Photo</b> above the canvas to drag the picture inside its window.</p>
+      </div>
+    </div>
+
+    <!-- EXPORT -->
+    <div class="pane" data-pane="export" hidden>
+      <div class="group">
+        <h3>Image</h3>
+        <div class="row"><button class="btn primary" id="png1">PNG 1080 px</button><button class="btn" id="png2">PNG 2160 px</button><button class="btn" id="svgOut">SVG vector</button></div>
+        <p class="note">WhatsApp profile pictures crop to a circle; keep important letters inside the round window.</p>
+      </div>
+      <div class="group">
+        <h3>Project</h3>
+        <div class="row"><button class="btn" id="projOut">Save project file</button><label class="btn" for="projIn">Open project file…</label><input type="file" id="projIn" accept=".json,application/json" hidden></div>
+        <div class="row"><button class="btn warn" id="resetAll">Start over with the sample</button></div>
+      </div>
+      <div class="group">
+        <h3>Fonts</h3>
+        <p class="note">Thuluth: ae_Tholoth (Arabeyes, GPL with font exception). Naskh Mushaf: Amiri Quran. Katibeh, Ruqaa (Aref Ruqaa), Kufi (Reem Kufi) and Farsi (Noto Nastaliq Urdu): SIL Open Font License. Sample painting: Viktor Vasnetsov, <i>The Word</i>, public domain.</p>
+      </div>
+    </div>
+  </aside>
+</main>
+<div class="toast" id="toast" hidden></div>
+<div class="overlay" id="overlay" hidden><img id="ovImg" alt="Exported image"><p>Press and hold the image to save it.</p><button class="btn" id="ovClose">Close</button></div>
+
+<script>/*HB_JS*/</script>
+<script>/*HBJS_JS*/</script>
+<script>
+'use strict';
+/* ------------------------------------------------------------------ fonts */
+const FONTS = [
+  {id:'tholoth', name:'Thuluth', ar:'ثُلُث', file:'fonts/ae_Tholoth.ttf', about:'ae_Tholoth — tall alifs, sweeping tails'},
+  {id:'amiriq', name:'Naskh Mushaf', ar:'نَسْخ', file:'fonts/AmiriQuran-Regular.ttf', about:'Amiri Quran — the fullest tashkeel'},
+  {id:'katibeh', name:'Katibeh', ar:'كاتِبة', file:'fonts/Katibeh-Regular.ttf', about:'Heavy Naskh with Thuluth touches'},
+  {id:'ruqaa', name:'Ruqaa', ar:'رُقْعَة', file:'fonts/ArefRuqaa-Regular.ttf', about:'Aref Ruqaa — quick, handwritten'},
+  {id:'kufi', name:'Kufi', ar:'كُوفِي', file:'fonts/ReemKufi-Variable.ttf', about:'Reem Kufi — geometric, monumental'},
+  {id:'nastaliq', name:'Farsi', ar:'فارِسي', file:'fonts/NotoNastaliqUrdu-Variable.ttf', about:'Noto Nastaliq — hanging baseline'},
+];
+const MARKS = [
+  ['َ','fatha'],['ُ','damma'],['ِ','kasra'],['ْ','sukun'],['ّ','shadda'],
+  ['ً','an'],['ٌ','un'],['ٍ','in'],['ٰ','alif'],['ٓ','madda'],['ٱ','wasla'],['ـ','kashida']];
+
+let HB = null;
+const fontCache = {};     // id -> {font, upem, cps:Set}
+const shapeCache = new Map();
+const glyphCache = new Map();
+
+async function loadHB(){
+  const wasm = await (await fetch('hb.wasm')).arrayBuffer();
+  const mod = await createHarfBuzz({wasmBinary: wasm});
+  HB = hbjs(mod);
+}
+async function loadFont(id){
+  if (fontCache[id]) return fontCache[id];
+  const def = FONTS.find(f => f.id === id) || FONTS[0];
+  const buf = await (await fetch(def.file)).arrayBuffer();
+  const blob = HB.createBlob(buf), face = HB.createFace(blob, 0), font = HB.createFont(face);
+  const cps = new Set(face.collectUnicodes());
+  return (fontCache[id] = {font, upem: face.upem, cps});
+}
+/* Fonts without wasla / dagger alif get the standard modern fully-voweled spelling. */
+function normalize(text, f){
+  let t = text;
+  if (!f.cps.has(0x0671)) t = t.replace(/ٱ/g, 'ا');
+  if (!f.cps.has(0x0670)) t = t.replace(/َ?ٰ/g, 'َ');
+  return t;
+}
+function shape(fontId, text){
+  const key = fontId + '\u0000' + text;
+  if (shapeCache.has(key)) return shapeCache.get(key);
+  const f = fontCache[fontId];
+  const buf = HB.createBuffer();
+  buf.addText(normalize(text, f)); buf.guessSegmentProperties();
+  HB.shape(f.font, buf);
+  const out = buf.json(); buf.destroy();
+  let x = 0; const glyphs = [];
+  for (const g of out){
+    glyphs.push({g: g.g, cl: g.cl, x: x + g.dx, y: g.dy, mark: g.ax === 0});
+    x += g.ax;
+  }
+  const res = {glyphs, adv: Math.max(x, 1), upem: f.upem};
+  if (shapeCache.size > 400) shapeCache.clear();
+  shapeCache.set(key, res);
+  return res;
+}
+function glyph(fontId, gid){
+  const key = fontId + ':' + gid;
+  if (glyphCache.has(key)) return glyphCache.get(key);
+  const cmds = fontCache[fontId].font.glyphToJson(gid);
+  let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const c of cmds) for (let i = 0; i < c.values.length; i += 2){
+    const X = c.values[i], Y = c.values[i+1];
+    if (X < x0) x0 = X; if (X > x1) x1 = X; if (Y < y0) y0 = Y; if (Y > y1) y1 = Y;
+  }
+  const res = {cmds, cx: isFinite(x0) ? (x0+x1)/2 : 0, cy: isFinite(y0) ? (y0+y1)/2 : 0, empty: !isFinite(x0)};
+  glyphCache.set(key, res);
+  return res;
+}
+
+/* ------------------------------------------------------------------ state */
+const SAMPLE_TOP = 'أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا ٱللَّٰهُ ٱلْآبُ وَٱلِٱبْنُ وَٱلرُّوحُ ٱلْقُدُسُ';
+const SAMPLE_BOTTOM = 'وَيَسُوعُ ٱلْمَسِيحُ كَلِمَةُ ٱللَّٰهِ';
+let state, photoData = null, sampleData = null;
+let sel = {item: -1, glyph: -1};
+let mode = 'words';
+let uid = 1;
+const hist = {stack: [], i: -1};
+
+function defaultState(){
+  return {
+    w: 1080, h: 1080, src: SAMPLE_TOP + '\n' + SAMPLE_BOTTOM, font: 'tholoth',
+    style: {gold: true, ink: '#d9a441', markOn: false, mark: '#f6e2a6', weight: 3.2, outline: 0, outlineColor: '#0b1226', shadow: true},
+    bg: {c1: '#1d3263', c2: '#070d1e', pattern: 'dots', frame: 'rings'},
+    photo: {has: true, mask: 'circle', ms: 265, x: 109, y: 263, w: 864, op: 1},
+    items: []
+  };
+}
+
+/* ------------------------------------------------------------------ geometry */
+const rad = d => d * Math.PI / 180;
+function itemMapper(it){
+  const sh = shape(it.font, it.text);
+  const k = it.size / sh.upem, sx = it.sx * (it.flip ? -1 : 1);
+  const L = sh.adv * k * Math.abs(it.sx);
+  const bend = it.bend || 0;
+  const R = bend ? L / Math.abs(rad(bend)) : 0;
+  const cr = Math.cos(rad(it.rot)), sr = Math.sin(rad(it.rot));
+  return {sh, k, map(xu, yu){
+    const x = (xu - sh.adv/2) * k * sx, y = yu * k;
+    let X, Y;
+    if (!bend){ X = x; Y = -y; }
+    else {
+      const a = x / R;
+      if (bend > 0){ X = (R + y) * Math.sin(a); Y = R - (R + y) * Math.cos(a); }
+      else { X = (R - y) * Math.sin(a); Y = -R + (R - y) * Math.cos(a); }
+    }
+    return [it.x + X*cr - Y*sr, it.y + X*sr + Y*cr];
+  }};
+}
+function glyphPath(it, gi, m){
+  const g = m.sh.glyphs[gi];
+  const G = glyph(it.font, g.g);
+  if (G.empty) return {d: '', box: null};
+  const t = (it.tweaks && it.tweaks[gi]) || {};
+  // a haraka follows its letter's tweak when "keep marks" is on
+  let tt = t;
+  if (g.mark && it.tweaks){
+    const base = baseOf(m.sh, gi);
+    const bt = base >= 0 ? it.tweaks[base] : null;
+    if (bt && bt.link) tt = {dx: (t.dx||0) + (bt.dx||0), dy: (t.dy||0) + (bt.dy||0), s: t.s, r: t.r};
+  }
+  const s = tt.s || 1, r = rad(tt.r || 0), c = Math.cos(r), sn = Math.sin(r);
+  const ox = g.x + (tt.dx || 0), oy = g.y + (tt.dy || 0);
+  let d = '', x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+  for (const cmd of G.cmds){
+    d += cmd.type;
+    const v = cmd.values;
+    for (let i = 0; i < v.length; i += 2){
+      const px = (v[i] - G.cx) * s, py = (v[i+1] - G.cy) * s;
+      const [X, Y] = m.map(G.cx + px*c - py*sn + ox, G.cy + px*sn + py*c + oy);
+      d += (i ? ' ' : '') + X.toFixed(1) + ' ' + Y.toFixed(1);
+      if (X < x0) x0 = X; if (X > x1) x1 = X; if (Y < y0) y0 = Y; if (Y > y1) y1 = Y;
+    }
+  }
+  return {d, box: [x0, y0, x1, y1]};
+}
+function baseOf(sh, gi){
+  const cl = sh.glyphs[gi].cl;
+  for (let j = 0; j < sh.glyphs.length; j++) if (j !== gi && sh.glyphs[j].cl === cl && !sh.glyphs[j].mark) return j;
+  return -1;
+}
+
+/* ------------------------------------------------------------------ render */
+const svg = document.getElementById('art');
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+function buildSVG(forExport){
+  const S = state, W = S.w, H = S.h, st = S.style;
+  const cx = W/2, cy = H/2;
+  let defs = `<linearGradient id="gold" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="${H}">
+    <stop offset="0" stop-color="#fbe7a1"/><stop offset=".3" stop-color="#d9a441"/><stop offset=".55" stop-color="#f6d98a"/><stop offset="1" stop-color="#b07a24"/></linearGradient>
+    <radialGradient id="bgg" cx=".5" cy=".5" r=".72"><stop offset="0" stop-color="${S.bg.c1}"/><stop offset="1" stop-color="${S.bg.c2}"/></radialGradient>
+    <filter id="sh" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="${W/430}" in="SourceAlpha"/><feOffset dy="${W/430}"/><feComponentTransfer><feFuncA type="linear" slope=".75"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>`;
+  if (S.bg.pattern === 'dots') defs += `<pattern id="pat" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="12" cy="12" r="1.4" fill="#d9a441" opacity=".17"/></pattern>`;
+  if (S.bg.pattern === 'stars') defs += `<pattern id="pat" width="60" height="60" patternUnits="userSpaceOnUse"><g fill="none" stroke="#d9a441" stroke-width="1" opacity=".16"><rect x="18" y="18" width="24" height="24"/><rect x="18" y="18" width="24" height="24" transform="rotate(45 30 30)"/></g></pattern>`;
+  const ph = S.photo;
+  let photo = '', maskPath = '';
+  if (ph.has && photoData){
+    const ms = ph.ms;
+    if (ph.mask === 'circle') maskPath = `<circle cx="${cx}" cy="${cy}" r="${ms}"/>`;
+    else if (ph.mask === 'arch'){
+      const w = ms * 1.5, top = cy - ms * 1.05, r = w/2, bot = cy + ms * 1.05;
+      maskPath = `<path d="M${cx - r},${top + r} A${r},${r} 0 0 1 ${cx + r},${top + r} L${cx + r},${bot} L${cx - r},${bot} Z"/>`;
+    } else maskPath = `<rect width="${W}" height="${H}"/>`;
+    defs += `<clipPath id="pm">${maskPath}</clipPath>`;
+    const h = ph.w * (ph.ar || 800/732);
+    photo = `<image x="${ph.x.toFixed(1)}" y="${ph.y.toFixed(1)}" width="${ph.w.toFixed(1)}" height="${h.toFixed(1)}" clip-path="url(#pm)" opacity="${ph.op}" preserveAspectRatio="none" href="${photoData}" xlink:href="${photoData}"/>`;
+  }
+  const ring = c => `stroke="${c}"`;
+  const goldOrInk = st.gold ? 'url(#gold)' : st.ink;
+  let frame = '';
+  if (S.bg.frame === 'rings'){
+    const R = Math.min(W, H)/2;
+    frame = `<g fill="none" ${ring(goldOrInk)}><circle cx="${cx}" cy="${cy}" r="${R*0.948}" stroke-width="3"/><circle cx="${cx}" cy="${cy}" r="${R*0.926}" stroke-width="1"/></g>`;
+  } else if (S.bg.frame === 'square'){
+    frame = `<g fill="none" ${ring(goldOrInk)}><rect x="28" y="28" width="${W-56}" height="${H-56}" stroke-width="3"/><rect x="42" y="42" width="${W-84}" height="${H-84}" stroke-width="1"/></g>`;
+  }
+  let maskRing = '';
+  if (ph.has && photoData && ph.mask !== 'full'){
+    maskRing = maskPath.replace(/\/>$/, ` fill="none" stroke="${goldOrInk}" stroke-width="6"/>`);
+  }
+  // letters
+  let ink = '', overlay = '';
+  if (!forExport){ hitItems = []; hitGlyphs = []; }
+  S.items.forEach((it, ii) => {
+    if (!fontCache[it.font]) return;
+    const m = itemMapper(it);
+    let bx0 = Infinity, by0 = Infinity, bx1 = -Infinity, by1 = -Infinity;
+    m.sh.glyphs.forEach((g, gi) => {
+      const p = glyphPath(it, gi, m);
+      if (!p.d) return;
+      const isMark = g.mark;
+      const fill = isMark && st.markOn ? st.mark : goldOrInk;
+      const selG = !forExport && mode === 'letters' && sel.item === ii && sel.glyph === gi;
+      ink += `<path d="${p.d}" data-i="${ii}" data-g="${gi}" fill="${fill}" stroke="${fill}" stroke-width="${isMark ? st.weight * 0.35 : st.weight}"${selG ? ' class="selg"' : ''}/>`;
+      const b = p.box; if (!forExport) hitGlyphs.push({ii, gi, b, area: (b[2]-b[0])*(b[3]-b[1])});
+      if (b[0] < bx0) bx0 = b[0]; if (b[1] < by0) by0 = b[1]; if (b[2] > bx1) bx1 = b[2]; if (b[3] > by1) by1 = b[3];
+      if (selG) overlay += `<rect x="${b[0]-6}" y="${b[1]-6}" width="${b[2]-b[0]+12}" height="${b[3]-b[1]+12}" fill="none" stroke="#5fd0ff" stroke-width="2.5" stroke-dasharray="6 4" rx="4"/>`;
+    });
+    if (!forExport && isFinite(bx0)) hitItems.push({ii, b: [bx0, by0, bx1, by1]});
+    if (!forExport && sel.item === ii && mode !== 'photo' && isFinite(bx0)){
+      overlay += `<rect x="${bx0-10}" y="${by0-10}" width="${bx1-bx0+20}" height="${by1-by0+20}" fill="none" stroke="#5fd0ff" stroke-width="2" stroke-dasharray="${mode === 'letters' ? '2 6' : '10 6'}" rx="6" pointer-events="none"/>`;
+    }
+  });
+  const outline = st.outline > 0 ? `<g fill="none" stroke="${st.outlineColor}" stroke-width="${st.weight + st.outline*2}" stroke-linejoin="round" pointer-events="none">${ink.replace(/ data-i="\d+" data-g="\d+"/g, '').replace(/ fill="[^"]*" stroke="[^"]*" stroke-width="[^"]*"/g, '')}</g>` : '';
+  const pat = S.bg.pattern !== 'none' ? `<rect width="${W}" height="${H}" fill="url(#pat)"/>` : '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
+<defs>${defs}</defs>
+<rect width="${W}" height="${H}" fill="url(#bgg)"/>${pat}${photo}${maskRing}${frame}
+<g${st.shadow ? ' filter="url(#sh)"' : ''} stroke-linejoin="round">${outline}${ink}</g>
+${overlay ? `<g pointer-events="none">${overlay}</g>` : ''}</svg>`;
+}
+
+let raf = 0, hitItems = [], hitGlyphs = [];
+function hitTest(p){
+  const inside = (b, pad) => p.x >= b[0]-pad && p.x <= b[2]+pad && p.y >= b[1]-pad && p.y <= b[3]+pad;
+  if (mode === 'letters'){
+    const c = hitGlyphs.filter(h => inside(h.b, 8)).sort((a, b) => a.area - b.area)[0];
+    return c ? {ii: c.ii, gi: c.gi} : null;
+  }
+  for (let k = hitItems.length - 1; k >= 0; k--) if (inside(hitItems[k].b, 6)) return {ii: hitItems[k].ii, gi: -1};
+  return null;
+}
+function render(){
+  if (raf) return;
+  raf = requestAnimationFrame(() => {
+    raf = 0;
+    const doc = buildSVG(false);
+    const inner = doc.slice(doc.indexOf('>') + 1, doc.lastIndexOf('</svg>'));
+    svg.setAttribute('viewBox', `0 0 ${state.w} ${state.h}`);
+    svg.innerHTML = inner;
+    document.getElementById('wrap').style.setProperty('--ar', state.w / state.h);
+    syncPanels();
+  });
+}
+
+/* ------------------------------------------------------------------ history */
+function snapshot(){ return JSON.stringify(state); }
+function commit(){
+  const s = snapshot();
+  if (hist.stack[hist.i] === s) return;
+  hist.stack = hist.stack.slice(0, hist.i + 1); hist.stack.push(s);
+  if (hist.stack.length > 120) hist.stack.shift();
+  hist.i = hist.stack.length - 1;
+  save(); updateUndo();
+}
+async function restore(s){
+  state = JSON.parse(s);
+  await ensureFonts();
+  if (sel.item >= state.items.length) sel = {item: -1, glyph: -1};
+  save(); updateUndo(); render();
+}
+function updateUndo(){
+  document.getElementById('undo').disabled = hist.i <= 0;
+  document.getElementById('redo').disabled = hist.i >= hist.stack.length - 1;
+}
+function save(){
+  try { localStorage.setItem('mihbara.v1', snapshot()); } catch (e) {}
+  try { if (photoData && photoData !== sampleData) localStorage.setItem('mihbara.photo', photoData); else localStorage.removeItem('mihbara.photo'); } catch (e) {}
+}
+async function ensureFonts(){
+  const ids = new Set([state.font, ...state.items.map(i => i.font)]);
+  for (const id of ids) await loadFont(id);
+}
+
+/* ------------------------------------------------------------------ layouts */
+function newItem(text, font, x, y, size, extra){
+  return Object.assign({id: uid++, text, font, x, y, size, rot: 0, sx: 1, flip: false, bend: 0, tweaks: {}}, extra || {});
+}
+function sizeFor(font, text, width){
+  const sh = shape(font, text); return width / sh.adv * sh.upem;
+}
+const LAYOUTS = [
+  {id:'ring', name:'Medallion ring', about:'Line 1 arches over the photo, line 2 curves beneath. Best for profile pictures.'},
+  {id:'tarkib', name:'Tarkib', about:'Words stacked and interlocked inside a circle, the Thuluth way.'},
+  {id:'tiers', name:'Tiers', about:'One line per row, each fitted to the width.'},
+  {id:'line', name:'Single line', about:'All the text on one baseline.'},
+];
+const GAP = 0.22;   // word gap in tarkib, in em
+function compose(kind){
+  const S = state, W = S.w, H = S.h, cx = W/2, cy = H/2, f = S.font;
+  const lines = S.src.split('\n').map(l => l.trim().replace(/\s+/g, ' ')).filter(Boolean);
+  if (!lines.length) return;
+  const items = [];
+  const minD = Math.min(W, H);
+  if (kind === 'line'){
+    const t = lines.join(' ');
+    items.push(newItem(t, f, cx, cy + minD*0.06, sizeFor(f, t, W*0.86)));
+  } else if (kind === 'tiers'){
+    const gap = H * 0.8 / lines.length;
+    lines.forEach((t, i) => {
+      const size = Math.min(sizeFor(f, t, W*(0.86 - 0.04*i)), gap*0.95);
+      items.push(newItem(t, f, cx, H*0.1 + gap*(i + 0.72), size));
+    });
+  } else if (kind === 'ring'){
+    const R = minD * 0.345;
+    const top = lines.length > 1 ? lines.slice(0, -1).join(' ') : lines[0];
+    const bottom = lines.length > 1 ? lines[lines.length - 1] : '';
+    const spanTop = bottom ? 236 : 300;
+    items.push(newItem(top, f, cx, cy - R, rad(spanTop) * R / shape(f, top).adv * shape(f, top).upem, {bend: spanTop}));
+    if (bottom){
+      const Rb = minD * 0.407, span = 112;
+      items.push(newItem(bottom, f, cx, cy + Rb, rad(span) * Rb / shape(f, bottom).adv * shape(f, bottom).upem, {bend: -span}));
+    }
+  } else if (kind === 'tarkib'){
+    const words = lines.join(' ').split(' ');
+    const n = words.length;
+    const rows = n <= 2 ? 1 : n <= 5 ? 2 : n <= 9 ? 3 : n <= 14 ? 4 : 5;
+    const advs = words.map(w => shape(f, w).adv);
+    const total = advs.reduce((a, b) => a + b, 0);
+    const groups = []; let cur = [], acc = 0, target = total / rows;
+    words.forEach((w, i) => {
+      cur.push(i); acc += advs[i];
+      if (acc >= target * (groups.length + 1) - advs[i]*0.4 && groups.length < rows - 1){ groups.push(cur); cur = []; }
+    });
+    if (cur.length) groups.push(cur);
+    const R = minD * 0.42, rowH = R * 2 / (groups.length + 0.35);
+    const sizes = groups.map((g, r) => {
+      const y = -R + rowH * (r + 0.85);
+      const chord = 2 * Math.sqrt(Math.max(R*R - y*y, (R*0.45)**2)) * 0.9;
+      const adv = g.reduce((a, i) => a + advs[i], 0) + (g.length - 1) * GAP * shape(f, words[0]).upem;
+      return {y, s: chord / adv * shape(f, words[0]).upem};
+    });
+    const med = sizes.map(s => s.s).sort((a, b) => a - b)[Math.floor(sizes.length/2)];
+    groups.forEach((g, r) => {
+      const size = Math.min(Math.max(sizes[r].s, med*0.88), med*1.12, rowH * 1.25);
+      const k = size / shape(f, words[0]).upem, gap = GAP * size;
+      const widths = g.map(i => advs[i] * k);
+      const rowW = widths.reduce((a, b) => a + b, 0) + gap * (g.length - 1);
+      let x = cx + rowW/2;       // right to left
+      g.forEach((i, j) => {
+        items.push(newItem(words[i], f, x - widths[j]/2, cy + sizes[r].y, size));
+        x -= widths[j] + gap;
+      });
+    });
+  }
+  S.items = items; sel = {item: -1, glyph: -1};
+  if (kind !== 'ring' && S.photo.has && S.photo.mask !== 'full') S.photo.op = S.photo.op; // leave photo as is
+  commit(); render();
+}
+
+/* ------------------------------------------------------------------ pointer */
+const wrap = document.getElementById('wrap');
+const pointers = new Map();
+let drag = null;
+function toSvg(e){
+  const pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+function tweakOf(it, gi){ it.tweaks = it.tweaks || {}; return (it.tweaks[gi] = it.tweaks[gi] || {}); }
+wrap.addEventListener('pointerdown', e => {
+  wrap.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId, toSvg(e));
+  if (pointers.size === 2 && drag){ startPinch(); return; }
+  const p = toSvg(e);
+  const direct = e.target.closest && e.target.closest('path[data-i]');
+  const t = direct ? {ii: +direct.dataset.i, gi: +direct.dataset.g} : hitTest(p);
+  if (mode === 'photo'){
+    drag = {kind: 'photo', p0: p, x: state.photo.x, y: state.photo.y};
+    return;
+  }
+  if (t){
+    const ii = t.ii, gi = t.gi;
+    sel.item = ii; sel.glyph = mode === 'letters' ? gi : -1;
+    const it = state.items[ii];
+    if (mode === 'letters'){
+      const tw = tweakOf(it, gi);
+      tw.link = document.getElementById('keepMarks').checked;
+      drag = {kind: 'glyph', p0: p, dx: tw.dx || 0, dy: tw.dy || 0};
+    } else drag = {kind: 'item', p0: p, x: it.x, y: it.y};
+    showTab(mode === 'letters' ? 'letters' : 'arrange');
+  } else {
+    sel = {item: -1, glyph: -1}; drag = null;
+  }
+  render();
+});
+wrap.addEventListener('pointermove', e => {
+  if (!pointers.has(e.pointerId)) return;
+  pointers.set(e.pointerId, toSvg(e));
+  if (drag && drag.kind === 'pinch'){ doPinch(); return; }
+  if (!drag || drag.kind === 'none' || pointers.size > 1) return;
+  const p = toSvg(e), dx = p.x - drag.p0.x, dy = p.y - drag.p0.y;
+  if (drag.kind === 'photo'){ state.photo.x = drag.x + dx; state.photo.y = drag.y + dy; }
+  else if (drag.kind === 'item'){ const it = state.items[sel.item]; it.x = drag.x + dx; it.y = drag.y + dy; }
+  else if (drag.kind === 'glyph'){
+    const it = state.items[sel.item];
+    const r = rad(-it.rot), lx = dx*Math.cos(r) - dy*Math.sin(r), ly = dx*Math.sin(r) + dy*Math.cos(r);
+    const k = it.size / shape(it.font, it.text).upem;
+    const tw = tweakOf(it, sel.glyph);
+    tw.dx = drag.dx + lx / (k * it.sx * (it.flip ? -1 : 1));
+    tw.dy = drag.dy - ly / k;
+  }
+  drag.moved = true; render();
+});
+function endPointer(e){
+  pointers.delete(e.pointerId);
+  if (pointers.size === 0){ if (drag && drag.moved) commit(); drag = null; }
+  else if (drag && drag.kind === 'pinch'){ drag = {kind: 'none', moved: drag.moved}; }
+}
+wrap.addEventListener('pointerup', endPointer);
+wrap.addEventListener('pointercancel', endPointer);
+function pinchMetrics(){ const [a, b] = [...pointers.values()]; return {d: Math.hypot(b.x-a.x, b.y-a.y), ang: Math.atan2(b.y-a.y, b.x-a.x)}; }
+function startPinch(){
+  const m = pinchMetrics();
+  if (mode === 'photo') drag = {kind: 'pinch', m, w: state.photo.w, x: state.photo.x, y: state.photo.y, moved: false};
+  else if (sel.item >= 0){
+    const it = state.items[sel.item];
+    if (mode === 'letters' && sel.glyph >= 0){ const tw = tweakOf(it, sel.glyph); drag = {kind: 'pinch', m, s: tw.s || 1, r: tw.r || 0, moved: false}; }
+    else drag = {kind: 'pinch', m, size: it.size, rot: it.rot, moved: false};
+  }
+}
+function doPinch(){
+  const m = pinchMetrics(), f = m.d / drag.m.d, da = (m.ang - drag.m.ang) * 180 / Math.PI;
+  if (mode === 'photo'){
+    const ph = state.photo, cx = state.w/2, cy = state.h/2;
+    ph.w = Math.max(100, drag.w * f); ph.x = cx - (cx - drag.x) * f; ph.y = cy - (cy - drag.y) * f;
+  } else if (sel.item >= 0){
+    const it = state.items[sel.item];
+    if (drag.s !== undefined){ const tw = tweakOf(it, sel.glyph); tw.s = Math.min(4, Math.max(0.2, drag.s * f)); tw.r = drag.r - da; }
+    else { it.size = Math.min(1200, Math.max(10, drag.size * f)); it.rot = normAng(drag.rot + da); }
+  }
+  drag.moved = true; render();
+}
+const normAng = a => ((a + 540) % 360) - 180;
+wrap.addEventListener('wheel', e => {
+  if (sel.item < 0 && mode !== 'photo') return;
+  e.preventDefault();
+  const f = Math.exp(-e.deltaY * 0.0015);
+  if (mode === 'photo'){ const ph = state.photo, cx = state.w/2, cy = state.h/2; ph.w *= f; ph.x = cx - (cx - ph.x)*f; ph.y = cy - (cy - ph.y)*f; }
+  else if (mode === 'letters' && sel.glyph >= 0){ const tw = tweakOf(state.items[sel.item], sel.glyph); tw.s = (tw.s || 1) * f; }
+  else state.items[sel.item].size *= f;
+  render(); clearTimeout(wheelT); wheelT = setTimeout(commit, 300);
+}, {passive: false});
+let wheelT = 0;
+
+/* ------------------------------------------------------------------ panels */
+const $ = id => document.getElementById(id);
+function showTab(name){
+  currentTab = name;
+  document.querySelectorAll('#tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === name));
+  document.querySelectorAll('.pane').forEach(p => p.hidden = p.dataset.pane !== name);
+  try { localStorage.setItem('mihbara.tab', name); } catch (e) {}
+}
+let currentTab = 'text';
+$('tabs').addEventListener('click', e => { const b = e.target.closest('button[data-tab]'); if (b) showTab(b.dataset.tab); });
+
+function setMode(m){
+  mode = m;
+  $('mWords').setAttribute('aria-pressed', m === 'words');
+  $('mLetters').setAttribute('aria-pressed', m === 'letters');
+  $('mPhoto').setAttribute('aria-pressed', m === 'photo');
+  wrap.classList.toggle('photo-mode', m === 'photo');
+  $('hint').innerHTML = m === 'words' ? 'Drag a word to move it. Two fingers pinch to resize and rotate. Switch to <b>Letters &amp; marks</b> to move a single letter or haraka.'
+    : m === 'letters' ? 'Tap any letter, dot or haraka and drag it. Pinch to scale and turn it. Harakat follow their letter unless you switch that off in the Letters tab.'
+    : 'Drag to move the photo inside its window. Pinch or scroll to zoom it.';
+  if (m !== 'letters') sel.glyph = -1;
+  if (m === 'letters') showTab('letters'); if (m === 'photo') showTab('bg');
+  render();
+}
+$('mWords').onclick = () => setMode('words');
+$('mLetters').onclick = () => setMode('letters');
+$('mPhoto').onclick = () => setMode('photo');
+
+function markButtons(host, target){
+  host.innerHTML = MARKS.map(([c, n]) => `<button type="button" data-c="${c}" title="${n}">${n === 'kashida' || n === 'wasla' ? c : '◌' + c}<small>${n}</small></button>`).join('');
+  host.addEventListener('click', e => {
+    const b = e.target.closest('button[data-c]'); if (!b) return;
+    const el = target(), c = b.dataset.c;
+    const s = el.selectionStart ?? el.value.length, en = el.selectionEnd ?? s;
+    el.value = el.value.slice(0, s) + c + el.value.slice(en);
+    el.focus(); el.setSelectionRange(s + c.length, s + c.length);
+    el.dispatchEvent(new Event('input', {bubbles: true}));
+    el.dispatchEvent(new Event('change', {bubbles: true}));
+  });
+}
+markButtons($('srcMarks'), () => $('src'));
+markButtons($('itemMarks'), () => $('itemText'));
+
+$('src').addEventListener('input', () => { state.src = $('src').value; });
+$('src').addEventListener('change', () => commit());
+
+function fontPreview(id){
+  const f = fontCache[id]; if (!f) return '';
+  const it = {text: 'بِسْمِ ٱللَّٰهِ', font: id, x: 90, y: 38, size: 34, rot: 0, sx: 1, flip: false, bend: 0};
+  const sh = shape(id, it.text); it.size = Math.min(40, 170 / sh.adv * sh.upem);
+  const m = itemMapper(it);
+  let d = ''; sh.glyphs.forEach((g, gi) => { d += glyphPath(it, gi, m).d; });
+  return `<svg viewBox="0 0 180 52" aria-hidden="true"><path d="${d}" fill="currentColor"/></svg>`;
+}
+function buildFontList(){
+  $('fontlist').innerHTML = FONTS.map(f => `<button type="button" class="fontopt" data-f="${f.id}" aria-pressed="${state.font === f.id}"><div><b>${f.name} · ${f.ar}</b><span>${f.about}</span></div>${fontPreview(f.id)}</button>`).join('');
+  $('itemFont').innerHTML = FONTS.map(f => `<option value="${f.id}">${f.name}</option>`).join('');
+}
+$('fontlist').addEventListener('click', async e => {
+  const b = e.target.closest('button[data-f]'); if (!b) return;
+  const id = b.dataset.f; await loadFont(id);
+  state.font = id;
+  // apply to all words so the whole piece changes script together
+  state.items.forEach(it => { const old = shape(it.font, it.text); it.font = id; const nw = shape(id, it.text); it.size *= (old.adv / old.upem) / (nw.adv / nw.upem); it.tweaks = {}; });
+  document.querySelectorAll('.fontopt').forEach(x => x.setAttribute('aria-pressed', x.dataset.f === id));
+  commit(); render();
+});
+$('layouts').innerHTML = LAYOUTS.map(l => `<button type="button" class="card" data-l="${l.id}"><b>${l.name}</b><span>${l.about}</span></button>`).join('');
+$('layouts').addEventListener('click', e => { const b = e.target.closest('button[data-l]'); if (b){ compose(b.dataset.l); toast('Composed: ' + LAYOUTS.find(l => l.id === b.dataset.l).name); } });
+
+/* item controls */
+function bindRange(id, out, get, set, fmt){
+  const el = $(id);
+  el.addEventListener('input', () => { set(+el.value); $(out).textContent = fmt(+el.value); render(); });
+  el.addEventListener('change', () => commit());
+  return () => { const v = get(); if (v === undefined) return; el.value = v; $(out).textContent = fmt(v); };
+}
+const cur = () => state.items[sel.item];
+const syncers = [
+  bindRange('itemSize', 'oSize', () => cur()?.size, v => cur().size = v, v => Math.round(v)),
+  bindRange('itemRot', 'oRot', () => cur()?.rot, v => cur().rot = v, v => Math.round(v) + '°'),
+  bindRange('itemSx', 'oSx', () => cur()?.sx, v => cur().sx = v, v => v.toFixed(2) + '×'),
+  bindRange('itemBend', 'oBend', () => cur()?.bend, v => cur().bend = v, v => Math.round(v) + '°'),
+  bindRange('gDx', 'oDx', () => gtw()?.dx || 0, v => { const t = gtwMake(); t.dx = v; }, v => Math.round(v)),
+  bindRange('gDy', 'oDy', () => gtw()?.dy || 0, v => { const t = gtwMake(); t.dy = v; }, v => Math.round(v)),
+  bindRange('gS', 'oS', () => gtw()?.s || 1, v => { const t = gtwMake(); t.s = v; }, v => v.toFixed(2) + '×'),
+  bindRange('gR', 'oR', () => gtw()?.r || 0, v => { const t = gtwMake(); t.r = v; }, v => Math.round(v) + '°'),
+  bindRange('weight', 'oWeight', () => state.style.weight, v => state.style.weight = v, v => v.toFixed(1)),
+  bindRange('outline', 'oOutline', () => state.style.outline, v => state.style.outline = v, v => v.toFixed(1)),
+  bindRange('maskSize', 'oMask', () => state.photo.ms, v => state.photo.ms = v, v => Math.round(v)),
+  bindRange('photoZoom', 'oZoom', () => state.photo.w, v => { const ph = state.photo, f = v / ph.w, cx = state.w/2, cy = state.h/2; ph.x = cx - (cx - ph.x)*f; ph.y = cy - (cy - ph.y)*f; ph.w = v; }, v => Math.round(v)),
+  bindRange('photoOp', 'oOp', () => state.photo.op, v => state.photo.op = v, v => Math.round(v*100) + '%'),
+];
+function gtw(){ const it = cur(); return it && sel.glyph >= 0 ? (it.tweaks || {})[sel.glyph] : undefined; }
+function gtwMake(){ const t = tweakOf(cur(), sel.glyph); t.link = $('keepMarks').checked; return t; }
+
+$('itemText').addEventListener('input', () => { const it = cur(); if (!it) return; it.text = $('itemText').value || ' '; it.tweaks = {}; render(); });
+$('itemText').addEventListener('change', () => commit());
+$('itemFont').addEventListener('change', async () => { const it = cur(); if (!it) return; await loadFont($('itemFont').value); it.font = $('itemFont').value; it.tweaks = {}; commit(); render(); });
+$('itemFlip').onclick = () => { const it = cur(); if (it){ it.flip = !it.flip; commit(); render(); } };
+$('itemCenter').onclick = () => { const it = cur(); if (it){ it.x = state.w/2; commit(); render(); } };
+$('itemUp').onclick = () => move(1);
+$('itemDown').onclick = () => move(-1);
+function move(d){
+  const i = sel.item, j = i + d; if (i < 0 || j < 0 || j >= state.items.length) return;
+  const a = state.items; [a[i], a[j]] = [a[j], a[i]]; sel.item = j; commit(); render();
+}
+$('itemDup').onclick = () => { const it = cur(); if (!it) return; const c = JSON.parse(JSON.stringify(it)); c.id = uid++; c.x += 30; c.y += 30; state.items.push(c); sel.item = state.items.length - 1; commit(); render(); };
+$('itemDel').onclick = () => { if (sel.item < 0) return; state.items.splice(sel.item, 1); sel = {item: -1, glyph: -1}; commit(); render(); };
+$('addWord').onclick = () => { const t = 'نُور'; state.items.push(newItem(t, state.font, state.w/2, state.h/2, 220)); sel.item = state.items.length - 1; showTab('arrange'); commit(); render(); setTimeout(() => $('itemText').select(), 50); };
+$('splitWords').onclick = () => {
+  const it = cur(); if (!it) return;
+  const words = it.text.trim().split(/\s+/); if (words.length < 2) return toast('The selected text is a single word already.');
+  const m = itemMapper(it), k = m.k;
+  const parts = []; let x = it.x + shape(it.font, it.text).adv * k * it.sx / 2;
+  const space = shape(it.font, ' ').adv * k * it.sx;
+  words.forEach(w => { const wd = shape(it.font, w).adv * k * it.sx; parts.push(newItem(w, it.font, x - wd/2, it.y, it.size, {rot: it.rot, sx: it.sx})); x -= wd + space; });
+  state.items.splice(sel.item, 1, ...parts); sel = {item: -1, glyph: -1}; commit(); render();
+  toast('Split into ' + words.length + ' words. Drag them into a tarkib.');
+};
+$('gPrev').onclick = () => stepGlyph(-1);
+$('gNext').onclick = () => stepGlyph(1);
+function stepGlyph(d){
+  const it = cur(); if (!it) return;
+  const n = shape(it.font, it.text).glyphs.length;
+  sel.glyph = ((sel.glyph < 0 ? 0 : sel.glyph + d) + n) % n;
+  if (mode !== 'letters') setMode('letters'); else render();
+}
+$('gReset').onclick = () => { const it = cur(); if (it && it.tweaks){ delete it.tweaks[sel.glyph]; commit(); render(); } };
+$('gResetAll').onclick = () => { const it = cur(); if (it){ it.tweaks = {}; commit(); render(); } };
+
+/* style */
+const PRESETS = [
+  {name:'Gold on lapis', about:'Gilded letters, deep blue ground', s:{gold:true, ink:'#d9a441', markOn:false, weight:3.2, outline:0, shadow:true}, bg:{c1:'#1d3263', c2:'#070d1e', pattern:'dots'}},
+  {name:'Ink on paper', about:'Black ink, warm paper, red harakat', s:{gold:false, ink:'#141414', markOn:true, mark:'#a3261f', weight:2, outline:0, shadow:false}, bg:{c1:'#f4ecd8', c2:'#dccfae', pattern:'none'}},
+  {name:'Ottoman', about:'Gold letters on oxblood, blue harakat', s:{gold:true, ink:'#d9a441', markOn:true, mark:'#8fb6ff', weight:3, outline:0, shadow:true}, bg:{c1:'#6e1b1b', c2:'#2a0707', pattern:'stars'}},
+  {name:'Night white', about:'White letters with a dark outline', s:{gold:false, ink:'#ffffff', markOn:false, weight:2.5, outline:5, outlineColor:'#0b1226', shadow:true}, bg:{c1:'#1a1f2b', c2:'#050608', pattern:'none'}},
+];
+$('presets').innerHTML = PRESETS.map((p, i) => `<button type="button" class="card" data-p="${i}" style="background:radial-gradient(circle at 50% 45%, ${p.bg.c1}, ${p.bg.c2});color:${p.s.gold ? '#f1d796' : p.s.ink};border-color:${p.bg.c2}"><b>${p.name}</b><span style="color:inherit;opacity:.8">${p.about}</span></button>`).join('');
+$('presets').addEventListener('click', e => {
+  const b = e.target.closest('button[data-p]'); if (!b) return;
+  const p = PRESETS[+b.dataset.p];
+  Object.assign(state.style, p.s); Object.assign(state.bg, p.bg); commit(); render();
+});
+$('useGold').onchange = e => { state.style.gold = e.target.checked; commit(); render(); };
+$('inkColor').oninput = e => { state.style.ink = e.target.value; state.style.gold = false; render(); };
+$('inkColor').onchange = () => commit();
+$('useMarkColor').onchange = e => { state.style.markOn = e.target.checked; commit(); render(); };
+$('markColor').oninput = e => { state.style.mark = e.target.value; state.style.markOn = true; render(); };
+$('markColor').onchange = () => commit();
+$('outlineColor').oninput = e => { state.style.outlineColor = e.target.value; render(); };
+$('outlineColor').onchange = () => commit();
+$('shadow').onchange = e => { state.style.shadow = e.target.checked; commit(); render(); };
+
+/* background */
+$('aspect').addEventListener('click', e => {
+  const b = e.target.closest('button[data-ar]'); if (!b) return;
+  const [w, h] = b.dataset.ar.split('x').map(Number);
+  const dy = (h - state.h) / 2;
+  state.items.forEach(it => it.y += dy); state.photo.y += dy;
+  state.w = w; state.h = h; commit(); render();
+});
+$('bg1').oninput = e => { state.bg.c1 = e.target.value; render(); };
+$('bg2').oninput = e => { state.bg.c2 = e.target.value; render(); };
+$('bg1').onchange = $('bg2').onchange = () => commit();
+$('pattern').onchange = e => { state.bg.pattern = e.target.value; commit(); render(); };
+$('frame').onchange = e => { state.bg.frame = e.target.value; commit(); render(); };
+$('mask').onchange = e => { state.photo.mask = e.target.value; if (e.target.value === 'full') fitPhotoFull(); commit(); render(); };
+$('photoDel').onclick = () => { state.photo.has = false; commit(); render(); };
+$('photoIn').onchange = async e => {
+  const file = e.target.files[0]; if (!file) return;
+  try {
+    const {url, ar} = await downscale(file, 1800);
+    photoData = url; state.photo.has = true; state.photo.ar = ar;
+    const ms = state.photo.ms, target = state.photo.mask === 'full' ? Math.max(state.w, state.h / ar) : ms * 2.2;
+    state.photo.w = target; state.photo.x = state.w/2 - target/2; state.photo.y = state.h/2 - target*ar/2;
+    commit(); render(); toast('Photo added. Switch to Photo mode to drag it.');
+  } catch (err) { toast('That file could not be read as an image. Try a JPG or PNG.'); }
+  e.target.value = '';
+};
+function fitPhotoFull(){
+  const ph = state.photo, ar = ph.ar || 800/732;
+  const w = Math.max(state.w, state.h / ar); ph.w = w; ph.x = (state.w - w)/2; ph.y = (state.h - w*ar)/2;
+}
+function downscale(file, max){
+  return new Promise((res, rej) => {
+    const img = new Image(), u = URL.createObjectURL(file);
+    img.onload = () => {
+      const s = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas'); c.width = Math.round(img.width*s); c.height = Math.round(img.height*s);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(u);
+      res({url: c.toDataURL('image/jpeg', 0.9), ar: img.height / img.width});
+    };
+    img.onerror = rej; img.src = u;
+  });
+}
+
+/* sync all controls from state */
+function syncPanels(){
+  const it = cur();
+  $('noItem').hidden = !!it; $('itemCtl').hidden = !it;
+  if (it){
+    if (document.activeElement !== $('itemText')) $('itemText').value = it.text;
+    $('itemFont').value = it.font;
+  }
+  const hasG = it && sel.glyph >= 0;
+  $('noGlyph').hidden = !!hasG; $('glyphCtl').hidden = !hasG;
+  if (hasG){
+    const sh = shape(it.font, it.text), g = sh.glyphs[sel.glyph];
+    $('gName').textContent = `${g.mark ? 'haraka' : 'letter'} ${sel.glyph + 1} of ${sh.glyphs.length}`;
+  }
+  syncers.forEach(f => { try { f(); } catch (e) {} });
+  const st = state.style;
+  $('useGold').checked = st.gold; $('inkColor').value = st.ink; $('useMarkColor').checked = st.markOn; $('markColor').value = st.mark || '#a3261f';
+  $('outlineColor').value = st.outlineColor || '#0b1226'; $('shadow').checked = st.shadow;
+  $('bg1').value = state.bg.c1; $('bg2').value = state.bg.c2; $('pattern').value = state.bg.pattern; $('frame').value = state.bg.frame;
+  $('mask').value = state.photo.mask;
+  document.querySelectorAll('#aspect button').forEach(b => b.setAttribute('aria-pressed', b.dataset.ar === `${state.w}x${state.h}`));
+  if (document.activeElement !== $('src')) $('src').value = state.src;
+  $('status').textContent = `${state.items.length} word${state.items.length === 1 ? '' : 's'} · ${state.w}×${state.h}`;
+}
+
+/* ------------------------------------------------------------------ export */
+let downloads = null, sampler = null;
+function toast(msg){ const t = $('toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 3200); }
+async function renderPNG(scale){
+  const doc = buildSVG(true);
+  const url = URL.createObjectURL(new Blob([doc], {type: 'image/svg+xml'}));
+  const img = new Image();
+  await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url; });
+  const c = document.createElement('canvas'); c.width = state.w * scale; c.height = state.h * scale;
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+  return c;
+}
+async function offer(filename, data, previewCanvas){
+  if (downloads){
+    try { await downloads.save({filename, data}); toast('Saved ' + filename); return; }
+    catch (e) {
+      if (e && e.code === 'declined') return;
+      if (e && e.code === 'rate_limited') return toast('A save prompt is already open.');
+    }
+  }
+  if (previewCanvas){ $('ovImg').src = previewCanvas.toDataURL('image/png'); $('overlay').hidden = false; }
+  else toast('Saving files is not available in this view.');
+}
+async function exportPNG(scale){
+  try {
+    const c = await renderPNG(scale);
+    const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+    await offer(`mihbara-${state.w * scale}.png`, blob, c);
+  } catch (e) { toast('The image could not be drawn. Try removing the photo and export again.'); }
+}
+$('png1').onclick = () => exportPNG(1);
+$('png2').onclick = () => exportPNG(2);
+$('quickExport').onclick = () => exportPNG(1);
+$('svgOut').onclick = () => offer('mihbara.svg', buildSVG(true));
+$('projOut').onclick = () => offer('mihbara-project.json', JSON.stringify({mihbara: 1, state, photo: photoData}, null, 1));
+$('projIn').onchange = async e => {
+  const file = e.target.files[0]; if (!file) return;
+  try {
+    const j = JSON.parse(await file.text());
+    if (!j.state || !Array.isArray(j.state.items)) throw 0;
+    photoData = j.photo || sampleData; await restore(JSON.stringify(j.state)); commit(); toast('Project opened.');
+  } catch (err) { toast('That file is not a Mihbara project.'); }
+  e.target.value = '';
+};
+$('ovClose').onclick = () => $('overlay').hidden = true;
+$('resetAll').onclick = async () => { state = defaultState(); photoData = sampleData; await ensureFonts(); compose('ring'); toast('Back to the sample medallion.'); };
+$('undo').onclick = () => { if (hist.i > 0){ hist.i--; restore(hist.stack[hist.i]); } };
+$('redo').onclick = () => { if (hist.i < hist.stack.length - 1){ hist.i++; restore(hist.stack[hist.i]); } };
+document.addEventListener('keydown', e => {
+  const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !typing){ e.preventDefault(); (e.shiftKey ? $('redo') : $('undo')).click(); }
+  if (typing || sel.item < 0) return;
+  const step = e.shiftKey ? 10 : 1, it = cur();
+  const nudge = {ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, -step], ArrowDown: [0, step]}[e.key];
+  if (nudge){
+    e.preventDefault();
+    if (mode === 'letters' && sel.glyph >= 0){ const t = gtwMake(), k = it.size / shape(it.font, it.text).upem; t.dx = (t.dx||0) + nudge[0]/k; t.dy = (t.dy||0) - nudge[1]/k; }
+    else { it.x += nudge[0]; it.y += nudge[1]; }
+    render(); clearTimeout(wheelT); wheelT = setTimeout(commit, 400);
+  }
+  if (e.key === 'Delete'){ e.preventDefault(); $('itemDel').click(); }
+});
+
+/* Claude: add tashkeel */
+$('aiTashkeel').onclick = async () => {
+  const btn = $('aiTashkeel'); const text = $('src').value.trim(); if (!text || !sampler) return;
+  btn.disabled = true; btn.textContent = 'Adding tashkeel…';
+  try {
+    const r = await sampler('Add complete, grammatically correct Arabic tashkeel (every haraka, shadda, sukun and tanwin) to the text below. Keep every word, line break and spelling exactly as written; do not translate or explain. Reply with the voweled text only.\n\n' + text, {modelTier: 'default', cache: false});
+    const out = (r.text || '').trim();
+    if (out){ state.src = out; $('src').value = out; commit(); toast('Tashkeel added. Compose again to use it.'); }
+  } catch (e) {
+    if (e && e.code === 'not_granted') btn.hidden = true;
+    else toast(e && e.code === 'rate_limited' ? 'Too many requests. Try again in a minute.' : 'Claude could not add tashkeel just now.');
+  }
+  btn.disabled = false; btn.textContent = 'Add full tashkeel with Claude';
+};
+
+/* ------------------------------------------------------------------ boot */
+async function toDataURL(url){
+  const b = await (await fetch(url)).blob();
+  return await new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); });
+}
+(async function boot(){
+  try {
+    await loadHB();
+    await Promise.all(FONTS.map(f => loadFont(f.id)));
+    sampleData = await toDataURL('sample.jpg');
+  } catch (e) {
+    $('loading').textContent = 'The shaping engine could not load. Reload the page to try again.';
+    return;
+  }
+  let saved = null;
+  try { saved = localStorage.getItem('mihbara.v1'); } catch (e) {}
+  if (saved){
+    try {
+      state = JSON.parse(saved);
+      let p = null; try { p = localStorage.getItem('mihbara.photo'); } catch (e) {}
+      photoData = p || sampleData;
+      await ensureFonts();
+    } catch (e) { state = null; }
+  }
+  if (!state){ state = defaultState(); photoData = sampleData; compose('ring'); }
+  uid = Math.max(1, ...state.items.map(i => i.id || 0)) + 1;
+  buildFontList();
+  hist.stack = [snapshot()]; hist.i = 0; updateUndo();
+  $('loading').hidden = true;
+  let tab = null; try { tab = localStorage.getItem('mihbara.tab'); } catch (e) {}
+  if (tab && document.querySelector(`[data-pane="${tab}"]`)) showTab(tab);
+  render();
+  if (window.claude && window.claude.use){
+    window.claude.use('downloads').then(d => { downloads = d; }).catch(() => {});
+    window.claude.use('sample').then(s => { sampler = s; if (s) $('aiTashkeel').hidden = false; }).catch(() => {});
+  }
+})();
+</script>

@@ -1,0 +1,27 @@
+Fonts bundled with Mihbara
+
+AmiriQuran-Regular.ttf
+   Copyright 2010-2022 The Amiri Project Authors (https://github.com/aliftype/amiri).
+   License: This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: https://openfontlicense.org
+
+ArefRuqaa-Regular.ttf
+   Copyright 2015-2021 The Aref Ruqaa Project Authors (https://github.com/alif-type/aref-ruqaa), with Reserved Font Name EURM10.
+   License: This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: https://scripts.sil.org/OFL
+
+Katibeh-Regular.ttf
+   Copyright 2015, 2016 KB-Studio (www.k-b-studio.com|tarobish@gmail.com). Copyright 2015, 2016 Lasse Fister (lasse@graphicore.de). Copyright 2015, 2016 Eduardo Tunni(edu@tipo.net.ar).
+   License: This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is copied below, and is also available with a FAQ at: http://scripts.sil.org/OFL
+
+NotoNastaliqUrdu-Variable.ttf
+   Copyright 2022 The Noto Project Authors (https://github.com/notofonts/nastaliq)
+   License: This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: https://scripts.sil.org/OFL
+
+ReemKufi-Variable.ttf
+   Copyright 2015-2022 The Reem Kufi Project Authors (https://github.com/aliftype/reem-kufi).
+   License: This Font Software is licensed under the SIL Open Font License, Version 1.1. This license is available with a FAQ at: https://scripts.sil.org/OFL
+
+ae_Tholoth.ttf
+   Typeface and data `2003-2007, Arabeyes.org. Latin glyphs are based on "Free UCS Outline Fonts", www.nongnu.org/freefont. This font is distributed under the terms of GPL license with font embedding exception.
+   License: 
+
+SIL Open Font License 1.1 text: OFL.txt. ae_Tholoth: GNU GPL v2 with font embedding exception (Arabeyes.org, Debian package fonts-arabeyes).
