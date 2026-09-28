@@ -12,6 +12,12 @@ were lost.
 | `شفاء_العليل.md` | شفاء العليل (ط المعرفة) | ابن القيم (ت ٧٥١) | complete | 333 | 161,925 |
 | `مجموع_الفتاوى_ج08_القدر.md` | مجموع الفتاوى | ابن تيمية (ت ٧٢٨) | vol. 8 (القدر) | 548 | 106,992 |
 | `تحفة_المحتاج_ج01.md` | تحفة المحتاج بحواشي الشرواني والعبادي | ابن حجر الهيتمي (ت ٩٧٤) | vol. 1 | 506 | 428,806 |
+| `درء_تعارض_العقل_والنقل.md` | درء تعارض العقل والنقل (ت محمد رشاد سالم) | ابن تيمية (ت ٧٢٨) | complete, 10 vols | 4,031 | 670,546 |
+
+**Large books:** درء تعارض العقل والنقل is about 1.2 million tokens, more than any AI can read at
+once. `درء_تعارض_العقل_والنقل.volumes/v01.md … v10.md` hold one volume each (80k–155k tokens),
+each with its own front matter and reading guide, so a single volume fits in one context window.
+For questions across the whole book, use the `.chunks.jsonl` with a retrieval tool.
 
 ## What's in each `.md`
 

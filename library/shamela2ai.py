@@ -72,6 +72,10 @@ def infer_levels(toc):
     return level, order, inferred
 
 
+def squash(s):
+    return re.sub(r'[^\u0621-\u064A0-9٠-٩A-Za-z]', '', unicodedata.normalize('NFC', s or ''))
+
+
 def ce(ah):
     return None if ah is None else round(ah * 0.970224 + 621.5709)
 
@@ -153,6 +157,7 @@ def convert(meta, toc, pages, manifest, volumes=None, name=None, profile=None):
     body, chunks = [], []
     path, done, anchors = [], set(), {}
     open_ = {}   # layer -> chunk being filled
+    echo, dropped = {'text': '', 'left': 0}, [0]   # body lines that merely repeat a heading
     layers_seen, words = set(), 0
 
     def flush(layer=None):
@@ -194,18 +199,27 @@ def convert(meta, toc, pages, manifest, volumes=None, name=None, profile=None):
             layers_seen.add(layer)
             if layer == 'main':
                 pos = 0
+                def emit(x):
+                    nonlocal words
+                    if echo['left'] and squash(x) and squash(x) in echo['text']:
+                        echo['left'] -= 1; dropped[0] += 1
+                        return
+                    echo['left'] = 0
+                    body.extend([x, '']); add_chunk_text(x, pref, 'main'); words += len(x.split())
+
                 for m in SPAN.finditer(text):
                     for x in paras(text[pos:m.start()]):
-                        body.extend([x, '']); add_chunk_text(x, pref, 'main'); words += len(x.split())
+                        emit(x)
                     t = by_shamela.get(int(m.group(1)))
                     if t and t['title_id'] not in done:
                         heading(t, pref); done.add(t['title_id'])
+                        echo['text'], echo['left'] = squash(t['title_text']), 3
                     elif norm(clean(m.group(2))):
                         x = norm(clean(m.group(2)))
                         body.extend([f'**{x}**', '']); add_chunk_text(x, pref, 'main')
                     pos = m.end()
                 for x in paras(text[pos:]):
-                    body.extend([x, '']); add_chunk_text(x, pref, 'main'); words += len(x.split())
+                    emit(x)
             else:
                 ps = paras(SPAN.sub(lambda m: m.group(2), text))
                 if not ps:
@@ -220,6 +234,10 @@ def convert(meta, toc, pages, manifest, volumes=None, name=None, profile=None):
     flush()
 
     # ---- front matter
+    chars = sum(len(c['text']) for c in chunks)
+    marks = sum(len(re.findall('[\u064B-\u0652]', c['text'])) for c in chunks)
+    ratio = marks / max(chars, 1)
+    vocal = ('fully vocalized' if ratio > 0.25 else 'partly vocalized' if ratio > 0.05 else 'unvocalized (occasional harakat)') + ', as in source'
     fields, notes = parse_card(meta.get('betaka_text'))
     d = death_ah(meta.get('main_author_death_hijri'))
     authors = []
@@ -243,10 +261,12 @@ def convert(meta, toc, pages, manifest, volumes=None, name=None, profile=None):
         'category': meta.get('category_name_ar'),
         'book_type': meta.get('book_type_label'),
         'language': 'ar (Classical Arabic)',
-        'diacritics': 'as in source (harakat kept)',
+        'diacritics': vocal,
         'scope': f"volume {', '.join(volumes)} only" if volumes else 'complete work',
         'page_range': f'{first} – {last}',
-        'stats': {'pages': len(pages), 'headings': len(anchors), 'words': words, 'chunks': len(chunks)},
+        'stats': {'pages': len(pages), 'headings': len(anchors), 'words': words, 'characters': chars,
+                  'tokens_estimate': round(chars / 3), 'chunks': len(chunks),
+                  'repeated_heading_lines_removed': dropped[0]},
         'heading_levels': 'from the dataset where recorded, otherwise inferred from heading words (باب/فصل…)' if inferred else 'from the dataset',
         'text_layers': {l: (profile or {}).get('layers', {}).get(l, LAYER_NAMES.get(l, l)) for l in ['main', 's0', 's1', 'fn'] if l in layers_seen},
         'card_notes': notes or None,
@@ -292,6 +312,17 @@ def convert(meta, toc, pages, manifest, volumes=None, name=None, profile=None):
 
 
 PROFILES = {
+    # Dar' Ta'arud al-'Aql wa-l-Naql, ed. Muhammad Rashad Salim
+    21506: {
+        'guide': ['- Headings are descriptive titles in this edition (they speak of Ibn Taymiyya in the third person); '
+                  'they summarize, they are not his words.',
+                  '- Ibn Taymiyya quotes opponents at great length (e.g. `قال الرازي`, `قال أبو حامد`, `قال ابن سينا`, '
+                  '`قال أبو البركات`) before answering. A quotation usually runs until his reply begins with markers such as '
+                  '`فيقال`, `قيل`, `قلت`, `والجواب`, `فيقال له`, `الوجه الأول/الثاني…`. Never attribute quoted positions to him.',
+                  '- The book answers al-Razi\'s "universal rule" (القانون الكلي) that reason takes precedence over revelation when they '
+                  'seem to conflict; most of the work is numbered refutations (وجوه) of that rule and of kalam and falsafa arguments.',
+                  '- The editor\'s footnotes are not in the source data.'],
+    },
     # Tuhfat al-Muhtaj: commentary with the Minhaj in parentheses, plus two gloss layers per page
     9059: {
         'layers': {'main': 'تحفة المحتاج (الشرح، والمتن بين قوسين)', 's0': 'الحاشية الأولى', 's1': 'الحاشية الثانية'},
@@ -311,6 +342,7 @@ def main():
     ap.add_argument('--name', help='output file name without extension')
     ap.add_argument('--out', default='.')
     ap.add_argument('--dir', help='local copy of the book folder')
+    ap.add_argument('--split-volumes', action='store_true', help='also write one file per volume (NAME/vNN.md)')
     a = ap.parse_args()
     cat = catalog()
     row = next((r for r in cat['books'] if (r[1] if a.shamela else r[0]) == a.id), None)
@@ -323,7 +355,17 @@ def main():
     open(os.path.join(a.out, name + '.md'), 'w', encoding='utf-8').write(md)
     open(os.path.join(a.out, name + '.chunks.jsonl'), 'w', encoding='utf-8').write(chunks)
     s = fm['stats']
-    print(f"{name}: {s['pages']} pages, {s['headings']} headings, {s['words']:,} words, {s['chunks']} chunks", file=sys.stderr)
+    print(f"{name}: {s['pages']} pages, {s['headings']} headings, {s['words']:,} words, ~{s['tokens_estimate']:,} tokens, "
+          f"{s['chunks']} chunks, {s['repeated_heading_lines_removed']} repeated heading lines removed", file=sys.stderr)
+    if a.split_volumes:
+        vols = sorted({vol_label(p.get('part')) for p in pages}, key=lambda v: (not v.isdigit(), int(v) if v.isdigit() else 0, v))
+        vdir = os.path.join(a.out, name + '.volumes')
+        os.makedirs(vdir, exist_ok=True)
+        for v in vols:
+            vmd, _, vfm = convert(meta, toc, pages, manifest, [v], None, PROFILES.get(meta['shamela_id']))
+            fn = f"v{int(v):02d}.md" if v.isdigit() else f"v-{v}.md"
+            open(os.path.join(vdir, fn), 'w', encoding='utf-8').write(vmd)
+            print(f"  {fn}: {vfm['stats']['pages']} pages, ~{vfm['stats']['tokens_estimate']:,} tokens", file=sys.stderr)
 
 
 if __name__ == '__main__':
