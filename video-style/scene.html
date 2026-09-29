@@ -1,0 +1,372 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>scene</title>
+<style>
+  /* Everything is laid out in a fixed 848x464 design space and scaled by the
+     renderer via deviceScaleFactor, so the look is identical at any resolution. */
+  :root {
+    --gold: #ffc21a;
+    --red: #ff2a2a;
+    --ink: #f4f4f6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 848px; height: 464px; background: #050507; overflow: hidden; }
+  body { font-family: "Liberation Sans", "Helvetica Neue", Arial, "DejaVu Sans", sans-serif; color: var(--ink); }
+
+  #stage { position: relative; width: 848px; height: 464px; overflow: hidden; }
+  #gl { position: absolute; inset: 0; width: 848px; height: 464px; }
+
+  /* ---------- persistent chrome ---------- */
+  #handles { position: absolute; left: 28px; top: 40px; display: flex; flex-direction: column; gap: 12px; opacity: 0; }
+  .handle { display: flex; align-items: center; gap: 12px; font-size: 13.5px; letter-spacing: .2px; text-shadow: 0 0 6px rgba(255,255,255,.25); }
+  .handle .ico { width: 32px; height: 32px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #6d7077, #2c2e33);
+                 display: grid; place-items: center; box-shadow: 0 0 10px rgba(255,255,255,.12); }
+  .handle svg { width: 16px; height: 16px; fill: #e9eaee; }
+  #corner { position: absolute; right: 24px; top: 20px; width: 46px; height: 52px; opacity: 0; filter: drop-shadow(0 0 5px rgba(255,255,255,.35)); }
+
+  /* ---------- scenes ---------- */
+  .scene { position: absolute; inset: 0; opacity: 0; visibility: hidden; }
+
+  /* speaker scene */
+  .avatar { position: absolute; left: 50%; top: 112px; width: 96px; height: 96px; margin-left: -48px; border-radius: 50%;
+            border: 3px solid rgba(255,255,255,.9); box-shadow: 0 0 18px rgba(255,255,255,.35), 0 0 40px rgba(255,40,40,.25);
+            background: #23252b center/cover no-repeat; display: grid; place-items: center; font-size: 34px; font-weight: 700; color: #b9bcc6; overflow: hidden; }
+  .name { position: absolute; left: 0; width: 848px; top: 214px; text-align: center; font-weight: 700; font-size: 13px; line-height: 1.25;
+          color: var(--red); text-shadow: 0 0 8px rgba(255,20,20,.9), 0 0 18px rgba(255,20,20,.6); }
+  .ghost { position: absolute; right: 26px; top: 128px; width: 300px; text-align: right; font-size: 13.5px; line-height: 1.3;
+           color: rgba(255,60,60,.38); text-shadow: 0 0 8px rgba(255,30,30,.5); filter: blur(.5px); }
+  .ghost b { color: rgba(255,80,80,.7); }
+
+  .sub { position: absolute; font-weight: 700; font-size: 15px; line-height: 1.32; text-shadow: 0 0 7px rgba(255,255,255,.45), 0 1px 2px rgba(0,0,0,.9); }
+  .sub .w { visibility: hidden; }
+  .sub .w.on { visibility: visible; }
+  .sub .g { color: var(--gold); text-shadow: 0 0 9px rgba(255,194,26,.75), 0 1px 2px rgba(0,0,0,.9); }
+  .sub .r { color: var(--red);  text-shadow: 0 0 9px rgba(255,30,30,.95), 0 0 16px rgba(255,30,30,.55), 0 1px 2px rgba(0,0,0,.9); }
+  .sub .i { font-style: italic; }
+  .sub .caret { position: absolute; width: 2px; height: 1.05em; background: var(--gold); box-shadow: 0 0 6px var(--gold); display: none; }
+  .center-sub { left: 130px; width: 588px; top: 322px; text-align: center; }
+  .side-sub   { left: 368px; width: 410px; text-align: left; }
+
+  /* card scene */
+  .card-title { position: absolute; left: 0; width: 848px; text-align: center; font-weight: 700; font-size: 12px; line-height: 1.35;
+                text-shadow: 0 0 6px rgba(255,255,255,.4); transform-origin: 50% 0; }
+  .paper-wrap { position: absolute; left: 0; top: 0; width: 520px; transform-origin: 50% 50%;
+                filter: drop-shadow(0 0 10px rgba(255,255,255,.45)) drop-shadow(0 6px 14px rgba(0,0,0,.6)); }
+  .paper { background: #fbfbf8; color: #15151a; padding: 18px 22px 20px; font-family: "Liberation Serif", "Times New Roman", "DejaVu Serif", serif;
+           font-size: 13.5px; line-height: 1.72; }
+  .paper[dir=rtl] { font-family: "Amiri", "Noto Naskh Arabic", "DejaVu Sans", serif; font-size: 14.5px; line-height: 1.95; text-align: right; }
+  .paper mark { background: linear-gradient(rgba(255,190,20,.88), rgba(255,190,20,.88)) no-repeat left center / var(--p, 0%) 92%;
+                color: inherit; box-decoration-break: clone; -webkit-box-decoration-break: clone; padding: 0 2px; }
+  .paper[dir=rtl] mark { background-position: right center; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="gl"></canvas>
+  <div id="handles"></div>
+  <canvas id="corner" width="92" height="104"></canvas>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "/node_modules/three/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+const W = 848, H = 464;
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const easeOut = t => 1 - Math.pow(1 - clamp(t), 3);
+const easeInOut = t => { t = clamp(t); return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+const easeOutBack = t => { t = clamp(t); const c1 = 1.4, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+const mulberry = a => () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const esc = s => s.replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+const stage = document.getElementById('stage');
+let project, intro = { duration: 0 }, scenes = [];
+let renderer, cam, bgMat, logoMesh, markMesh, stars, logoTex;
+
+/* ------------------------------------------------------------------ logo */
+function makeLogoCanvas(brand, img) {
+  const S = 1024, c = document.createElement('canvas'); c.width = c.height = S;
+  const g = c.getContext('2d');
+  if (img) {                                   // user-supplied logo: fit & use its alpha (or luminance if opaque)
+    const r = Math.min(S / img.width, S / img.height) * .92;
+    g.drawImage(img, (S - img.width * r) / 2, (S - img.height * r) / 2, img.width * r, img.height * r);
+    const d = g.getImageData(0, 0, S, S), p = d.data; let opaque = true;
+    for (let i = 3; i < p.length; i += 4) if (p[i] < 250) { opaque = false; break; }
+    if (opaque) for (let i = 0; i < p.length; i += 4) { const l = (p[i] + p[i + 1] + p[i + 2]) / 3; p[i + 3] = l; p[i] = p[i + 1] = p[i + 2] = 255; }
+    g.putImageData(d, 0, 0);
+    return c;
+  }
+  // generated teardrop mark with lettering + dotted ornaments
+  g.translate(S / 2, S / 2); g.strokeStyle = g.fillStyle = '#fff'; g.lineWidth = 16; g.lineJoin = 'round';
+  const drop = () => { g.beginPath(); g.moveTo(0, -430); g.bezierCurveTo(60, -300, 330, -90, 330, 130); g.arc(0, 130, 330, 0, Math.PI, false); g.bezierCurveTo(-330, -90, -60, -300, 0, -430); g.closePath(); };
+  drop(); g.stroke(); g.lineWidth = 6; g.save(); g.scale(.86, .86); g.translate(0, 26); drop(); g.stroke(); g.restore();
+  const rnd = mulberry(7);
+  g.save(); drop(); g.clip();
+  for (let i = 0; i < 220; i++) { const x = (rnd() - .5) * 640, y = -380 + rnd() * 860, r = 3 + rnd() * 6; g.beginPath(); g.ellipse(x, y, r, r * 1.5, 0, 0, 7); g.fill(); }
+  g.restore();
+  const label = brand.logoText || 'LOGO'; let fs = 150;
+  g.font = `700 ${fs}px "Amiri","DejaVu Sans","Liberation Sans",sans-serif`;
+  fs = Math.min(fs, fs * 440 / g.measureText(label).width);                    // keep lettering inside the drop
+  g.font = `700 ${fs}px "Amiri","DejaVu Sans","Liberation Sans",sans-serif`; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.save(); g.translate(0, 110); g.rotate(-.18); g.lineJoin = 'round'; g.lineWidth = 14; g.strokeStyle = '#000'; g.strokeText(label, 0, 0);
+  g.fillStyle = '#fff'; g.fillText(label, 0, 0); g.restore();
+  return c;
+}
+
+/* ---------------------------------------------------------------- WebGL */
+function initGL(brand, logoCanvas) {
+  const canvas = document.getElementById('gl');
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true, alpha: false });
+  renderer.setPixelRatio(project.glScale ?? 1);
+  renderer.setSize(W, H, false);
+  cam = new THREE.PerspectiveCamera(32, W / H, .1, 100); cam.position.z = 10;
+  const scene = new THREE.Scene(); window.__glScene = scene;
+
+  // background: vignette + slow haze + optional red tint
+  bgMat = new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 }, uTint: { value: 0 }, uPulse: { value: 0 } },
+    vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }',
+    fragmentShader: `
+      varying vec2 vUv; uniform float uTime, uTint, uPulse;
+      float h(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }
+      float n(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
+        return mix(mix(h(i),h(i+vec2(1,0)),f.x), mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x), f.y); }
+      float fbm(vec2 p){ float a=.5, s=0.; for(int i=0;i<4;i++){ s+=a*n(p); p*=2.03; a*=.5; } return s; }
+      void main(){
+        vec2 uv = vUv, c = uv-.5; c.x *= 1.83;
+        float r = length(c);
+        float haze = fbm(c*2.2 + vec2(uTime*.02, -uTime*.015));
+        vec3 col = vec3(.018,.02,.03) + vec3(.03,.035,.05)*haze*smoothstep(1.1,.0,r);
+        col += vec3(.025,.03,.045) * smoothstep(.75,.0,length(c-vec2(.1,.05)));
+        col += vec3(.20,.015,.02) * uTint * smoothstep(.9,.05,length(c-vec2(0.,-.02))) * (.55+.45*haze);
+        col += vec3(.08,.09,.12) * uPulse * smoothstep(.7,.0,r);
+        col *= smoothstep(1.25,.25,r);                          // vignette
+        col += (h(uv*vec2(848.,464.)+fract(uTime)*17.)-.5)*.012; // film grain
+        gl_FragColor = vec4(col,1.);
+      }`,
+    depthWrite: false
+  });
+  const bg = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), bgMat);
+  const d = 20, bh = 2 * Math.tan(THREE.MathUtils.degToRad(cam.fov / 2)) * (cam.position.z + d);
+  bg.scale.set(bh * cam.aspect * 1.15, bh * 1.15, 1); bg.position.z = -d; bg.renderOrder = -1; scene.add(bg);
+
+  // starfield with parallax
+  const N = 260, pos = new Float32Array(N * 3), seed = new Float32Array(N), rnd = mulberry(42);
+  for (let i = 0; i < N; i++) { pos.set([(rnd() - .5) * 26, (rnd() - .5) * 15, -6 + rnd() * 8], i * 3); seed[i] = rnd() * 6.28; }
+  const sg = new THREE.BufferGeometry();
+  sg.setAttribute('position', new THREE.BufferAttribute(pos, 3)); sg.setAttribute('seed', new THREE.BufferAttribute(seed, 1));
+  const sm = new THREE.ShaderMaterial({
+    uniforms: { uTime: { value: 0 }, uTint: { value: 0 } }, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: `attribute float seed; uniform float uTime; varying float vA;
+      void main(){ vec3 p = position; p.y += mod(uTime*.05*(1.+position.z*.08)+ 20., 15.) - 7.5; p.y = mod(p.y+7.5, 15.)-7.5;
+        vec4 mv = modelViewMatrix*vec4(p,1.); gl_Position = projectionMatrix*mv;
+        gl_PointSize = (1.2+ (position.z+6.)*.25) * (0.8+.4*sin(uTime*1.3+seed));
+        vA = .25 + .45*(.5+.5*sin(uTime*.9+seed*3.)); }`,
+    fragmentShader: `uniform float uTint; varying float vA; void main(){ float d=length(gl_PointCoord-.5); float a=smoothstep(.5,.0,d)*vA;
+      gl_FragColor = vec4(mix(vec3(.75,.8,.95), vec3(1.,.35,.35), uTint*.6), a); }`
+  });
+  stars = new THREE.Points(sg, sm); scene.add(stars);
+
+  // 3D chrome logo: bevel normals derived from the alpha channel + sweeping light
+  logoTex = new THREE.CanvasTexture(logoCanvas); logoTex.anisotropy = 4; logoTex.colorSpace = THREE.SRGBColorSpace;
+  const lm = () => new THREE.ShaderMaterial({
+    uniforms: { map: { value: logoTex }, uOpacity: { value: 0 }, uTime: { value: 0 }, uTint: { value: 0 }, uTexel: { value: 1 / 1024 } },
+    transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    vertexShader: 'varying vec2 vUv; varying vec3 vN; void main(){ vUv=uv; vN = normalize(normalMatrix*vec3(0.,0.,1.)); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }',
+    fragmentShader: `uniform sampler2D map; uniform float uOpacity, uTime, uTint, uTexel; varying vec2 vUv; varying vec3 vN;
+      void main(){
+        float a = texture2D(map, vUv).a; if (a < .01) discard;
+        float e = uTexel*3.;
+        float ax = texture2D(map, vUv+vec2(e,0.)).a - texture2D(map, vUv-vec2(e,0.)).a;
+        float ay = texture2D(map, vUv+vec2(0.,e)).a - texture2D(map, vUv-vec2(0.,e)).a;
+        vec3 n = normalize(vec3(-ax*1.0, -ay*1.0, .6));
+        vec3 L = normalize(vec3(sin(uTime*.7)*.9, .6+.3*cos(uTime*.5), .8));
+        float diff = clamp(dot(n,L)*.5+.5, 0., 1.);
+        float spec = pow(clamp(dot(n, normalize(L+vec3(0.,0.,1.))), 0., 1.), 22.);
+        float band = smoothstep(.15,.0,abs(fract(vUv.x*.7+vUv.y*.5 - uTime*.12)-.5)) * .35;
+        vec3 steel = mix(vec3(.28,.32,.38), vec3(.78,.84,.92), diff);
+        vec3 col = steel + spec*vec3(1.) + band*vec3(.6,.7,.85);
+        col = mix(col, col*vec3(1.4,.5,.5), uTint*.6);
+        gl_FragColor = vec4(col, a*uOpacity);
+      }`
+  });
+  logoMesh = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 4.2), lm()); scene.add(logoMesh);
+  markMesh = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 5.2), lm()); markMesh.position.z = -1.5; scene.add(markMesh);
+  window.__glRender = () => renderer.render(scene, cam);
+}
+
+/* -------------------------------------------------------- DOM builders */
+function tornPolygon(seed, n = 26, amp = 3.2) {
+  const r = mulberry(seed), pts = [], j = () => (r() - .5) * 2 * amp;
+  for (let i = 0; i <= n; i++) pts.push([100 * i / n, j() * .5]);                       // top
+  for (let i = 1; i < 10; i++) pts.push([100 + j() * .15, 100 * i / 10]);               // right (nearly straight)
+  for (let i = n; i >= 0; i--) pts.push([100 * i / n, 100 + j() * .5]);                 // bottom
+  for (let i = 9; i > 0; i--) pts.push([j() * .15, 100 * i / 10]);                      // left
+  return 'polygon(' + pts.map(([x, y]) => `${(x).toFixed(2)}% ${(y).toFixed(2)}%`).join(',') + ')';
+}
+
+function buildSub(text, cls) {
+  // markup: {g|gold} {r|red} {i|italic}; plain words are white
+  const el = document.createElement('div'); el.className = 'sub ' + cls;
+  const words = [];
+  const re = /\{([gri])\|([^}]*)\}|([^\s{]+)/g; let m; const parts = [];
+  // tokenise so styled runs keep their internal word breaks
+  const src = text.replace(/\{([gri])\|([^}]*)\}/g, (_, k, s) => s.split(/\s+/).filter(Boolean).map(w => `\u0001${k}${w}`).join(' '));
+  src.split(/\s+/).filter(Boolean).forEach(tok => {
+    const k = tok[0] === '\u0001' ? tok[1] : ''; const w = k ? tok.slice(2) : tok;
+    const s = document.createElement('span'); s.className = 'w ' + k; s.textContent = w; el.appendChild(s); el.appendChild(document.createTextNode(' ')); words.push(s);
+  });
+  const caret = document.createElement('span'); caret.className = 'caret'; el.appendChild(caret);
+  return { el, words, caret };
+}
+
+function revealSub(sub, p, t, showCaret = true) {
+  const n = sub.words.length, shown = Math.floor(p * n + (p >= 1 ? 0 : 0));
+  sub.words.forEach((w, i) => w.classList.toggle('on', i < shown));
+  const last = sub.words[shown - 1];
+  if (showCaret && shown > 0 && p < 1) {
+    const box = sub.el.getBoundingClientRect(), r = last.getBoundingClientRect();
+    sub.caret.style.left = (r.right - box.left + 2) + 'px'; sub.caret.style.top = (r.top - box.top + 1) + 'px';
+    sub.caret.style.display = (Math.floor(t * 4) % 2 ? 'none' : 'block');
+  } else sub.caret.style.display = 'none';
+}
+
+function buildSpeaker(s, base) {
+  const root = document.createElement('div'); root.className = 'scene';
+  const av = document.createElement('div'); av.className = 'avatar';
+  if (s.avatar) av.style.backgroundImage = `url(${base + s.avatar})`; else av.textContent = (s.name || '?')[0];
+  const nm = document.createElement('div'); nm.className = 'name'; nm.innerHTML = esc(s.name || '') + (s.label ? `<br><span style="font-weight:600">${esc(s.label)}</span>` : '');
+  const gh = document.createElement('div'); gh.className = 'ghost'; gh.innerHTML = esc(s.ghost || '').replace(/\*([^*]+)\*/g, '<b>$1</b>');
+  const sub = buildSub(s.subtitle || '', 'center-sub'); if (s.subtitleTop) sub.el.style.top = s.subtitleTop + 'px';
+  root.append(av, nm, gh, sub.el); stage.appendChild(root);
+  return {
+    root, tint: s.tint ?? 1,
+    update(l, dur) {
+      const iA = easeOutBack(l / .7);
+      av.style.opacity = clamp(l / .4); av.style.transform = `scale(${lerp(.7, 1, iA)})`;
+      nm.style.opacity = clamp((l - .15) / .4); gh.style.opacity = clamp((l - .3) / .6);
+      gh.style.transform = `translateX(${lerp(18, 0, easeOut((l - .3) / .8))}px)`;
+      const rd = s.revealDuration ?? Math.max(.5, (dur - .6) * .72);
+      revealSub(sub, clamp((l - .5) / rd), l);
+    }
+  };
+}
+
+function buildCard(s, base) {
+  const root = document.createElement('div'); root.className = 'scene';
+  const title = document.createElement('div'); title.className = 'card-title'; title.textContent = s.source || '';
+  const wrap = document.createElement('div'); wrap.className = 'paper-wrap';
+  const paper = document.createElement('div'); paper.className = 'paper'; paper.dir = s.dir || 'ltr'; if (s.lang) paper.lang = s.lang;
+  paper.style.clipPath = tornPolygon(s.seed ?? 11);
+  let marks = 0;
+  paper.innerHTML = esc(s.body || '').replace(/\[\[([^\]]+)\]\]/g, (_, t) => `<mark data-i="${marks++}">${t}</mark>`).replace(/\n/g, '<br>');
+  wrap.appendChild(paper);
+  const sub = buildSub(s.subtitle || '', 'side-sub');
+  root.append(title, wrap, sub.el); stage.appendChild(root);
+  const markEls = [...paper.querySelectorAll('mark')];
+  const pw = 520; let ph = 0;
+  return {
+    root, tint: s.tint ?? 0,
+    update(l, dur) {
+      if (!ph) { ph = wrap.offsetHeight; }
+      const dock = s.dock !== false, dockAt = s.dockAt ?? dur * .45, dockT = easeInOut((l - dockAt) / .8);
+      const enter = easeOut(l / .9);
+      // paper: flies in tilted, settles straight, then (optionally) docks left & shrinks
+      const rot = lerp(s.tilt ?? -9, 0, enter) * (1 - dockT);
+      const sc = lerp(1.14, 1, enter) * (dock ? lerp(1, .5, dockT) : 1);
+      const cx = lerp(W / 2, 200, dock ? dockT : 0), cy = lerp(H / 2 + 22, H / 2 + 2, dock ? dockT : 0);
+      const dy = (1 - enter) * 40;
+      wrap.style.left = (cx - pw / 2) + 'px'; wrap.style.top = (cy - ph / 2 + dy) + 'px'; wrap.style.width = pw + 'px';
+      wrap.style.transform = `rotate(${rot}deg) scale(${sc})`; wrap.style.opacity = clamp(l / .35);
+      // title sits above the paper and follows it
+      const tTop = cy - (ph * sc) / 2 - 30 * (dock ? lerp(1, .55, dockT) : 1) + dy;
+      title.style.top = tTop + 'px'; title.style.opacity = clamp((l - .2) / .4);
+      title.style.left = (cx - W / 2) + 'px'; title.style.width = W + 'px';
+      title.style.transform = `scale(${dock ? lerp(1, .6, dockT) : 1})`;
+      // highlighter marks sweep in one after another
+      const hl0 = s.highlightAt ?? 1.1, step = s.highlightStep ?? .55;
+      markEls.forEach((m, i) => m.style.setProperty('--p', (easeInOut((l - hl0 - i * step) / .7) * 100).toFixed(1) + '%'));
+      // subtitle
+      const subStart = dock ? dockAt + .6 : .6;
+      sub.el.style.top = (H / 2 - sub.el.offsetHeight / 2 + 4) + 'px';
+      if (!dock) { sub.el.className = 'sub center-sub'; sub.el.style.top = '360px'; }
+      const rd = s.revealDuration ?? Math.max(.5, (dur - subStart - .5) * .8);
+      revealSub(sub, clamp((l - subStart) / rd), l);
+      sub.el.style.opacity = clamp((l - subStart + .2) / .3);
+    }
+  };
+}
+
+/* ---------------------------------------------------------------- setup */
+const loadImg = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = () => rej(new Error('cannot load ' + src)); i.src = src; });
+
+window.setup = async (proj, base) => {
+  project = proj; const brand = proj.brand || {};
+  for (const f of proj.fonts || []) { const ff = new FontFace(f.family, `url(${base + f.file})`); document.fonts.add(await ff.load()); }
+  const logoImg = brand.logo ? await loadImg(base + brand.logo) : null;
+  const logoCanvas = makeLogoCanvas(brand, logoImg);
+  initGL(brand, logoCanvas);
+
+  // corner logo (silver) + handles
+  const cc = document.getElementById('corner').getContext('2d'); cc.drawImage(logoCanvas, 0, 0, 92, 104);
+  cc.globalCompositeOperation = 'source-in'; cc.fillStyle = '#cfd3dc'; cc.fillRect(0, 0, 92, 104);
+  const icons = [
+    '<svg viewBox="0 0 24 24"><path d="M21.5 3.5 2.6 10.8c-.9.4-.9 1.2 0 1.5l4.8 1.5 1.8 5.6c.2.6.9.8 1.4.4l2.6-2.2 4.6 3.4c.6.4 1.3.1 1.5-.6l3.2-15.2c.2-.9-.5-1.4-1-1.1zM9 13.5l9.2-5.7-7.2 6.9-.3 3.3z"/></svg>',
+    '<svg viewBox="0 0 24 24"><path d="M16.6 3c.3 2.2 1.6 3.7 3.9 3.9v3c-1.4.1-2.6-.3-3.9-1.1v6.2c0 3.2-2.4 5.4-5.4 5.4S5.6 18.2 5.6 15.2c0-3.3 2.8-5.6 6.1-5.3v3.1c-1.5-.3-3 .6-3 2.2 0 1.3 1 2.3 2.3 2.3 1.4 0 2.4-1 2.4-2.6V3z"/></svg>'
+  ];
+  document.getElementById('handles').innerHTML = (brand.handles || []).map((h, i) => `<div class="handle"><div class="ico">${icons[i % 2]}</div><span>${esc(h)}</span></div>`).join('');
+
+  intro = proj.intro || { duration: 0 };
+  const scale = proj.baseUrl ?? base;
+  scenes = (proj.scenes || []).map(s => ({ ...s, ...(s.type === 'card' ? buildCard(s, base) : buildSpeaker(s, base)) }));
+  await document.fonts.ready;
+  return { duration: proj.duration ?? Math.max(...scenes.map(s => s.end), intro.duration) };
+};
+
+/* ---------------------------------------------------------------- frame */
+window.frame = t => {
+  const cur = scenes.find(s => t >= s.start && t < s.end);
+  let tint = 0;
+
+  // scenes: fade in/out, then drive their own animation
+  scenes.forEach(s => {
+    const on = t >= s.start - .001 && t < s.end + .001;
+    s.root.style.visibility = on ? 'visible' : 'hidden';
+    if (!on) return;
+    const l = t - s.start, dur = s.end - s.start;
+    s.root.style.opacity = Math.min(clamp(l / .3), clamp((dur - l) / .3));
+    s.update(l, dur);
+  });
+  if (cur) { const l = t - cur.start; tint = cur.tint * Math.min(easeOut(l / .6), clamp((cur.end - t) / .4)); }
+
+  // chrome
+  const chromeIn = clamp((t - intro.duration + .3) / .7);
+  document.getElementById('handles').style.opacity = chromeIn;
+  document.getElementById('corner').style.opacity = chromeIn * .95;
+
+  // 3D logo: intro reveal (rotating chrome), then it sinks into a faint watermark behind the content
+  const iD = intro.duration || 0;
+  const introP = iD ? clamp(t / iD) : 1;
+  const inShow = iD ? Math.min(easeOut(t / .9), clamp((iD - t) / .7)) : 0;
+  logoMesh.material.uniforms.uOpacity.value = inShow; logoMesh.material.uniforms.uTime.value = t; logoMesh.material.uniforms.uTint.value = tint;
+  logoMesh.rotation.y = lerp(-.95, .18, easeOut(introP)) + Math.sin(t * .8) * .08;
+  logoMesh.rotation.x = Math.sin(t * .6) * .05;
+  logoMesh.position.set(lerp(-.4, 2.2, easeOut(introP)), -.15, lerp(-2, 1.4, easeOut(introP)));
+  const wm = clamp((t - iD + .4) / 1.2);
+  markMesh.material.uniforms.uOpacity.value = wm * .13; markMesh.material.uniforms.uTime.value = t + 4; markMesh.material.uniforms.uTint.value = tint;
+  markMesh.position.set(-.3, -.6, -1.5); markMesh.rotation.set(Math.sin(t * .3) * .12, Math.sin(t * .22) * .35, Math.sin(t * .17) * .08);
+
+  bgMat.uniforms.uTime.value = t; bgMat.uniforms.uTint.value = tint; bgMat.uniforms.uPulse.value = iD ? Math.max(0, 1 - Math.abs(t - iD * .5) / (iD * .5)) * .6 : 0;
+  stars.material.uniforms.uTime.value = t; stars.material.uniforms.uTint.value = tint;
+  cam.position.x = Math.sin(t * .25) * .35; cam.position.y = Math.cos(t * .19) * .15; cam.lookAt(0, 0, 0);
+  window.__glRender();
+};
+window.__ready = true;
+</script>
+</body>
+</html>

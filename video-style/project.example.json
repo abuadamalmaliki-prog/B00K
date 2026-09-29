@@ -1,0 +1,33 @@
+{
+  "width": 1696,
+  "fps": 30,
+  "brand": {
+    "logoText": "Your Logo",
+    "handles": ["t.me/yourchannel", "@yourhandle"]
+  },
+  "intro": { "duration": 3 },
+  "scenes": [
+    {
+      "type": "speaker", "start": 3, "end": 10,
+      "name": "Speaker Name", "label": "(Role or label)",
+      "ghost": "Why is this a *problem* for the person quoted in the clip?",
+      "subtitle": "The quote is authentic — {r|meaning the claim is taken at face value}, and that is where the discussion starts.",
+      "tint": 1
+    },
+    {
+      "type": "card", "start": 10, "end": 19,
+      "source": "In Book Title, vol. 2, page 45, the author says:",
+      "body": "Whoever reads carefully will find that [[a claim on its own is not the same as its implication]], and that scholars have always drawn this distinction. [[The wording matters as much as the meaning.]]\nEven so, the context of the passage decides how it is read.",
+      "subtitle": "Now that we have the source in front of us, {g|notice the two highlighted lines}: the first separates the claim from its implication, and {g|the second ties it back to the wording}.",
+      "dockAt": 3.6, "tilt": -9
+    },
+    {
+      "type": "card", "start": 19, "end": 26,
+      "source": "Arabic source, page 142",
+      "dir": "rtl", "lang": "ar", "seed": 5,
+      "body": "قال المؤلف: [[العبرة بالمعنى لا باللفظ]] وهذا أصل عظيم في الفهم، [[ولا يصح الاستدلال بالظاهر وحده]] دون النظر في السياق.",
+      "subtitle": "The same point is made in the second source, {g|and it is worded even more directly}.",
+      "dockAt": 2.8, "tilt": 7
+    }
+  ]
+}
