@@ -8,7 +8,7 @@
 
 ## Ringkasan
 
-1. Video yang kami bantah memutar klip singkat Al-Ustadz Yazid Jawas yang menyatakan bahwa nasihat kepada penguasa **tidak** dilakukan di mimbar, ceramah umum, atau tulisan terbuka, melainkan dengan mendatangi penguasa. Si penyanggah menjawab dengan tiga kitab: *Syarh Muslim* (An-Nawawi), *'Umdatul Qari* (Al-'Aini), dan *Ihya' 'Ulumiddin* beserta syarahnya *Ithaf* (Az-Zabidi).
+1. Video yang kami bantah memutar klip singkat Al-Ustadz Yazid Jawas yang menyatakan bahwa nasihat kepada penguasa **tidak** dilakukan di mimbar, ceramah umum, atau tulisan (yang kami pahami sebagai tulisan terbuka), melainkan dengan mendatangi penguasa. Si penyanggah menjawab dengan tiga kitab: *Syarh Muslim* (An-Nawawi), *'Umdatul Qari* (Al-'Aini), dan *Ihya' 'Ulumiddin* beserta syarahnya *Ithaf* (Az-Zabidi).
 2. Si penyanggah **mengakui sendiri** bahwa hadits yang dipakai sang ustadz itu sahih ("memang haditsnya sahih"). Perselisihan karenanya menyempit: bukan soal *dalil*, melainkan soal *pengecualian*.
 3. Kami cek kitab-kitab yang ia perintahkan untuk dicek. **An-Nawawi dan Al-'Aini menetapkan nasihat sembunyi-sembunyi sebagai hukum asal** (dan menghubungkan terang-terangan dengan perpecahan dan fitnah); **Al-Ghazali membatasi rakyat terhadap penguasa pada pemberitahuan dan nasihat lembut**; dan **Az-Zabidi mengutip hadits 'Iyadh bin Ghanm**, hadits yang sama dengan yang dipakai sang ustadz, sebagai dalil larangan menegur penguasa terang-terangan.
 4. Pengecualian yang dikutip (“jika tidak mungkin secara sembunyi-sembunyi”) memang ada, tetapi (a) syaratnya *tidak mungkin* belum dibuktikan, hanya diklaim; (b) hadits “kalimat haq di hadapan penguasa zalim” bicara tentang berhadapan langsung dengan penguasa, yang justru sejalan dengan “datangi kantornya”; dan (c) kalimat Al-Ghazali tentang “dua hal yang sama-sama terlarang” ternyata berbicara tentang **tindakan fisik** (menyita harta, memecahkan bejana khamr di rumah penguasa), bukan tentang ceramah atau kritik terbuka.
@@ -97,7 +97,7 @@ Jadi ada dua pendapat yang dinukil. Kami tidak menyembunyikan pendapat kedua. Te
 
 ### 2.3 Ibnu Hajar, *Fathul Bari* (penjelasan hadits Usamah, Bukhari no. 3267 dan 7098)
 
-Kitab ini tidak disebut si penyanggah, tetapi ia syarah Bukhari yang paling utama, dan Ibnu Hajar (Syafi'i) menukil dua ulama besar:
+Kitab ini tidak ditampilkan di video, tetapi ia syarah Bukhari yang paling utama, dan Ibnu Hajar (Syafi'i) menukil dua ulama besar:
 
 > قال المهلب: ... فقال أسامة: قد كلمته سرا دون أن أفتح بابا؛ أي **باب الإنكار على الأئمة علانية خشية أن تفترق الكلمة**. ثم عرفهم أنه **لا يداهن أحدا** ولو كان أميرا بل **ينصح له في السر جهده**
 
@@ -225,7 +225,7 @@ Agar tidak menghindar (kaidah kami: tidak boleh menyerang sosok jerami, *strawma
 
 > «أَمَّا هَذَا فَقَدْ قَضَى مَا عَلَيْهِ. سَمِعْتُ رَسُولَ اللَّهِ ﷺ يَقُولُ: مَنْ رَأَى مِنْكُمْ مُنْكَرًا فَلْيُغَيِّرْهُ بِيَدِهِ...» (Muslim no. 49; kisahnya juga di Bukhari, *Kitab al-'Idain*, *Fathul Bari* 2/449)
 
-Ini bukti bahwa teguran langsung kepada penguasa di depan orang banyak, pada saat itu, di tempat itu, atas satu perbuatan yang sedang dilakukan, **pernah terjadi dan dibenarkan Abu Sa'id**. Kami tidak menutup mata terhadapnya. Yang kami pertahankan adalah batas peristiwa itu, dari teks kisahnya sendiri:
+Dalam riwayat Bukhari, pelakunya adalah Abu Sa'id sendiri: ia menarik pakaian Marwan lalu berkata, “Demi Allah, kalian telah mengubah!”, dan Marwan menjawab, “Wahai Abu Sa'id, telah hilang apa yang engkau ketahui.” Ini bukti bahwa teguran langsung kepada penguasa di depan orang banyak, pada saat itu, di tempat itu, atas satu perbuatan yang sedang dilakukan, **pernah terjadi dan dibenarkan Abu Sa'id**. Kami tidak menutup mata terhadapnya. Yang kami pertahankan adalah batas peristiwa itu, dari teks kisahnya sendiri:
 
 1. **Teguran langsung, di hadapan penguasa.** Marwan hadir dan mendengar. Tidak ada penyebaran keburukannya kepada orang-orang yang tidak hadir.
 2. **Atas satu tindakan yang sedang berlangsung**: mengubah urutan shalat dan khutbah di lapangan shalat. Bukan kritik atas kebijakan, tidak menyebut deretan aib.
