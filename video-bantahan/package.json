@@ -1,0 +1,13 @@
+{
+  "name": "video-bantahan",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Video bantahan vertikal 1080x1920: HTML/CSS/JS + Three.js (CSS3DRenderer, tanpa WebGL) + Playwright + ffmpeg.",
+  "dependencies": {
+    "@fontsource/amiri": "^5.1.0",
+    "@fontsource/inter": "^5.1.0",
+    "playwright": "1.56.1",
+    "three": "^0.170.0"
+  }
+}

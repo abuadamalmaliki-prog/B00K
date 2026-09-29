@@ -1,0 +1,183 @@
+{
+  "fps": 30,
+  "w": 1080,
+  "h": 1920,
+  "handle": "@atba3_alqur2an_walsunnah",
+  "criticHandle": "@hafizmuhammad_ngaji",
+  "sources": {
+    "critic": "/root/.claude/uploads/eb8fcef9-0dbf-55b1-b749-a0d11310833a/42f1e482-v1c044g50000daptjcfog65hl1b3fun0.mp4",
+    "nasheed": "/root/.claude/uploads/eb8fcef9-0dbf-55b1-b749-a0d11310833a/1649c001-ssstik.io_f.xxjii_1790687797516.mp4"
+  },
+  "scenes": [
+    { "id": "intro", "type": "intro", "dur": 7.0 },
+
+    { "id": "title", "type": "title", "dur": 5.0,
+      "kicker": "BANTAHAN ILMIAH",
+      "title": "Menasihati Penguasa",
+      "sub": "Menjawab penyanggah Al-Ustadz Yazid Jawas rahimahullah" },
+
+    { "id": "q_ustadz", "type": "quote", "who": "ustadz", "label": "USTADZ YAZID JAWAS",
+      "crop": [0, 82, 339, 222], "clips": [[0.0, 17.1]], "lead": 0.4, "tail": 0.6,
+      "captions": [
+        { "s": 0.00, "e": 3.02, "text": "Dan kita menasihati penguasa bukan di mimbar. Nggak boleh." },
+        { "s": 3.02, "e": 6.40, "text": "Menasihati penguasa nggak boleh di mimbar," },
+        { "s": 6.40, "e": 10.00, "text": "nggak boleh dalam ceramah umum, nggak boleh juga dalam bentuk tulisan." },
+        { "s": 10.62, "e": 13.90, "text": "Datangi. Datangi ke kantornya," },
+        { "s": 15.22, "e": 17.00, "text": "atau ke tempatnya, atau ke rumahnya." }
+      ] },
+
+    { "id": "q1", "type": "quote", "who": "critic", "label": "UCAPAN PENYANGGAH",
+      "crop": [0, 0, 576, 700], "clips": [[24.90, 41.30]], "lead": 0.4, "tail": 0.5,
+      "captions": [
+        { "s": 24.94, "e": 28.50, "text": "Memang haditsnya shahih, cuma pemahamannya kurang komprehensif." },
+        { "s": 28.60, "e": 32.68, "text": "Beliau-beliau ini kan yang mendewa-dewakan Shahih Bukhari dan Shahih Muslim, ya?" },
+        { "s": 32.76, "e": 37.88, "text": "Coba dicek dalam kitab syarah Shahih Bukhari dan syarah Shahih Muslim, beserta kitab Ihya' Ulumuddin" },
+        { "s": 38.02, "e": 41.22, "text": "dan syarahnya, biar tambah komprehensif, tambah sempurna pemahamannya." }
+      ] },
+
+    { "id": "r1", "type": "rebut", "dur": 6.5, "tag": "BANTAHAN", "big": true,
+      "beats": [
+        { "t": 0.3, "d": 2.0, "html": "Haditsnya shahih.\n{d|Katanya sendiri.}" },
+        { "t": 2.3, "d": 1.8, "html": "Ia suruh cek kitab." },
+        { "t": 4.1, "d": 2.4, "html": "{g|Kami cek.}\nKitabnya membantah dia.", "hold": true }
+      ] },
+
+    { "id": "q2", "type": "quote", "who": "critic", "label": "UCAPAN PENYANGGAH",
+      "crop": [0, 0, 576, 700], "clips": [[41.35, 49.58]], "lead": 0.4, "tail": 0.5,
+      "captions": [
+        { "s": 41.40, "e": 45.64, "text": "Dalam syarah Shahih Muslim, An-Nawawi, memang menasihati pemerintah harus secara sembunyi-sembunyi." },
+        { "s": 45.86, "e": 49.58, "text": "Tapi … konteksnya ketika memungkinkan." }
+      ] },
+
+    { "id": "r2", "type": "rebut", "dur": 20.5, "tag": "BANTAHAN 1",
+      "cards": [
+        { "t": 0.3, "d": 20.2, "src": "An-Nawawi · Syarh Shahih Muslim 18/118",
+          "ar": "يعني <m>المجاهرة بالإنكار على الأمراء في الملأ</m> <m>كما جرى لقتلة عثمان رضي الله عنه</m> وفيه الأدب مع الأمراء واللطف بهم <m>ووعظهم سرا</m> ... <m>وهذا كله إذا أمكن ذلك</m> فإن لم يمكن الوعظ سرا والإنكار فليفعله علانية <m>لئلا يضيع أصل الحق</m>",
+          "marks": [1.2, 5.8, 8.0, 11.6, 15.6] }
+      ],
+      "beats": [
+        { "t": 0.9, "d": 4.6, "html": "Yang ditolak Usamah:\n{g|mengingkari pemimpin terang-terangan di depan khalayak.}" },
+        { "t": 5.6, "d": 4.6, "html": "Kata An-Nawawi:\n“sebagaimana terjadi pada {g|para pembunuh ‘Utsman}.”" },
+        { "t": 10.4, "d": 5.6, "html": "Pengecualiannya dua syarat:\n{g|“jika tidak mungkin”}\ndan {g|“agar pokok kebenaran tidak hilang”}." },
+        { "t": 16.2, "d": 4.2, "html": "“Tidak mungkin” harus {g|dibuktikan}.\nBukan diklaim.", "hold": true }
+      ] },
+
+    { "id": "q3", "type": "quote", "who": "critic", "label": "UCAPAN PENYANGGAH",
+      "crop": [0, 0, 576, 700], "clips": [[49.74, 58.66]], "lead": 0.4, "tail": 0.5,
+      "captions": [
+        { "s": 49.78, "e": 54.34, "text": "Kalau di era sekarang di Indonesia, kamu mendatangi istana, mendatangi gedung DPR," },
+        { "s": 54.34, "e": 58.58, "text": "kamu yang diinjak-injak di dalamnya. Sekarang itu zamannya no … no justice." }
+      ] },
+
+    { "id": "r3", "type": "rebut", "dur": 17.0, "tag": "BANTAHAN 2",
+      "cards": [
+        { "t": 0.3, "d": 16.7, "src": "Ibnu Baz · Majmu' Fatawa wa Maqalat 8/210",
+          "ar": "<m>ليس من منهج السلف التشهير بعيوب الولاة، وذكر ذلك على المنابر</m>؛ لأن ذلك يفضي إلى الفوضى وعدم السمع والطاعة في المعروف ... ولكن الطريقة المتبعة عند السلف: <m>النصيحة فيما بينهم وبين السلطان</m>، <m>والكتابة إليه</m>، <m>أو الاتصال بالعلماء الذين يتصلون به</m> حتى يوجه إلى الخير.",
+          "marks": [4.6, 9.4, 10.6, 11.8] }
+      ],
+      "beats": [
+        { "t": 0.9, "d": 3.6, "html": "Ia hanya menyebut {g|satu jalur}:\nistana dan gedung DPR." },
+        { "t": 4.4, "d": 4.8, "html": "Ibnu Baz:\n“{g|Bukan dari manhaj salaf} mengumbar aib penguasa di atas mimbar.”" },
+        { "t": 9.3, "d": 4.4, "html": "Jalur salaf: {g|temui langsung}, {g|tulis surat kepadanya}, {g|lewat ulama yang punya akses}." },
+        { "t": 13.6, "d": 3.2, "html": "Satu jalur tertutup\ntidak membuktikan semua tertutup.", "hold": true }
+      ] },
+
+    { "id": "q4", "type": "quote", "who": "critic", "label": "UCAPAN PENYANGGAH",
+      "crop": [0, 0, 576, 700], "clips": [[80.44, 91.56]], "lead": 0.4, "tail": 0.5,
+      "captions": [
+        { "s": 80.48, "e": 86.24, "text": "Kalau tidak memungkinkan menasihati pemerintah secara sembunyi-sembunyi, maka lakukanlah secara terang-terangan." },
+        { "s": 86.40, "e": 91.50, "text": "Karena kata Rasulullah, sebaik-baiknya jihad adalah berkata hak di hadapan pemerintah yang zalim." }
+      ] },
+
+    { "id": "r4", "type": "rebut", "dur": 16.5, "tag": "BANTAHAN 3",
+      "cards": [
+        { "t": 0.3, "d": 6.9, "src": "HR. Abu Dawud, At-Tirmidzi, Ibnu Majah · Al-Albani, Ash-Shahihah 491", "center": true,
+          "ar": "أفضل الجهاد كلمة حق <m>عند</m> سلطان جائر",
+          "marks": [1.0] },
+        { "t": 7.4, "d": 9.0, "src": "Al-Khaththabi · Ma'alim as-Sunan",
+          "ar": "وصاحب السلطان <m>مقهور في يده</m> فهو إذا قال الحق وأمره بالمعروف <m>فقد تعرض للتلف وأهدف نفسه للهلاك</m>",
+          "marks": [8.4, 10.6] }
+      ],
+      "beats": [
+        { "t": 0.9, "d": 3.0, "html": "“{g|‘Inda}” artinya {g|di hadapan} penguasa." },
+        { "t": 3.9, "d": 3.2, "html": "Bukan “di depan umum”." },
+        { "t": 7.8, "d": 4.6, "html": "Al-Khaththabi: yang berhadapan dengan penguasa {g|“berada dalam genggamannya”}, dan ia mempertaruhkan dirinya." },
+        { "t": 12.6, "d": 3.6, "html": "Hadits ini tentang {g|datang berhadapan}.\nPersis kata Ustadz:\n“Datangi ke kantornya.”", "hold": true }
+      ] },
+
+    { "id": "q5", "type": "quote", "who": "critic", "label": "UCAPAN PENYANGGAH",
+      "crop": [0, 0, 576, 700], "clips": [[91.60, 102.40], [110.70, 122.22]], "lead": 0.4, "tail": 0.5,
+      "captions": [
+        { "s": 91.64, "e": 96.66, "text": "Tapi kan bang, menasihati pemerintah di depan umum, menjatuhkan marwah kewibawaan pemerintah, hukumnya haram." },
+        { "s": 96.90, "e": 100.58, "text": "Ya sama, membiarkan pemerintah dalam kezaliman juga haram." },
+        { "s": 100.76, "e": 102.36, "text": "Makanya dalam kitab Ihya' Ulumuddin …" },
+        { "s": 110.74, "e": 118.08, "text": "Kita menjatuhkan kewibawaan pemerintah juga haram, kita juga membiarkan pemerintah terus-menerus dalam kezaliman juga haram." },
+        { "s": 118.18, "e": 122.22, "text": "Maka disesuaikan konteksnya … wal-amru fihi mawkulun ila ijtihad." }
+      ] },
+
+    { "id": "r5", "type": "rebut", "dur": 22.0, "tag": "BANTAHAN 4",
+      "cards": [
+        { "t": 0.3, "d": 13.6, "src": "Al-Ghazali · Ihya' 'Ulumiddin 2/318",
+          "ar": "وأما الرعية مع السلطان فالأمر فيها أشد من الولد <m>فليس لها معه إلا التعريف والنصح</m> فأما الرتبة الثالثة ففيها نظر من حيث إن <m>الهجوم على أخذ الأموال من خزانته</m> ... <m>وكسر آنية الخمور في بيته</m> يكاد يفضي إلى خرق هيبته ... <m>فقد تعارض فيه أيضا محذوران</m> <m>والأمر فيه موكول إلى اجتهاد</m>",
+          "marks": [1.4, 5.8, 7.4, 9.0, 12.2] },
+        { "t": 14.2, "d": 7.6, "src": "Az-Zabidi · Ithaf as-Sadah 8/50 (hadits 'Iyadh bin Ghanm)", "center": true,
+          "ar": "من كانت عنده نصيحة لذي سلطان <m>فلا يكلمه بها علانية</m> وليأخذ بيده <m>فليخل به</m>",
+          "marks": [15.2, 16.0] }
+      ],
+      "beats": [
+        { "t": 0.9, "d": 4.4, "html": "Al-Ghazali: rakyat terhadap penguasa hanya punya {g|“ta‘rif dan nasihat”}." },
+        { "t": 5.4, "d": 5.2, "html": "“Dua hal yang sama-sama dilarang” itu tentang {g|tindakan fisik}: menyita harta dari kas penguasa, memecahkan bejana khamr di rumahnya." },
+        { "t": 10.8, "d": 3.2, "html": "Bukan tentang ceramah.\nBukan tentang media." },
+        { "t": 14.6, "d": 3.6, "html": "Az-Zabidi menyambungnya dengan hadits ‘Iyadh:\n{g|jangan berbicara kepadanya terang-terangan.}" },
+        { "t": 18.4, "d": 3.4, "html": "Keputusannya diserahkan kepada {g|ijtihad}.\nBukan kepada video TikTok.", "hold": true }
+      ] },
+
+    { "id": "q6", "type": "quote", "who": "critic", "label": "UCAPAN PENYANGGAH",
+      "crop": [0, 0, 576, 700], "clips": [[122.24, 138.20]], "lead": 0.4, "tail": 0.5,
+      "captions": [
+        { "s": 122.28, "e": 129.76, "text": "Lebih baik mengorbankan kewibawaan pemerintah daripada terus didiamkan, dan banyak rakyat yang sengsara, gitu loh." },
+        { "s": 129.76, "e": 134.46, "text": "Lebih baik mengorbankan kewibawaan pemerintah yang memang sudah nggak punya wibawa di mata rakyat," },
+        { "s": 134.46, "e": 138.16, "text": "daripada kita terus membiarkan pemerintah dalam kezaliman." }
+      ] },
+
+    { "id": "r6", "type": "rebut", "dur": 31.5, "tag": "BANTAHAN 5",
+      "cards": [
+        { "t": 5.6, "d": 5.6, "src": "HR. Muslim 2989 · Usamah bin Zaid", "center": true,
+          "ar": "والله لقد كلمته <m>فيما بيني وبينه</m>، ما دون أن أفتتح أمرا لا أحب أن أكون أول من فتحه",
+          "marks": [6.6] },
+        { "t": 11.4, "d": 4.6, "src": "Al-Muhallab · dinukil Ibnu Hajar, Fathul Bari", "center": true,
+          "ar": "<m>لا يداهن أحدا</m> ولو كان أميرا بل <m>ينصح له في السر جهده</m>",
+          "marks": [12.2, 13.6] },
+        { "t": 20.4, "d": 6.2, "src": "Anas bin Malik · Ibnu Abi 'Ashim, As-Sunnah 1015 · sanadnya jayyid (Al-Albani)", "center": true,
+          "ar": "نهانا كبراؤنا من أصحاب رسول الله صلى الله عليه وسلم: <m>لا تسبوا أمراءكم ولا تغشوهم ولا تبغضوهم</m> واتقوا الله واصبروا",
+          "marks": [21.6] },
+        { "t": 26.6, "d": 4.8, "src": "Abu Bakrah · Ibnu Abi 'Ashim, As-Sunnah 1018 · hasan (Al-Albani)", "center": true,
+          "ar": "<m>من أهان سلطان الله أهانه الله</m>",
+          "marks": [27.4] }
+      ],
+      "beats": [
+        { "t": 0.4, "d": 3.0, "html": "Ia sodorkan dua pilihan:\n{g|ekspos} atau {g|biarkan}." },
+        { "t": 3.2, "d": 2.3, "html": "Ada yang ketiga." },
+        { "t": 5.9, "d": 5.3, "html": "Usamah: “Aku sudah berbicara dengannya {g|empat mata}, tanpa membuka pintu yang aku tak suka jadi orang pertama membukanya.”" },
+        { "t": 11.7, "d": 4.6, "html": "Al-Muhallab: ia {g|tidak menjilat} siapa pun. Ia menasihati dalam sunyi, {g|sungguh-sungguh}." },
+        { "t": 16.4, "d": 3.8, "html": "Hari ini banyak kritik terbuka\nsudah berubah menjadi {g|cacian}." },
+        { "t": 20.7, "d": 5.8, "html": "Para pembesar sahabat melarang: “{g|Jangan mencaci pemimpin kalian}, jangan menipu, jangan membenci. Bertakwalah dan bersabarlah.”" },
+        { "t": 26.9, "d": 4.4, "html": "Rasulullah ﷺ: “Siapa menghinakan penguasa Allah, {g|Allah akan menghinakannya}.”", "hold": true }
+      ] },
+
+    { "id": "outro", "type": "outro", "dur": 10.0,
+      "beats": [
+        { "t": 0.4, "d": 2.5, "html": "Kitab yang ia suruh cek\n{g|membantah dia.}" },
+        { "t": 3.5, "d": 2.6, "html": "Hukum asal menasihati penguasa:\n{g|langsung dan tertutup.}\nMenghina: {g|terlarang.}" }
+      ],
+      "refs": [
+        "An-Nawawi · Syarh Shahih Muslim 18/118",
+        "Al-'Aini · 'Umdatul Qari 15/166",
+        "Ibnu Hajar · Fathul Bari (3267, 7098)",
+        "Al-Ghazali · Ihya' 2/318–320 · Az-Zabidi · Ithaf 8/50",
+        "Ibnu Baz · Majmu' Fatawa wa Maqalat 8/210–211",
+        "Ibnu Abi 'Ashim · As-Sunnah 1015, 1018, 1096–1098",
+        "Al-Albani · Ash-Shahihah 491, 2297"
+      ] }
+  ]
+}
