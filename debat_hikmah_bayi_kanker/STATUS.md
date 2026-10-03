@@ -1,10 +1,11 @@
-# Status Debat (DIJEDA)
+# Status Debat: SELESAI
 
-- [x] Ronde 1 — tiga jawaban: `R1_A_lughawi.md`, `R1_B_istiqrai.md`, `R1_C_mulzim.md`
-- [ ] Ronde 2 — saling serang (dihentikan di tengah jalan; file R2 yang ada, jika ada, belum lengkap)
-- [ ] Ronde 3 — pembelaan + pengakuan mati/hidup
-- [ ] Duel final sampai satu tersisa
-- [ ] Jawaban final (Markdown)
+- [x] Ronde 1: tiga jawaban (`R1_*.md`)
+- [x] Ronde 2: saling serang (`R2_*.md`)
+- [x] Ronde 3: pembelaan dan voting (`R3_*.md`). B (Al-Istiqra'i) tereliminasi 2–1.
+- [x] Ronde 4–5: duel final A vs C (`R4_*.md`, `R5_*.md`). C (Al-Mulzim) dinyatakan mati.
+- [x] **Pemenang: A (Al-Lughawi)**
+- [x] Jawaban final: **`JAWABAN_FINAL.md`**
 
 Alat perpustakaan: `alat/shamela.py` (+ `alat/index.json`, peta book_id → folder dataset
-AuthenticIlm/Shamela4_Full_DB). Butuh juga `_meta/book_metadata.parquet` untuk perintah `find`.
+AuthenticIlm/Shamela4_Full_DB). Perintah `find` butuh `_meta/book_metadata.parquet`.
