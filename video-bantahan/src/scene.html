@@ -65,9 +65,7 @@
   .q-card .bar { position: absolute; left: 0; bottom: 0; height: 7px; width: 0; }
   .q-cap { position: absolute; left: 70px; right: 70px; font-weight: 700; font-size: 58px; line-height: 1.24; letter-spacing: -.4px; }
   .q-cap .ph { position: absolute; left: 0; right: 0; top: 0; opacity: 0; }
-  .q-cap .w { color: var(--dim); transition: none; }
-  .q-cap .w.on { color: var(--ink); }
-  .q-cap .w.cur { color: var(--gold2); }
+  .q-cap .w { color: transparent; -webkit-background-clip: text; background-clip: text; background-image: linear-gradient(90deg, #f3efe6 0%, #f3efe6 0%, rgba(243,239,230,.28) 0%); }
 
   /* ---------- rebuttal ---------- */
   .r-cards, .r-beats { position: absolute; inset: 0; }
@@ -76,8 +74,8 @@
   .paper .ar { font-family: Amiri, "DejaVu Sans", serif; direction: rtl; text-align: right; font-size: 50px; line-height: 2.05; }
   .paper.center .ar { text-align: center; font-size: 68px; line-height: 1.9; }
   .paper .src { margin-top: 26px; padding-top: 20px; border-top: 1.5px solid rgba(22,20,15,.16); font-family: Inter, sans-serif; direction: ltr; text-align: left; font-size: 25px; font-weight: 600; letter-spacing: .4px; color: #6c6250; }
-  .paper mark { color: inherit; background: linear-gradient(rgba(245,180,0,.92), rgba(245,180,0,.92)) no-repeat right center / var(--p, 0%) 88%;
-                box-decoration-break: clone; -webkit-box-decoration-break: clone; padding: 0 6px; }
+  .paper mark { color: inherit; background: none; }
+  .paper mark .hw { background: linear-gradient(rgba(245,180,0,.92), rgba(245,180,0,.92)) no-repeat right center / 0% 88%; padding: 0 2px; }
   .beat { position: absolute; left: 80px; right: 80px; font-weight: 800; letter-spacing: -.8px; text-align: center; opacity: 0; }
   .beat.bottom { top: 1170px; font-size: 66px; line-height: 1.22; }
   .beat.mid { top: 610px; font-size: 84px; line-height: 1.16; }
@@ -268,12 +266,18 @@ function buildQuote(s) {
     const url = `/work/frames/${s.id}/${String(n).padStart(5, '0')}.jpg`;
     if (img.dataset.n !== String(n)) { img.src = url; img.dataset.n = String(n); try { await img.decode(); } catch (e) {} }
     bar.style.width = (clamp((l - s.lead) / s.clipDur) * 100) + '%';
-    let dp = 0; (s.cuts || []).forEach(c => { const d = Math.abs((l - s.lead) - c); dp = Math.max(dp, 1 - clamp(d / .16)); }); dip.style.opacity = dp;
-    let cur = -1; phs.forEach((p, i) => { if (tau >= p.c.ts - .02) cur = i; }); if (cur < 0) cur = 0;
+    let dp = 0; (s.cuts || []).forEach(c => { const d = Math.abs((l - s.lead) - c); dp = Math.max(dp, .85 * (1 - clamp(d / .12))); }); dip.style.opacity = dp;
     phs.forEach((p, i) => {
-      const vis = i === cur; p.ph.style.opacity = vis ? clamp((tau - p.c.ts + .12) / .18 + (i === 0 ? 1 : 0)) : 0;
-      if (vis) { let last = -1; p.times.forEach((tt, k) => { if (tau >= tt) last = k; });
-        p.spans.forEach((sp, k) => { sp.className = 'w' + (k < last ? ' on' : k === last ? ' on cur' : ''); }); }
+      const nx = phs[i + 1], inn = i === 0 ? 1 : eOut((tau - p.c.ts) / .2), out = nx ? 1 - eOut((tau - (nx.c.ts - .1)) / .12) : 1;
+      const op = Math.min(inn, out); p.ph.style.opacity = op; p.ph.style.transform = `translateY(${(1 - inn) * 10}px)`;
+      if (op <= 0.001) return;
+      p.spans.forEach((sp, k) => {
+        const t0 = p.times[k], t1 = k + 1 < p.times.length ? p.times[k + 1] : p.c.te, d = Math.max(.14, t1 - t0 + .06);
+        const f = clamp((tau - t0) / d), pc = (f * 100).toFixed(1);
+        sp.style.backgroundImage = f <= 0 ? 'linear-gradient(90deg, rgba(243,239,230,.28), rgba(243,239,230,.28))'
+          : f >= 1 ? 'linear-gradient(90deg, #f3efe6, #f3efe6)'
+          : `linear-gradient(90deg, #f3efe6 0%, #f3efe6 ${Math.max(0, f * 100 - 14).toFixed(1)}%, #ffd86b ${pc}%, rgba(243,239,230,.28) ${Math.min(100, f * 100 + .01).toFixed(2)}%)`;
+      });
     });
     root.style.opacity = fadeEnv(l, dur, .35, .35);
     root.style.transform = `translateY(${(1 - eOut(l / .6)) * 24}px)`;
@@ -287,7 +291,9 @@ function buildRebut(s) {
   (s.cards || []).forEach((c, ci) => {
     const w = el('div', 'paperw'); const p = el('div', 'paper' + (c.center ? ' center' : '')); p.style.clipPath = tornPolygon(11 + ci * 7 + s.id.length);
     p.innerHTML = `<div class="ar" lang="ar" dir="rtl">${c.ar.replace(/<m>/g, '<mark>').replace(/<\/m>/g, '</mark>')}</div><div class="src">${esc(c.src)}</div>`; w.appendChild(p); cbox.appendChild(w);
-    w.style.top = (c.center ? 400 : 300) + 'px'; cards.push({ w, c, marks: [...p.querySelectorAll('mark')] });
+    w.style.top = (c.center ? 400 : 300) + 'px';
+    const marks = [...p.querySelectorAll('mark')].map(m => { const txt = m.textContent; m.innerHTML = ''; const ws = txt.split(/(?<=\s)/).filter(Boolean).map(t => { const hw = el('span', 'hw'); hw.textContent = t; m.appendChild(hw); return hw; }); return ws; });
+    cards.push({ w, c, marks });
   });
   (s.beats || []).forEach(b => {
     const has = (s.cards || []).some(c => b.t < c.t + c.d && b.t + b.d > c.t);
@@ -300,7 +306,8 @@ function buildRebut(s) {
       const a = l - c.t, inn = eOut(a / .8), out = clamp((c.t + c.d - l) / .45);
       const vis = a > -.01 && l < c.t + c.d + .01; w.style.visibility = vis ? 'visible' : 'hidden';
       w.style.opacity = Math.min(inn, out); w.style.transform = `translateY(${(1 - inn) * 70 + (1 - out) * -30}px) rotate(${lerp(-1.6, 0, inn)}deg)`;
-      marks.forEach((m, i) => m.style.setProperty('--p', (eInOut((l - (c.marks[i] ?? 9999)) / .9) * 100).toFixed(1) + '%'));
+      marks.forEach((ws, i) => { const T = c.marks[i] ?? 9999, N = ws.length, D = Math.max(1.0, N * .3), x = clamp((l - T) / D) * N;
+        ws.forEach((hw, j) => { const q = clamp(x - j); hw.style.backgroundSize = ((q * q * (3 - 2 * q)) * 100).toFixed(1) + '% 88%'; }); });
     });
     beats.forEach(({ bt, b, hold }) => updateBeat(bt, b, l, hold));
     root.style.opacity = fadeEnv(l, dur, .3, .4);
@@ -345,10 +352,12 @@ window.setup = async () => {
 window.frame = async t => {
   let gold = 0, red = 0, intro = 0; let cur = null;
   for (const sc of scenes) {
-    const l = t - sc.s.start, on = l >= -0.001 && l < sc.s.dur + .001; sc.root.style.visibility = on ? 'visible' : 'hidden';
-    if (!on) continue; cur = sc;
-    await sc.update(Math.max(0, l), sc.s.dur);
-    const env = clamp(Math.min(l / .5, (sc.s.dur - l) / .5));
+    const X = .3, l = t - sc.s.start, on = l >= -X && l < sc.s.dur + X; sc.root.style.visibility = on ? 'visible' : 'hidden';
+    if (!on) continue; if (l >= 0 && l < sc.s.dur) cur = sc;
+    await sc.update(clamp(l, 0, sc.s.dur), sc.s.dur);
+    const first = sc === scenes[0], last = sc === scenes[scenes.length - 1];
+    sc.root.style.opacity = Math.min(first ? 1 : clamp((l + X) / (2 * X)), last ? 1 : clamp((sc.s.dur - l + X) / (2 * X)));
+    const env = clamp(Math.min((l + X) / .6, (sc.s.dur - l + X) / .6));
     if (sc.s.type === 'intro') intro = env; else if (sc.s.type === 'quote' && sc.s.who === 'critic') red = env; else gold = env;
   }
   // moods blend a bit beyond the scene edges so cuts feel continuous
