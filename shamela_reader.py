@@ -14,6 +14,13 @@ Aliran:
            - muat 1M      -> baca penuh (satu context, paling setia)
            - terlalu besar -> MAP->REDUCE (baca 100% teks berperingkat)
 
+Kajian mendalam (bacaan selari, matan + SEMUA nota kaki):
+  prep   : pecah kitab jadi unit bacaan; setiap nota kaki diletak tepat di bawah
+           baris matan yang dirujuknya (bukan di hujung halaman)
+  (pembaca selari baca setiap unit penuh ikut kajian_prompt.md -> study/<id>/notes/)
+  verify : semak setiap petikan «...» dalam nota wujud dalam teks asal
+  merge  : himpun bahagian yang sama dari semua unit untuk peringkat penyatuan
+
 Guna:
   pip install -r requirements.txt
   # Tak perlu ANTHROPIC_API_KEY: guna CLI `claude` (Claude Code) yang dah login.
@@ -126,6 +133,263 @@ def assemble(pages_jsonl: Path, out_txt: Path) -> None:
         if fn:
             chunks.append(f"\n(الحواشي ج{p.get('part')}/ص{p.get('page_num')}): {fn}")
     out_txt.write_text("\n".join(chunks), encoding="utf-8")
+
+
+# ===========================================================================
+# prep: sediakan unit bacaan (matan + nota kaki di bawah baris yang dihuraikan)
+# ===========================================================================
+STUDY_DIR = HERE / "study"
+UNIT_TOKENS = 24_000                # saiz sasaran satu unit (dibaca penuh oleh satu pembaca)
+_PARA = re.compile(r'^\s*([٠-٩]+)\s*[-ـ﵀-﷿]')    # "١٢٣ - " (nombor perenggan)
+_MARK = re.compile(r'\(¬([٠-٩0-9]+)\)')
+_HARAKAT = re.compile(r'[ؐ-ًؚ-ٰٟۖ-ۭـ]')
+
+
+def _raw_dir(book_id: str) -> Path:
+    hits = list((BOOKS_DIR / book_id / "_raw").glob("*/*/pages.jsonl"))
+    if not hits:
+        sys.exit(f"Kitab {book_id} belum dimuat turun. Guna: fetch <path>")
+    return hits[0].parent
+
+
+def _ar2int(s: str) -> int:
+    return int(s.translate(str.maketrans("٠١٢٣٤٥٦٧٨٩", "0123456789")))
+
+
+def _split_notes(fn: str) -> tuple[dict[str, str], list[str]]:
+    """Pecah teks nota kaki satu halaman ikut penanda (¬n)."""
+    notes, order, cur = {}, [], None
+    for line in fn.split("\n"):
+        m = re.match(r'\s*\(¬([٠-٩0-9]+)\)\s*(.*)', line)
+        if m:
+            cur = m.group(1)
+            notes[cur] = m.group(2)
+            order.append(cur)
+        elif cur:
+            notes[cur] += "\n" + line
+        elif line.strip():
+            notes.setdefault("?", "")
+            notes["?"] += line + "\n"
+            if "?" not in order:
+                order.append("?")
+    return notes, order
+
+
+def _annotate(page: dict) -> tuple[str, int, int, list[int]]:
+    """Teks halaman dengan setiap nota kaki diletak tepat selepas baris yang merujuknya."""
+    body = _clean((page.get("body") or "").replace("\r", "\n"))
+    notes, order = _split_notes(_clean((page.get("footnotes") or "").replace("\r", "\n")))
+    used, out, paras = set(), [], []
+    for line in body.split("\n"):
+        out.append(line)
+        m = _PARA.match(line)
+        if m:
+            paras.append(_ar2int(m.group(1)))
+        for k in _MARK.findall(line):
+            if k in notes and k not in used:
+                used.add(k)
+                txt = notes[k].strip().replace("\n", "\n        ")
+                out.append(f"    ⟨حاشية {k}⟩ {txt}")
+    for k in [k for k in order if k not in used]:
+        txt = notes[k].strip().replace("\n", "\n        ")
+        label = "تتمة حاشية من الصفحة السابقة" if k == "?" else f"حاشية {k} (لا إحالة لها في المتن)"
+        out.append(f"    ⟨{label}⟩ {txt}")
+    return "\n".join(out), len(order), len(used), paras
+
+
+def prep(book_id: str, unit_tokens: int = UNIT_TOKENS) -> Path:
+    """Pecah kitab kepada unit bacaan ikut bab/bahagian, setiap unit lengkap dengan nota kaki."""
+    raw = _raw_dir(book_id)
+    pages = [json.loads(l) for l in open(raw / "pages.jsonl", encoding="utf-8") if l.strip()]
+    # sequence_num boleh menyelang-seli bahagian (cth mukadimah & matan): susun ikut
+    # bahagian dulu (ikut kemunculan pertama), kemudian nombor halaman.
+    first: dict = {}
+    for p in sorted(pages, key=lambda p: p.get("sequence_num") or 0):
+        first.setdefault(p.get("part"), len(first))
+    pages.sort(key=lambda p: (first[p.get("part")], p.get("page_num") or 0,
+                              p.get("sequence_num") or 0))
+    toc = [json.loads(l) for l in open(raw / "toc.jsonl", encoding="utf-8") if l.strip()]
+    titles: dict[int, list[str]] = {}
+    for t in toc:
+        titles.setdefault(t["page_id"], []).append(t["title_text"])
+
+    blocks = []                     # satu blok = satu halaman
+    for p in pages:
+        text, n_notes, n_used, paras = _annotate(p)
+        heads = titles.get(p["page_id"], [])
+        hdr = f"\n[ج{p.get('part')}/ص{p.get('page_num')}]\n"
+        hdr += "".join(f"### {h}\n" for h in heads)
+        starts_mid = bool(text.strip()) and not _PARA.match(text.lstrip().split("\n")[0])
+        blocks.append(dict(part=p.get("part"), page=p.get("page_num"), heads=heads,
+                           text=hdr + text, notes=n_notes, used=n_used, paras=paras,
+                           starts_mid=starts_mid))
+
+    # Kumpul halaman jadi unit: putus di sempadan bab bila dah cukup saiz;
+    # kalau satu bab terlalu besar, putus di halaman yang bermula dengan perenggan baru.
+    cap = unit_tokens * CHARS_PER_TOKEN
+    units, cur, size = [], [], 0.0
+    for b in blocks:
+        new_part = cur and b["part"] != cur[-1]["part"]
+        at_head = bool(b["heads"])
+        if cur and (new_part or (size >= cap and at_head) or
+                    (size >= 1.35 * cap and not b["starts_mid"])):
+            units.append(cur); cur, size = [], 0.0
+        cur.append(b); size += len(b["text"])
+    if cur:
+        units.append(cur)
+
+    out = STUDY_DIR / book_id
+    (out / "units").mkdir(parents=True, exist_ok=True)
+    manifest, toc_lines = [], []
+    for i, u in enumerate(units, 1):
+        name = f"{i:02d}.txt"
+        text = "".join(b["text"] for b in u)
+        (out / "units" / name).write_text(text, encoding="utf-8")
+        paras = [n for b in u for n in b["paras"]]
+        heads = [h for b in u for h in b["heads"]]
+        info = dict(unit=name, part=u[0]["part"], pages=f"{u[0]['page']}-{u[-1]['page']}",
+                    paras=f"{min(paras)}-{max(paras)}" if paras else "",
+                    sections=heads, chars=len(text), tokens=_count(text),
+                    lines=text.count("\n") + 1,
+                    footnotes=sum(b["notes"] for b in u),
+                    footnotes_placed=sum(b["used"] for b in u))
+        manifest.append(info)
+        toc_lines.append(f"## {name} — ج{info['part']} ص{info['pages']}"
+                         + (f" — الفقرات {info['paras']}" if paras else ""))
+        toc_lines += [f"- {h}" for h in heads] or ["- (تتمة الباب السابق)"]
+    (out / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=1),
+                                       encoding="utf-8")
+    (out / "toc.md").write_text("\n".join(toc_lines) + "\n", encoding="utf-8")
+    full = "".join(b["text"] for b in blocks)
+    (out / "plain.txt").write_text(_norm(full, keep_lines=True), encoding="utf-8")
+
+    # Semakan liputan
+    # Liputan perenggan: semak pada bahagian yang paling banyak perenggan bernombor
+    by_part: dict = {}
+    for b in blocks:
+        by_part.setdefault(b["part"], []).extend(b["paras"])
+    all_paras = sorted(max(by_part.values(), key=len)) if by_part else []
+    print(f"Unit      : {len(units)} (sasaran ~{unit_tokens:,} token setiap satu)", file=sys.stderr)
+    print(f"Halaman   : {len(blocks)} (semua masuk tepat sekali)", file=sys.stderr)
+    nn, nu = sum(b["notes"] for b in blocks), sum(b["used"] for b in blocks)
+    print(f"Nota kaki : {nn}, {nu} diletak di bawah baris rujukan, {nn - nu} lagi "
+          f"(sambungan nota halaman sebelum / tiada penanda) di hujung halaman", file=sys.stderr)
+    if all_paras:
+        missing = sorted(set(range(1, all_paras[-1] + 1)) - set(all_paras))
+        print(f"Perenggan : 1-{all_paras[-1]}, tak dikesan: {missing or 'tiada'}", file=sys.stderr)
+    for m in manifest:
+        print(f"  {m['unit']} ص{m['pages']:>9} ¶{m['paras']:>10}  ~{m['tokens']:>6,} token  "
+              f"{m['footnotes']:>4} nota", file=sys.stderr)
+    return out
+
+
+# ===========================================================================
+# verify: semak setiap petikan «...» dalam nota wujud dalam teks asal
+# ===========================================================================
+def _norm(t: str, keep_lines: bool = False) -> str:
+    """Seragamkan ejaan untuk padanan: buang harakat/penanda/nombor, seragamkan hamzah."""
+    t = _MARK.sub("", t)
+    t = _HARAKAT.sub("", t)
+    t = re.sub(r'⟨[^⟩]*⟩|\[ج[^\]]*\]|[«»"“”\'()\[\]{}.,،؛;:!?؟*…=\-–ـ]|[٠-٩0-9]+', " ", t)
+    # Hamzah: teks lama sering tanpa hamzah atau dengan kerusi lain (شئ/شيء، مسئلة/مسألة)
+    t = re.sub(r'[أإآٱ]', "ا", t).replace("ؤ", "و")
+    t = re.sub(r'ئ(?!\S)', "ي", t).replace("ئ", "ا").replace("ء", "")
+    t = re.sub(r'ا{2,}', "ا", t).replace("ى", "ي").replace("ة", "ه")
+    t = re.sub(r'(?<!\S)ابن(?!\S)', "بن", t)
+    t = re.sub(r'(?<!\S)عمن(?!\S)', "عن من", t)
+    t = re.sub(r'(?<!\S)مما(?!\S)', "من ما", t)
+    if keep_lines:
+        return "\n".join(re.sub(r'\s+', ' ', l).strip() for l in t.split("\n"))
+    return re.sub(r'\s+', ' ', t).strip()
+
+
+def _haystack(book_id: str) -> str:
+    """Matan bersambung (merentas halaman, tanpa nota) + setiap nota + teks beranotasi."""
+    raw = _raw_dir(book_id)
+    pages = [json.loads(l) for l in open(raw / "pages.jsonl", encoding="utf-8") if l.strip()]
+    first: dict = {}
+    for p in sorted(pages, key=lambda p: p.get("sequence_num") or 0):
+        first.setdefault(p.get("part"), len(first))
+    pages.sort(key=lambda p: (first[p.get("part")], p.get("page_num") or 0))
+    body = " ".join(_clean((p.get("body") or "").replace("\r", "\n")) for p in pages)
+    notes = " ¦ ".join(_clean((p.get("footnotes") or "").replace("\r", "\n")) for p in pages)
+    return _norm(body) + " ¦ " + _norm(notes)
+
+
+def _nearest(q: str, hay: str) -> str:
+    """Cari tetingkap teks sumber yang paling hampir dengan petikan (utk diagnosis)."""
+    import difflib
+    words = q.split()
+    if len(words) < 2:
+        return ""
+    best, best_r = "", 0.0
+    for i in range(len(words) - 1):         # sauh: setiap pasangan kata yang wujud
+        anchor = f"{words[i]} {words[i+1]}"
+        for m in list(re.finditer(re.escape(anchor), hay))[:40]:
+            start = max(0, m.start() - len(" ".join(words[:i])) - 10)
+            win = hay[start:start + len(q) + 20]
+            r = difflib.SequenceMatcher(None, q, win).ratio()
+            if r > best_r:
+                best, best_r = win, r
+    return f"{best} ({best_r:.0%})" if best_r >= 0.6 else ""
+
+
+def verify(book_id: str, files: list[str]) -> int:
+    hay = _haystack(book_id)
+    bad = total = 0
+    for f in files:
+        for ln, line in enumerate(Path(f).read_text(encoding="utf-8").split("\n"), 1):
+            for q in re.findall(r'«([^»]+)»', line):
+                pieces = [p for p in re.split(r'\.\.\.|…', q) if len(_norm(p)) >= 3]
+                if not pieces:
+                    continue
+                total += 1
+                missing = [p for p in pieces if _norm(p) not in hay]
+                if missing:
+                    bad += 1
+                    print(f"{f}:{ln}: TIADA DALAM TEKS: «{missing[0].strip()}»")
+                    near = _nearest(_norm(missing[0]), hay)
+                    if near:
+                        print(f"    terdekat dalam sumber: {near}")
+    print(f"\n{total - bad}/{total} petikan sepadan dengan teks asal.", file=sys.stderr)
+    return bad
+
+
+# ===========================================================================
+# merge: himpun bahagian yang sama dari nota semua unit (bahan untuk penyatuan)
+# ===========================================================================
+SECTIONS = ["النطاق", "خلاصة الأبواب", "خريطة الاستدلال", "المصطلحات والتعريفات",
+            "المسائل والأمثلة", "النحو والصرف في كلام المؤلف", "حواشي المحقق اللغوية والنحوية",
+            "الغريب والدلالة", "الرسم والضبط واختلاف النسخ", "الأحاديث والآثار والشعر",
+            "تعقبات المحقق وآراؤه", "الشخصية والأسلوب", "الإحالات", "فهرس الموضوعات",
+            "مواضع مشكلة", "أسئلة اختبار"]
+
+
+def merge(book_id: str) -> Path:
+    base = STUDY_DIR / book_id
+    notes = sorted((base / "notes").glob("*.md"))
+    if not notes:
+        sys.exit("Tiada nota unit dalam study/<id>/notes/")
+    out = base / "sections"
+    out.mkdir(exist_ok=True)
+    buckets: dict[int, list[str]] = {i: [] for i in range(len(SECTIONS))}
+    for f in notes:
+        text = f.read_text(encoding="utf-8")
+        parts = re.split(r'^##\s*([٠-٩0-9]+)\s*[.\-]\s*.*$', text, flags=re.M)
+        found = set()
+        for num, body in zip(parts[1::2], parts[2::2]):
+            i = _ar2int(num)
+            if 0 <= i < len(SECTIONS):
+                found.add(i)
+                buckets[i].append(f"\n### الوحدة {f.stem}\n{body.strip()}\n")
+        miss = [SECTIONS[i] for i in range(len(SECTIONS)) if i not in found]
+        if miss:
+            print(f"  {f.name}: bahagian tiada -> {', '.join(miss)}", file=sys.stderr)
+    for i, name in enumerate(SECTIONS):
+        p = out / f"{i:02d}_{name.replace(' ', '_')}.md"
+        p.write_text(f"## {name}\n" + "".join(buckets[i]), encoding="utf-8")
+        print(f"  {p.name:45s} ~{_count(p.read_text(encoding='utf-8')):>7,} token", file=sys.stderr)
+    return out
 
 
 # ===========================================================================
@@ -263,6 +527,17 @@ def main() -> None:
     p.add_argument("question", nargs="?", default=None)
     p.add_argument("--faham", action="store_true", help="faham seluruh kitab (tanpa soalan)")
 
+    p = sub.add_parser("prep", help="pecah kitab jadi unit bacaan (matan + nota kaki di tempatnya)")
+    p.add_argument("book_id")
+    p.add_argument("--tokens", type=int, default=UNIT_TOKENS, help="saiz sasaran satu unit")
+
+    p = sub.add_parser("verify", help="semak petikan «...» dalam fail nota wujud dalam teks asal")
+    p.add_argument("book_id")
+    p.add_argument("files", nargs="+")
+
+    p = sub.add_parser("merge", help="himpun bahagian sama dari nota semua unit")
+    p.add_argument("book_id")
+
     a = ap.parse_args()
 
     if a.cmd == "find":
@@ -282,6 +557,16 @@ def main() -> None:
             "افهم واشرح بنية الكتاب وموضوعاته ومنهج المؤلف وأبرز مسائله إجمالًا."
             if (a.faham or not a.question) else a.question)
         read(a.book_id, task)
+
+    elif a.cmd == "prep":
+        out = prep(a.book_id, a.tokens)
+        print(f"Siap -> {out}")
+
+    elif a.cmd == "merge":
+        print(f"Siap -> {merge(a.book_id)}")
+
+    elif a.cmd == "verify":
+        sys.exit(1 if verify(a.book_id, a.files) else 0)
 
 
 if __name__ == "__main__":
