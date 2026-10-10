@@ -16,7 +16,7 @@ You are one of several expert readers studying the book **{title}** ({author}), 
 3. Read like a specialist in أصول الفقه and Arabic grammar. Track the argument across paragraphs: who is speaking (الشافعي، المناظر، شاكر، راو), what is claimed, and on what evidence.
 
 ## Output
-Write your notes to `{out_path}` **in Arabic, without harakat** (describe vocalisation in words, e.g. «بفتح النون»). The Arabic must be grammatically flawless, so proofread it. You may write the file in several parts (Write, then append with Bash).
+Write your notes to `{out_path}` **in Arabic, without any harakat at all**: no fatha, damma, kasra, sukun, shadda or tanwin, not even in your own prose or in quotes (describe vocalisation in words, e.g. «بفتح النون»). The Arabic must be grammatically flawless, so proofread it. You may write the file in several parts (Write, then append with Bash).
 
 Use **exactly** these section headers, in this order (write «لا يوجد» if a section has nothing):
 
@@ -46,11 +46,27 @@ What each section must contain:
 - **٢ خريطة الاستدلال**: every major claim as: الدعوى | الدليل (آية، حديث، إجماع، قياس، لغة، عقل) | الاعتراض | الجواب | (¶). Include the debates (قال لي قائل / فإن قال قائل), with who concedes what.
 - **٣ المصطلحات والتعريفات**: the author's own definitions and technical terms, quoted verbatim where possible.
 - **٤ المسائل والأمثلة**: the fiqh cases and examples used, with the ruling and the أصولي point each one illustrates.
-- **٥ النحو والصرف في كلام المؤلف**: notable constructions in the author's text: unusual case endings, omission (حذف), word order, particles used in place of others, dialect forms, rare verb forms. Format: (¶) | النص | الظاهرة | تفسير المحقق إن وجد | القاعدة المشهورة | المصدر. Mark the source as **[المحقق]** when the editor explains it, or **[تحليل القارئ]** for your own analysis. Make your own analysis only when you are certain of it, and keep it conservative.
-- **٦ حواشي المحقق اللغوية والنحوية**: **every** footnote in your unit that concerns grammar, morphology, lexicon, orthography (رسم) or vocalisation (ضبط), without exception, one entry each: [صN ح n] (¶) | الكلمة | خلاصة كلام المحقق | المراجع التي ذكرها (اللسان، المغني...). This section is critical, so do not summarise it into a few examples.
-- **٧ الغريب والدلالة**: rare or notable words, each with its meaning as given in the text or notes, and (¶).
+- **٥ النحو والصرف في كلام المؤلف**: notable constructions in the author's text: unusual case endings, omission (حذف), word order, particles used in place of others, dialect forms, rare verb forms. Format, one line per entry: `[وسم] (¶) | النص | الظاهرة | تفسير المحقق إن وجد | القاعدة المشهورة | المصدر`. Mark the source as **[المحقق]** when the editor explains it, or **[تحليل القارئ]** for your own analysis. Make your own analysis only when you are certain of it, and keep it conservative.
+- **٦ حواشي المحقق اللغوية والنحوية**: **every** footnote in your unit that concerns grammar, morphology, lexicon, orthography (رسم) or vocalisation (ضبط), without exception, one line per entry: `[وسم] [صN ح n] (¶) | الكلمة | خلاصة كلام المحقق | المراجع التي ذكرها (اللسان، المغني...)`. This section is critical, so do not summarise it into a few examples.
+**Tag (وسم) for every entry in sections ٥ and ٦.** Use exactly one of these tags, the one that fits best:
+`[إعراب]` unusual case/mood endings (e.g. a noun of كان in the accusative, لم not causing jazm) ·
+`[نيابة]` the deputy agent (نائب الفاعل) ·
+`[حذف]` omission and implied words ·
+`[حروف]` particles and prepositions, including one used in place of another ·
+`[أفعال]` verb forms, transitivity, the passive ·
+`[تذكير وتأنيث]` ·
+`[ضمائر]` pronoun reference, الالتفات, ضمير الفصل ·
+`[عدد]` numbers and counted nouns ·
+`[صرف]` morphology: patterns, plurals, verbal nouns ·
+`[لغات]` dialect forms (Hijaz, Quraysh, other Arab dialects) ·
+`[رسم]` al-Rabi's orthography: hamza, alif, the tanwin alif ·
+`[ضبط]` vocalisation recorded in the manuscript ·
+`[معجم]` word meaning and usage ·
+`[أسلوب]` rhetorical construction ·
+`[تلاوة]` a Qur'an quotation or reading.
+- **٧ الغريب والدلالة**: rare or notable words, one line each, starting with the word: `الكلمة | المعنى كما في النص أو الحاشية | (¶) [صN ح n]`.
 - **٨ الرسم والضبط واختلاف النسخ**: variant readings where the editor argues that meaning or grammar changes, listed individually. Give the count of purely mechanical variants without listing them. Note patterns (e.g. readers tampering with the original manuscript, and the editor's rules for preferring the original).
-- **٩ الأحاديث والآثار والشعر**: every hadith, athar and verse: the gist of the text, the narrator, how the author uses it, and the editor's تخريج and grading (with his verdict quoted if he grades it).
+- **٩ الأحاديث والآثار والشعر**: every hadith, athar and verse, one entry each, starting with a type tag `[حديث]`, `[أثر]`, `[شعر]` or `[آية]` (a Qur'an quotation only when there is a note on it, e.g. a misquotation or a reading): the gist of the text, the narrator, how the author uses it, and the editor's تخريج and grading (with his verdict quoted if he grades it).
 - **١٠ تعقبات المحقق وآراؤه**: every place where the editor disagrees with the author or others, or gives his own view, with the reason given.
 - **١١ الشخصية والأسلوب**: the author's character and rhetorical style as shown in this unit, with quotes.
 - **١٢ الإحالات**: internal cross-references (¶→¶), references to the author's other books (e.g. الأم، اختلاف الحديث) and to sources, and links to themes that you can see continue in other units.

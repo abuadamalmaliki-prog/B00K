@@ -374,7 +374,8 @@ def merge(book_id: str) -> Path:
     out.mkdir(exist_ok=True)
     buckets: dict[int, list[str]] = {i: [] for i in range(len(SECTIONS))}
     for f in notes:
-        text = f.read_text(encoding="utf-8")
+        text = _HARAKAT.sub("", f.read_text(encoding="utf-8"))   # jaring keselamatan: tanpa harakat
+        f.write_text(text, encoding="utf-8")
         parts = re.split(r'^##\s*([٠-٩0-9]+)\s*[.\-]\s*.*$', text, flags=re.M)
         found = set()
         for num, body in zip(parts[1::2], parts[2::2]):
@@ -389,6 +390,46 @@ def merge(book_id: str) -> Path:
         p = out / f"{i:02d}_{name.replace(' ', '_')}.md"
         p.write_text(f"## {name}\n" + "".join(buckets[i]), encoding="utf-8")
         print(f"  {p.name:45s} ~{_count(p.read_text(encoding='utf-8')):>7,} token", file=sys.stderr)
+
+    # Indeks berkategori: entri nahu (٥ + ٦) ikut وسم, glosari ikut abjad, riwayat ikut jenis
+    def entries(i: int) -> list[tuple[str, str]]:
+        rows = []
+        for block in buckets[i]:
+            unit = re.search(r'### الوحدة (\S+)', block).group(1)
+            for line in block.split("\n"):
+                line = re.sub(r'^\s*(?:[-*]|[0-9٠-٩]+[.)-])\s*', '', line).strip()
+                if line and not line.startswith(("###", "الصيغة", "لا يوجد")):
+                    rows.append((unit, line))
+        return rows
+
+    idx = out / "indeks"
+    idx.mkdir(exist_ok=True)
+    tagged: dict[str, list[str]] = {}
+    for i, src in ((5, "متن"), (6, "حاشية")):
+        for unit, line in entries(i):
+            m = re.match(r'\[([^\]]+)\]\s*', line)
+            tag = m.group(1) if m else "بلا وسم"
+            if m and (tag in ("المحقق", "تحليل القارئ") or re.match(r'ص[0-9٠-٩]', tag)):
+                tag = "بلا وسم"
+            tagged.setdefault(tag, []).append(f"- ({src}، و{unit}) {line[m.end():] if m and tag != 'بلا وسم' else line}")
+    for tag, rows in sorted(tagged.items(), key=lambda kv: -len(kv[1])):
+        (idx / f"نحو_{tag.replace(' ', '_')}.md").write_text(
+            f"## {tag}\n\nعدد المداخل: {len(rows)}\n\n" + "\n".join(rows) + "\n", encoding="utf-8")
+        print(f"  indeks/نحو_{tag}: {len(rows)}", file=sys.stderr)
+
+    words = sorted(entries(7), key=lambda r: _norm(r[1].split("|")[0]))
+    (idx / "الغريب_مرتبا.md").write_text(
+        "## الغريب مرتبا على الحروف\n\n" + "\n".join(f"- {l} (و{u})" for u, l in words) + "\n",
+        encoding="utf-8")
+    kinds: dict[str, list[str]] = {}
+    for unit, line in entries(9):
+        m = re.match(r'\[(حديث|أثر|شعر|آية)\]', line)
+        kinds.setdefault(m.group(1) if m else "أخرى", []).append(f"- (و{unit}) {line}")
+    (idx / "الروايات.md").write_text(
+        "".join(f"## {k}\n\nعدد المداخل: {len(v)}\n\n" + "\n".join(v) + "\n\n" for k, v in kinds.items()),
+        encoding="utf-8")
+    print(f"  indeks/الغريب: {len(words)}  الروايات: "
+          + ", ".join(f"{k} {len(v)}" for k, v in kinds.items()), file=sys.stderr)
     return out
 
 
