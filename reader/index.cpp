@@ -6,7 +6,12 @@
 //
 //   index build units.tsv outdir   -> vocab.tsv (stem, tf, df, example form)
 //                                     section_terms.tsv (top TF-IDF stems per section)
+//                                     section_vectors.tsv (sec, stem:weight … for similarity)
 //   index query units.tsv K words…  -> top-K units by BM25: "unit_id<TAB>score"
+//                                     (a word may carry a weight: word^0.3)
+//   index related units.tsv K words… -> K stems that co-occur with the words more
+//                                     than chance (PPMI): "stem<TAB>surface<TAB>score"
+//   index stem < lines               -> each input line as its space-separated stems
 //
 // Build: g++ -O2 -std=c++17 index.cpp -o index
 
@@ -179,6 +184,7 @@ static int build(const string& units_path, const string& outdir) {
     for (auto& [sec, m] : sec_tf) for (auto& [s, n] : m) ++df_sec[s];
     const double nsec = sec_tf.size();
     std::ofstream st(outdir + "/section_terms.tsv");
+    std::ofstream sv(outdir + "/section_vectors.tsv");
     for (auto& [sec, m] : sec_tf) {
         long total = 0;
         for (auto& [s, n] : m) total += n;
@@ -191,6 +197,10 @@ static int build(const string& units_path, const string& outdir) {
         st << sec;
         for (size_t i = 0; i < scored.size() && i < 12; ++i) st << '\t' << surface[scored[i].second];
         st << '\n';
+        sv << sec;
+        for (size_t i = 0; i < scored.size() && i < 80; ++i)
+            sv << '\t' << scored[i].second << ':' << scored[i].first;
+        sv << '\n';
     }
     std::cout << "index: " << units.size() << " units, " << words << " words, "
               << vocab.size() << " distinct stems\n";
@@ -207,19 +217,22 @@ static int query(const string& units_path, int k, const vector<string>& words) {
         avg += u.stems.size();
     }
     avg /= units.size();
-    std::unordered_set<string> q;
-    for (auto& w : words)
-        for (auto& t : tokenize(w))
-            if (!stopwords().count(t.stem)) q.insert(t.stem);
+    std::unordered_map<string, double> q;  // stem -> weight
+    for (auto& w : words) {
+        size_t caret = w.rfind('^');
+        double weight = caret == string::npos ? 1.0 : std::stod(w.substr(caret + 1));
+        for (auto& t : tokenize(w.substr(0, caret)))
+            if (!stopwords().count(t.stem)) q[t.stem] = std::max(q[t.stem], weight);
+    }
     const double k1 = 1.2, b = 0.75, N = units.size();
     vector<std::pair<double, int>> scored;
     for (auto& u : units) {
         double score = 0;
-        for (auto& s : q) {
+        for (auto& [s, weight] : q) {
             int f = std::count(u.stems.begin(), u.stems.end(), s);
             if (!f) continue;
             double idf = std::log(1 + (N - df[s] + 0.5) / (df[s] + 0.5));
-            score += idf * f * (k1 + 1) / (f + k1 * (1 - b + b * u.stems.size() / avg));
+            score += weight * idf * f * (k1 + 1) / (f + k1 * (1 - b + b * u.stems.size() / avg));
         }
         if (score > 0) scored.push_back({score, u.id});
     }
@@ -229,10 +242,58 @@ static int query(const string& units_path, int k, const vector<string>& words) {
     return 0;
 }
 
+// Words the book itself uses alongside the query: positive pointwise mutual
+// information between stems, counted over units, so "رؤية" can reach
+// passages that only say "النظر الى وجهه".
+static int related(const string& units_path, int k, const vector<string>& words) {
+    std::unordered_map<string, string> surface;
+    auto units = load(units_path, &surface);
+    std::unordered_set<string> q;
+    for (auto& w : words)
+        for (auto& t : tokenize(w))
+            if (!stopwords().count(t.stem)) q.insert(t.stem);
+    std::unordered_map<string, int> df, co;
+    int nq = 0;
+    for (auto& u : units) {
+        std::unordered_set<string> seen(u.stems.begin(), u.stems.end());
+        bool hit = false;
+        for (auto& s : q) hit |= seen.count(s) > 0;
+        nq += hit;
+        for (auto& s : seen) {
+            ++df[s];
+            if (hit) ++co[s];
+        }
+    }
+    const double N = units.size();
+    vector<std::pair<double, string>> scored;
+    for (auto& [s, c] : co) {
+        if (c < 3 || q.count(s) || stopwords().count(s)) continue;
+        double pmi = std::log(c * N / (double(nq) * df[s]));
+        if (pmi > 0) scored.push_back({pmi * std::log(1.0 + c), s});
+    }
+    std::sort(scored.rbegin(), scored.rend());
+    for (int i = 0; i < k && i < (int)scored.size(); ++i)
+        std::cout << scored[i].second << '\t' << surface[scored[i].second] << '\t'
+                  << scored[i].first << '\n';
+    return 0;
+}
+
 int main(int argc, char** argv) {
     if (argc >= 4 && string(argv[1]) == "build") return build(argv[2], argv[3]);
     if (argc >= 5 && string(argv[1]) == "query")
         return query(argv[2], std::stoi(argv[3]), vector<string>(argv + 4, argv + argc));
-    std::cerr << "usage: index build UNITS OUTDIR | index query UNITS K WORDS...\n";
+    if (argc == 2 && string(argv[1]) == "stem") {
+        string line;
+        while (std::getline(std::cin, line)) {
+            string out;
+            for (auto& t : tokenize(line))
+                if (!stopwords().count(t.stem)) out += (out.empty() ? "" : " ") + t.stem;
+            std::cout << out << '\n';
+        }
+        return 0;
+    }
+    if (argc >= 5 && string(argv[1]) == "related")
+        return related(argv[2], std::stoi(argv[3]), vector<string>(argv + 4, argv + argc));
+    std::cerr << "usage: index build UNITS OUTDIR | index query|related UNITS K WORDS...\n";
     return 2;
 }

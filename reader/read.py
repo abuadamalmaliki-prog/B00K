@@ -6,7 +6,9 @@
     python read.py quran                 # verify every Qur'an citation against the mushaf
     python read.py map > map.md          # outline with each section's distinctive terms
     python read.py matn                  # the commented poem, verse by verse, with locations
-    python read.py ask "رؤية المؤمنين ربهم يوم القيامة" [-k 5]
+    python read.py ask "رؤية المؤمنين ربهم يوم القيامة" [-k 5]      # plain BM25
+    python read.py graph                 # build the section graph (see graph.py)
+    python read.py explore "رؤية المؤمنين ربهم" [--top 8]          # BM25 + expansion + graph
 
 Stage outputs live in reader/build/ (units.tsv, sections.tsv, vocab.tsv,
 section_terms.tsv, quran_checks.tsv).
@@ -272,6 +274,10 @@ def main() -> None:
     q = sub.add_parser("ask")
     q.add_argument("question")
     q.add_argument("-k", type=int, default=5)
+    sub.add_parser("graph")
+    e = sub.add_parser("explore")
+    e.add_argument("question")
+    e.add_argument("--top", type=int, default=8)
     a = ap.parse_args()
     if a.cmd == "build":
         build(a.book)
@@ -283,6 +289,12 @@ def main() -> None:
         book_map()
     elif a.cmd == "matn":
         matn(a.against)
+    elif a.cmd == "graph":
+        from graph import graph_stats
+        graph_stats()
+    elif a.cmd == "explore":
+        from graph import explore
+        explore(a.question, a.top)
     else:
         ask(a.question, a.k)
 
