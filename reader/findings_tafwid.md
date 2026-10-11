@@ -1,72 +1,83 @@
-# Is al-Saffarini a mufawwid? Evidence from لوامع الأنوار البهية
+# Al-Saffarini on the attributes: muthbit al-maʿnā, not mufawwid
 
-**Method.** `evidence.py tafwid` collects every passage on the topic, not a
-ranked top-k: 216 matching units, shown in reading order with their
-neighbours. Every unit is tagged with its speaker (al-Saffarini, the poem, or
-a named scholar he is quoting). All of it was read. Page numbers are from
-volume 1 of the Damascus 1402 edition.
-
-## Why retrieval gets this wrong
-
-A search for "تفويض معناها المراد إلى الله" (`read.py ask` or `explore`)
-returns ص219, ص8, ص97, ص141 and ص242. Those are the passages that sound like
-tafwid, and two of them (ص141 Ibn Hajar, ص242 al-Bayhaqi) are quotations
-rather than his own words. Neither search returns ص117, ص211, ص215 or
-ص265–266, the passages that define his terms. A reader of the top results
-would conclude "mufawwid".
-
-## Statements that read as tafwid al-maʿnā (his own voice)
-
-| Page | Text |
-|---|---|
-| ص8 | أصحابنا من أتباع المأثور، والمرور كما جاء **مع التفويض** |
-| ص107 | ووجب إثباته له على الوجه الذي ورد، **ونكل معناه** للعزيز الحكيم، ولا نعدل به عن حقيقة وصفه |
-| ص219 | مذهب السلف… لا تؤول ولا تفسر بل يجب الإيمان بها، **وتفويض معناها المراد منها** إلى الله |
-| ص241 | (Ahmad via Ibn Hamdan) تمر كما جاءت **من غير بحث عن معانيها**… وكل ما يعقل ويتصور فهو تكييف; then in his own words: وهذا مذهب السلف الأثرية **فهو الحق** |
-| ص261 | the poem: «من غير تأويل **وغير فكر**»; his gloss: ولا تتعرض **لمعانيها** وأسرارها… فإن ذلك **ليس في طوق البشر** |
-
-## Statements of ithbāt al-maʿnā / tafwid of the kayf only
-
-| Page | Text |
-|---|---|
-| ص101 | الإثبات… من غير تعطيل لها **عن حقائقها** |
-| ص117 | under his own heading «طوائف المنحرفين وأنهم أهل تخييل **وتجهيل**»: أهل التجهيل are those who say the Prophet did not know the meanings of the attribute verses; the تأويل only God knows **is the unknown kayf** (الاستواء معلوم والكيف مجهول) |
-| ص200 | الاستواء معلوم… وأما الوقوف على **حقيقة أمر يعود إلى الكيفية** فمجهول |
-| ص211 | (al-Wasiti, quoted approvingly under his heading) **والوقوف في ذلك جهل وغي**… فما وصف لنا نفسه بها إلا لنثبت… إثبات بلا تحريف ولا تكييف **ولا وقوف** |
-| ص225–226 | إثبات وجود لا إثبات تكييف… صفات الرب **معلومة من حيث الجملة والثبوت**، غير معقولة من حيث التكييف |
-| ص231 | اليدان صفتان ذاتيتان **تزيدان على النعمة والقدرة**: positive content, not an empty word |
-| ص247 | ذاته وصفاته **معلومة من حيث الجملة**… بلا كيفية ولا تحديد |
-| ص265–266 | adopts Ibn Taymiyya's six positions on the attribute texts: the "الله أعلم بمراده" position is one of those that take the texts **against their apparent sense**; «والصواب… القطع **بالطريقة الثانية**» (their apparent sense, as befits God); then in his own words: صفاته لا يعلم **كنهها وحقيقتها** إلا هو… وإنما تعلم **من حيث الجملة** |
-
-## The passage that reconciles them
-
-ص215: «وكذلك **مدلول** أسمائه وصفاته التي يختص بها **التي هي حقيقته** لا يعلمها إلا هو».
-
-Here the unknowable *meaning* is equated with the attribute's own *reality*.
-Read with ص200 (حقيقة… تعود إلى الكيفية), ص266 (كنهها وحقيقتها) and ص261 (ليس
-في طوق البشر: the lexical sense of يد or استواء is not beyond human
-capacity, but its reality is), the word «معنى» in his tafwid statements
-refers to the reality and *how* of the attribute, not to the lexical sense.
+**Book:** لوامع الأنوار البهية (Damascus 1402, 2 vols, 921 pages).
+**Method:** 50 readers each read one part (16–24 pages, one-page overlap)
+in full, so every page was covered. Each reader followed the same neutral
+instructions (`swarm/INSTRUCTIONS.md`): quote every relevant passage
+verbatim, with page and speaker, and report evidence for *both* positions.
+Every reader confirmed it reached the last line of its part. The result was
+456 evidence items, all in `swarm/part01.md` … `swarm/part50.md`. Pages
+cited here are volume 1 unless marked ج2.
 
 ## Verdict
 
-Read as a whole, the book supports **muthbit al-maʿnā, mufawwid al-kayf**:
+**He affirms the meaning of the attributes (إثبات المعنى) and consigns only
+their kayf / kunh / ḥaqīqa.** The evidence is explicit and in his own voice;
+it does not depend on interpretation:
 
-- He adopts the Taymiyyan framework structurally, in his own section headings:
-  ahl al-tajhil are deviants, wuqūf is ignorance, and the right position is
-  الطريقة الثانية.
-- He gives attributes positive content (the two hands are additional to
-  blessing and power).
-- He defines the unknowable part as the حقيقة / كنه / كيفية.
+| Page | Speaker | Text |
+|---|---|---|
+| ص25 | author | Rejects outright the claim that the salaf's way was «**مجرد الإيمان بألفاظ القرآن والحديث من غير فقه ذلك بمنزلة الأميين**» — «وقد كذبوا وأفكوا على طريقة السلف». This is tafwid al-maʿnā, named and rejected. |
+| ص116–117 | author (his heading) | Lists «أهل التجهيل» among the deviant groups: those who say the Prophet «لم يعرف معاني ما أنزل عليه من آيات الصفات». Then Ibn Taymiyya, endorsed: the تأويل that only God knows «**هو الكيف المجهول**». |
+| ص128 | author (summarising Badāʾiʿ, «انتهى ملخصا») | Holding the names to be «ألفاظ مجردة لا تتضمن صفات ولا معاني» is «**من أعظم الإلحاد** فيها عقلا ولغة وشرعا وفطرة». |
+| ص194 | author | Endorses Ibn Taymiyya's argument that the apparent sense of the ʿuluww texts is what was meant (no majāz without a contextual signal): «**وهذا كلام متين لا مخلص لأحد عنه**». |
+| ص211 | al-Wāsiṭī, endorsed | «**والوقوف في ذلك جهل وغي**… فما وصف لنا نفسه بها إلا لنثبت… إثبات بلا تحريف ولا تكييف **ولا وقوف**». |
+| ص214 | Ibn Taymiyya, endorsed | «**علمنا معنى ذلك**… وفسرنا ذلك، وأما نفس الحقيقة… فذلك من التأويل الذي لا يعلمه إلا الله». |
+| ص243 | al-Ṭūfī, endorsed | «كلام السلف في هذا الباب يدل على **إثبات المعنى** المتنازع فيه»; and «**النزول معقول**، والكيف مجهول… وهكذا القول في سائر الصفات». |
+| ص247 | author (his own تنبيه) | نزوله وفوقيته واستواؤه «**ثابت معلوم** غير مكيف… لأن ذاته وصفاته **معلومة من حيث الجملة**». |
+| ص265–266 | author + Ibn Taymiyya | Of the six positions, «والصواب… القطع بالطريقة الثانية»: taking the texts on «ظاهرها اللائق». "الله أعلم بمراده" is listed as a departure from the ظاهر. In his own words: unknown is only «**كنهها وحقيقتها**… وإنما تعلم… من حيث الجملة». |
+| ج2 ص468 | author (closing) | Khalaf ta'wil is diverting the verses «عن مقتضاها الثابت **ومعناها الظاهر**». |
 
-**What the text does not settle:**
+**He also explains what the attributes mean throughout the book.** These are
+in his own voice unless noted:
 
-- **His wording.** "تفويض معناها المراد" (ص219) and "من غير بحث عن معانيها…
-  فهو الحق" (ص241) are tafwid formulas. They are worded as such, not merely
-  ambiguous. Whether they are loose terminology (معنى = حقيقة) or a real
-  inconsistency is an interpretive judgement. The reconciliation above is the
-  reading that makes the book consistent; it is not stated by him in so many
-  words.
-- **The editors' notes.** The edition's notes (أبا بطين، ابن سحمان) are not
-  marked separately in this digital text, so any objection they raised to
-  these formulas cannot be isolated here.
+- **Istiwāʾ:** «على عرشه من فوق سبع سماواته… بائن من خلقه» (ص190). Al-Jīlānī, endorsed: «استواء الذات على العرش» (ص196). Not istīlāʾ (ص197–198).
+- **Raḥma:** «صفة قديمة قائمة بذاته تقتضي التفضل والإنعام». It is not رقة القلب, and not mere blessing; «فلنثبت رحمة ليست كرحمة المخلوق» (ص32–33, ص100, ص221).
+- **Yad:** «صفتين ذاتيتين… تزيدان على النعمة والقدرة» (ص231–232).
+- **Wajh:** «صفة زائدة» on the essence, not the essence itself (ص226–228).
+- **Samʿ and baṣar:** distinct from knowledge, «لظواهر الآيات» (ص143–144).
+- **Kalām:** حرف وصوت. Through Ibn Taymiyya, endorsed: «النداء لا يكون إلا صوتا مسموعا… لا حقيقة ولا مجازا» (ص138–143, ص169).
+- **Ta'wil defined:** «صرف اللفظ عن ظاهره… أو عن حقيقته لمجازه» is «من المنكرات» (ص102).
+
+## The tafwid-worded passages, and why they don't overturn this
+
+| Page | Text | In context |
+|---|---|---|
+| ص97–99 | «تفويض علمه إلى الله»، Ibn ʿAbbās «لا يفسر»، Sufyān «تفسيره قراءته والسكوت عنه» | The same sentence says «فالواجب على الإنسان **أن يؤمن بظاهره**، ويكل علمه إلى الله». |
+| ص107 | «ونكل معناه للعزيز الحكيم» | The same sentence continues «**ولا نعدل به عن حقيقة وصفه**», «على الوجه الذي ورد». |
+| ص219 | «وتفويض معناها المراد منها إلى الله» | The next lines: «مضت أئمة السلف على **الإيمان بظاهر** ما جاء». |
+| ص241 | Aḥmad via Ibn Ḥamdān: «من غير بحث عن معانيها… فهو الحق» | The same quotation defines what is ruled out: «وكل ما يعقل ويتصور **فهو تكييف** وتشبيه». |
+| ص261 | «ولا تتعرض لمعانيها… فإن ذلك ليس في طوق البشر» | It comes right after «إثبات وجود لا إثبات تكييف وتحديد». Only the ḥaqīqa is beyond human capacity; the Arabic sense of يد or استواء is not. |
+
+**His terminology accounts for all of them.** When he says معنى or مدلول in
+these formulas, he means the attribute's reality:
+
+- ص113: «دون معرفة حقيقة ذاته وصفاته… يعني أن العقل يحيل معرفة **كنه** ذاته».
+- ص215: «مدلول أسمائه وصفاته… **التي هي حقيقته** لا يعلمها إلا هو».
+- ص266: «كنهها وحقيقتها».
+
+The تأويل that "only God knows" is «الكيف المجهول» (ص117).
+
+**Quotations are not his own view.** Ibn Ḥajar's «إما التفويض وإما التأويل»
+(ص141), al-Bayhaqī's «التفويض أسلم» (ص242), al-Qāḍī's «نزولا لا يعقل معناه»
+(ص250) and al-Nawawī's «ظاهرها غير مراد» (ص233, ص236) are reported. Each is
+answered nearby:
+
+- al-Ṭūfī (ص243) answers al-Bayhaqī;
+- al-Wāsiṭī (ص250) answers al-Qāḍī;
+- Ibn Taymiyya on the meaning of ظاهر (ص237–238) answers al-Nawawī.
+
+**What remains.** His wording in ص219, ص241 and ص261 is loose. Read alone,
+those sentences sound like tafwid al-maʿnā. They are the passages a ranked
+search returns first. Read with ص25, ص117, ص128, ص211, ص247 and ص266, they
+cannot mean consigning the lexical sense without contradicting his explicit
+rejection of exactly that position.
+
+## Where the evidence is (by part)
+
+- **Parts 01–15 (ج1 ص1–290):** creed method, names, attributes. This is where 384 of the 456 items are.
+- **Parts 16–24:** qadar, sins, īmān. Indirect evidence only, e.g. محبة/رضا distinct from مشيئة (ص307, ص328, ص361).
+- **Parts 25–50 (vol. 2):** eschatology, prophethood, Companions, logic, closing.
+  - Seven parts have nothing on the topic: 29, 31, 36, 42, 43, 44, 48.
+  - Method evidence by analogy: ظاهر kept and only كيفية consigned for the pens (ج2 ص288), the bridge (ج2 ص192) and the scale (ج2 ص184).
+  - The vision of God: «يرى ولا يدرك، كما يعلم ولا يحاط به» (ج2 ص247).
