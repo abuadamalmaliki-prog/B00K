@@ -1,1 +1,3 @@
 build/
+*.cm[iox]
+*.o
