@@ -430,41 +430,198 @@ Framework: Next.js with Turbopack (server-rendered React)
 
 ---
 
+## Finding #10: CORS Wildcard Subdomain Reflection with Credentials on E-commerce API
+**Severity**: High (Cross-Origin Data Theft / Account Takeover Chain)
+**Domain**: api.theperfumeshop.com, api-s1.theperfumeshop.com, media.theperfumeshop.com, media-s1.theperfumeshop.com
+
+### Description
+The entire API and media infrastructure serving the main e-commerce site reflects any `https://*.theperfumeshop.com` subdomain as a trusted CORS origin, combined with `Access-Control-Allow-Credentials: true`. The frontend SPA (SAP Hybris Composable Storefront) is configured with `useWithCredentials: true`, meaning all API calls carry authentication cookies cross-origin.
+
+This means JavaScript running on **any** subdomain of theperfumeshop.com can make authenticated cross-origin requests to the e-commerce API and read the responses, including personal data, order history, saved addresses, and payment information.
+
+### Steps to Reproduce
+1. Send a request to `api.theperfumeshop.com` with an arbitrary subdomain origin:
+   ```bash
+   curl -D- -H "Origin: https://attacker.theperfumeshop.com" \
+     "https://api.theperfumeshop.com/api/v2/tpsgb/currencies"
+   ```
+2. Observe the response headers:
+   ```
+   access-control-allow-origin: https://attacker.theperfumeshop.com
+   access-control-allow-credentials: true
+   access-control-allow-methods: GET,POST,HEAD,PUT,PATCH,DELETE,OPTIONS
+   ```
+3. Verify the same behavior on all API/media instances:
+   - `api-s1.theperfumeshop.com` (staging API)
+   - `media.theperfumeshop.com` (media CDN)
+   - `media-s1.theperfumeshop.com` (staging media)
+
+### Evidence
+```
+# Production API
+$ curl -D- -H "Origin: https://evil.theperfumeshop.com" https://api.theperfumeshop.com/...
+access-control-allow-origin: https://evil.theperfumeshop.com
+access-control-allow-credentials: true
+
+# Multi-level subdomain also accepted
+$ curl -D- -H "Origin: https://test.evil.theperfumeshop.com" https://api.theperfumeshop.com/...
+access-control-allow-origin: https://test.evil.theperfumeshop.com
+access-control-allow-credentials: true
+
+# HTTP origins correctly rejected (HTTPS-only)
+$ curl -D- -H "Origin: http://evil.theperfumeshop.com" https://api.theperfumeshop.com/...
+access-control-allow-origin: https://api.theperfumeshop.com  (not reflected)
+
+# External domains correctly rejected
+$ curl -D- -H "Origin: https://evil.com" https://api.theperfumeshop.com/...
+access-control-allow-origin: https://api.theperfumeshop.com  (not reflected)
+
+SPA Configuration (from main-NTGUEOI7.js):
+  prefix: "/api/v2/"
+  useWithCredentials: true
+  occ-backend-base-url: https://api.theperfumeshop.com
+```
+
+### Attack Chain
+The CORS wildcard enables a direct attack path when combined with any of the following subdomain compromise vectors (all verified as reachable):
+1. **XSS on any subdomain**: techsale, connect, scentral, dev.connect, test.connect, campaigns, or any of 30+ enumerated subdomains
+2. **Subdomain takeover**: Multiple subdomains return 502 Bad Gateway (videogift, refer, prod-cc, prod-k, bp, bpie) indicating potentially claimable backend infrastructure
+3. **campaigns.theperfumeshop.com** runs a default Apache test page with directory listing enabled -- no application deployed, potentially writable
+
+Attack scenario:
+```javascript
+// JavaScript on any *.theperfumeshop.com subdomain
+fetch('https://api.theperfumeshop.com/api/v2/tpsgb/users/current', {
+  credentials: 'include'
+})
+.then(r => r.json())
+.then(data => {
+  // Read victim's PII, orders, saved payment methods, addresses
+  exfiltrate(data);
+});
+```
+
+### Impact
+- **Critical**: Any XSS on any subdomain escalates to full authenticated API access on the main e-commerce platform
+- **High**: Attacker can read user PII (name, email, phone, addresses, order history, saved payment methods)
+- **High**: Attacker can perform actions as the user (modify cart, change delivery address, place orders)
+- **High**: The attack surface includes 30+ subdomains, development/test environments, and abandoned infrastructure
+- **Medium**: The SPA's `useWithCredentials: true` configuration confirms cookies are the authentication mechanism
+
+### CVSS 4.0
+**8.3** (High) - CVSS:4.0/AV:N/AC:H/AT:N/PR:N/UI:P/VC:H/VI:H/VA:N/SC:N/SI:N/SA:N
+
+### Recommendation
+1. **Immediate**: Replace the wildcard subdomain CORS pattern with an explicit allowlist of trusted origins (`https://www.theperfumeshop.com`, `https://api.theperfumeshop.com`)
+2. **Immediate**: Apply the same fix to api-s1, media, and media-s1 instances
+3. **Short-term**: Decommission or secure abandoned subdomains (videogift, refer, prod-cc, prod-k, bp, bpie) to reduce the attack surface
+4. **Short-term**: Deploy a web application on campaigns.theperfumeshop.com or remove the DNS entry -- the default Apache page with directory listing is a liability
+5. **Medium-term**: Consider moving to token-based authentication for API calls instead of cookie-based to eliminate CORS credential risks
+
+---
+
+## Finding #11: SAP Commerce Cloud Backend Hostname Exposure in Client-Side JavaScript
+**Severity**: Medium (Information Disclosure)
+**Domain**: www.theperfumeshop.com
+
+### Description
+The main site's client-side JavaScript bundle (`main-NTGUEOI7.js`) contains the direct SAP Commerce Cloud backend hostname: `sd.cmb8j9fjhz-emea5aswa1-d1-public.model-t.cc.commerce.ondemand.com`. This hostname bypasses the Akamai WAF and CDN layer, allowing an attacker to probe the backend directly for vulnerabilities without WAF filtering.
+
+### Steps to Reproduce
+1. Fetch the main JavaScript bundle:
+   ```bash
+   curl "https://www.theperfumeshop.com/main-NTGUEOI7.js" | grep "ondemand.com"
+   ```
+2. The backend hostname is embedded in an image URL reference:
+   ```
+   https://sd.cmb8j9fjhz-emea5aswa1-d1-public.model-t.cc.commerce.ondemand.com/medias/sys_master/images/...
+   ```
+3. Direct access to the backend returns SAP Commerce Cloud error pages (403 Forbidden) instead of Akamai WAF blocks, confirming the backend is directly reachable
+
+### Evidence
+```
+$ curl https://sd.cmb8j9fjhz-emea5aswa1-d1-public.model-t.cc.commerce.ondemand.com/occ/v2/tpsgb/
+HTTP/1.1 403 Forbidden
+Server: *
+X-SAP-Pad: 6837830
+X-Cache: MISS from sd.cmb8j9fjhz-emea5aswa1-d1-public.model-t.cc.commerce.ondemand.com
+<title>SAP Commerce Cloud - Forbidden</title>
+
+Backend also reveals in JavaScript:
+  OAuth endpoint: /authorizationserver/oauth/token
+  Client config: client_id: ui.ID, client_secret: ui.SECRET
+  Base sites: tpsgb (UK), tpsie (Ireland)
+  API prefix: /api/v2/
+```
+
+### Impact
+- **Medium**: Attacker can bypass Akamai WAF and probe the SAP Commerce Cloud backend directly
+- **Medium**: The backend responds with SAP-specific error pages revealing server technology and cache status
+- **Low**: Combined with the OAuth endpoint path, an attacker could attempt credential brute-forcing directly against the backend
+- **Low**: The hostname pattern reveals the SAP Commerce Cloud environment identifier (`cmb8j9fjhz`) and region (`emea5`)
+
+### CVSS 4.0
+**5.3** (Medium) - CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N
+
+### Recommendation
+1. **Immediate**: Remove direct backend hostname references from client-side JavaScript; serve media through the media.theperfumeshop.com CDN exclusively
+2. **Short-term**: Configure the SAP Commerce Cloud backend to reject requests not originating from the Akamai CDN (IP allowlisting or shared secret)
+3. **Short-term**: Suppress `X-SAP-Pad` and `X-Cache` response headers from the backend
+
+---
+
 ## Additional Observations
 
 ### Akamai WAF (AkamaiGHost)
-- `www.theperfumeshop.com` and `api.theperfumeshop.com` are protected by Akamai WAF
-- WAF bypass was temporarily achieved using full CORS browser headers, receiving Hybris API error responses instead of 403 blocks
+- `www.theperfumeshop.com` and `api.theperfumeshop.com` are protected by Akamai Bot Manager
+- The WAF requires JavaScript-generated sensor data (bot management cookies: `_abck`, `bm_sz`, `bm_so`, `bm_s`) for API access
+- Without valid sensor data, all OCC API requests return 403 even with valid session cookies
 - The API error `{"errors":[{"message":"Page size not initialized on session","type":"IllegalStateError"}]}` confirms SAP Hybris Commerce Cloud backend
-- Rate limiting kicks in after sustained automated requests
-
-### CORS Configuration
-- `api.theperfumeshop.com` properly implements CORS with:
-  - `access-control-allow-origin: https://www.theperfumeshop.com` (not wildcard)
-  - `access-control-allow-credentials: true`
-  - Properly scoped allowed methods and headers
-- Other domains do not reflect arbitrary origins
+- Akamai blocks TRACE method requests but allows OPTIONS
 
 ### Technology Stack Summary
 | Domain | Technology | Protection |
 |--------|-----------|------------|
-| www.theperfumeshop.com | SAP Hybris Commerce Cloud | Akamai WAF |
-| api.theperfumeshop.com | Hybris OCC API v2 | Akamai WAF |
-| connect.theperfumeshop.com | Next.js + Microsoft Entra ID | Azure Front Door |
-| techsale.theperfumeshop.com | Next.js + Supabase + Entra ID | Azure App Service |
+| www.theperfumeshop.com | SAP Hybris Commerce Cloud (Composable Storefront) | Akamai Bot Manager + WAF |
+| api.theperfumeshop.com | Hybris OCC API v2 (prefix: /api/v2/) | Akamai Bot Manager + WAF |
+| api-s1.theperfumeshop.com | Staging Hybris OCC API | Akamai WAF |
+| media.theperfumeshop.com | Hybris Media CDN | Akamai |
+| connect.theperfumeshop.com | Next.js + Microsoft Entra ID (NextAuth.js) | Azure Front Door |
+| dev.connect.theperfumeshop.com | Next.js + Microsoft Entra ID (NextAuth.js) | Azure Front Door |
+| test.connect.theperfumeshop.com | Next.js + Microsoft Entra ID (NextAuth.js) | Azure Front Door |
+| techsale.theperfumeshop.com | Next.js Turbopack + Supabase + Entra ID | Azure App Service |
 | scentral.theperfumeshop.com | Hublio (Vite SPA) + Supabase | Azure Static Web Apps |
-| campaigns.theperfumeshop.com | Apache 2.4.62 Oracle Linux | Akamai (partial) |
+| campaigns.theperfumeshop.com | Apache 2.4.62 Oracle Linux (default test page) | Akamai (partial) |
 | ecom-data.theperfumeshop.com | Google Cloud (Frontend) | Google |
+| SAP Backend | sd.cmb8j9fjhz-emea5aswa1-d1-public.model-t.cc.commerce.ondemand.com | IP-based (insufficient) |
+
+### Payment Integrations
+- Worldpay (card payments, Apple Pay, Google Pay)
+- PayPal
+- Klarna
+- Clearpay/Afterpay
+
+### Subdomain Status (502 Bad Gateway - Potential Takeover)
+- videogift.theperfumeshop.com
+- refer.theperfumeshop.com
+- prod-cc.theperfumeshop.com
+- prod-k.theperfumeshop.com
+- bp.theperfumeshop.com
+- bpie.theperfumeshop.com
+- promotions.theperfumeshop.com
 
 ---
 
-## Recommendations
-1. **CRITICAL**: Disable GitHub, Google, and Twitter authentication providers on scentral.theperfumeshop.com via `staticwebapp.config.json` route blocks
-2. **CRITICAL**: Restrict Azure AD authentication on scentral from `/common/` (multi-tenant) to the organization's specific tenant ID
-3. **HIGH**: Implement custom role-based access control on scentral requiring explicit role assignment instead of default `authenticated` role
-4. **Immediate**: Fix the internal origin leak on connect.theperfumeshop.com by setting `NEXTAUTH_URL` (or equivalent) to the public-facing URL
-5. **Immediate**: Remove stale Lync/SfB DNS records
-6. **Short-term**: Harden campaigns.theperfumeshop.com - disable directory listing, remove default test page
-7. **Short-term**: Strip `X-Powered-By` header and Supabase project ID from CSP on techsale
-8. **Medium-term**: Review Supabase RLS policies for the techsale application
-9. **Medium-term**: Validate callbackUrl against an allowlist on connect.theperfumeshop.com
+## Recommendations (Priority Order)
+1. **CRITICAL**: Replace wildcard subdomain CORS pattern (`*.theperfumeshop.com`) on api/media infrastructure with explicit origin allowlist (Finding #10)
+2. **CRITICAL**: Disable GitHub, Google, and Twitter authentication providers on scentral.theperfumeshop.com via `staticwebapp.config.json` route blocks (Finding #7)
+3. **CRITICAL**: Restrict Azure AD authentication on scentral from `/common/` (multi-tenant) to the organization's specific tenant ID (Finding #7)
+4. **HIGH**: Implement server-side authorization scope validation on techsale OAuth flow; do not pass scope as client-controlled parameter (Finding #8)
+5. **HIGH**: Decommission or secure abandoned subdomains returning 502 (videogift, refer, prod-cc, prod-k, bp, bpie) to reduce CORS attack surface (Finding #10)
+6. **Immediate**: Fix the internal origin leak on connect by setting `NEXTAUTH_URL` to the public-facing URL (Finding #1)
+7. **Immediate**: Remove SAP Commerce Cloud backend hostname from client-side JavaScript (Finding #11)
+8. **Short-term**: Harden campaigns.theperfumeshop.com - disable directory listing, remove default Apache test page, or decommission (Finding #10 chain)
+9. **Short-term**: Strip Supabase project identifiers from cookie names and CSP headers (Finding #2, #9)
+10. **Short-term**: Remove stale Lync/SfB DNS records (Finding #4)
+11. **Medium-term**: Review Supabase RLS policies for the techsale application
+12. **Medium-term**: Configure SAP Commerce Cloud backend to reject requests not from Akamai CDN
