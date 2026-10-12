@@ -31,8 +31,10 @@ import numpy as np
 
 from read import BUILD, section_path, sections, units
 
-MODEL = "intfloat/multilingual-e5-large"
-EMB = BUILD / "embeddings.npy"
+import os
+MODEL = os.environ.get("SEMANTIC_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
+E5 = "e5" in MODEL  # e5 models want "query: " / "passage: " prefixes
+EMB = BUILD / f"embeddings_{MODEL.split('/')[-1]}.npy"
 STRIP = re.compile(r"[ً-ْٰ]")
 
 
@@ -46,8 +48,15 @@ def plain(text: str) -> str:
 
 
 def embed() -> None:
+    import sys, time
     us = units()
-    vecs = list(_model().embed([f"passage: {plain(u['text'])[:1500]}" for u in us], batch_size=32))
+    texts = [("passage: " if E5 else "") + plain(u["text"])[:1500] for u in us]
+    vecs, t0 = [], time.time()
+    for i, v in enumerate(_model().embed(texts, batch_size=32), 1):
+        vecs.append(v)
+        if i % 500 == 0:
+            rate = i / (time.time() - t0)
+            print(f"  {i}/{len(texts)}  ~{(len(texts) - i) / rate / 60:.1f} min left", file=sys.stderr, flush=True)
     arr = np.asarray(vecs, dtype=np.float32)
     arr /= np.linalg.norm(arr, axis=1, keepdims=True)
     np.save(EMB, arr)
@@ -55,7 +64,7 @@ def embed() -> None:
 
 
 def _semantic(queries: list[str], emb: np.ndarray) -> np.ndarray:
-    q = np.asarray(list(_model().embed([f"query: {x}" for x in queries])), dtype=np.float32)
+    q = np.asarray(list(_model().embed([("query: " if E5 else "") + x for x in queries])), dtype=np.float32)
     q /= np.linalg.norm(q, axis=1, keepdims=True)
     return (emb @ q.T).max(axis=1)          # best match over all phrasings
 
