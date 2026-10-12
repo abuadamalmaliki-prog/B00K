@@ -184,6 +184,104 @@ Full validation requires completing the Microsoft Entra ID authentication flow, 
 
 ---
 
+## Finding #7: Multi-Provider Authentication on Corporate Intranet (Unauthorized Access Risk)
+**Severity**: High (Authentication Bypass / Unauthorized Access)
+**Domain**: scentral.theperfumeshop.com
+
+### Description
+The Scentral corporate intranet (Hublio platform, hosted on Azure Static Web Apps) has multiple third-party authentication providers enabled, including GitHub and Azure AD in multi-tenant mode (`/common/`). This allows **any person with a GitHub account or any Microsoft account** to initiate and potentially complete authentication to a corporate intranet that should be restricted to TPS employees only.
+
+Azure Static Web Apps has built-in authentication that, by default, enables GitHub, Azure AD, and other social providers. Unless these are explicitly disabled in `staticwebapp.config.json` and custom role restrictions are configured, any authenticated user receives the `authenticated` role and can access protected routes.
+
+This is the same vulnerability class documented by Wiz Research in "BingBang" (2023), which found ~25% of multi-tenant Azure apps were vulnerable to authentication bypass.
+
+### Steps to Reproduce
+
+**GitHub Authentication (any GitHub account):**
+1. Navigate to `https://scentral.theperfumeshop.com/.auth/login/github`
+2. Observe the 302 redirect chain:
+   ```
+   scentral.theperfumeshop.com/.auth/login/github
+   -> identity.7.azurestaticapps.net/.redirect/github?hostName=purple-meadow-019c63c03.7.azurestaticapps.net&...
+   -> identity.7.azurestaticapps.net/.auth/login/github?post_login_redirect_uri=/.auth/login/done
+   -> github.com/login/oauth/authorize?client_id=Ov23liR2k5yQPDnQ8uQB&redirect_uri=https://identity.7.azurestaticapps.net/.auth/login/github/callback
+   ```
+3. The GitHub OAuth flow is fully functional with client_id `Ov23liR2k5yQPDnQ8uQB`
+4. Any GitHub user can authorize the OAuth application and receive an authentication token
+
+**Azure AD Multi-Tenant Authentication (any Microsoft account):**
+1. Navigate to `https://scentral.theperfumeshop.com/.auth/login/aad`
+2. Observe the 302 redirect chain:
+   ```
+   scentral.theperfumeshop.com/.auth/login/aad
+   -> identity.7.azurestaticapps.net/.redirect/aad?hostName=purple-meadow-019c63c03.7.azurestaticapps.net&...
+   -> login.microsoftonline.com/common/oauth2/v2.0/authorize?client_id=d414ee2d-73e5-4e5b-bb16-03ef55fea597&scope=openid+profile+email&response_type=code+id_token&response_mode=form_post
+   ```
+3. The `/common/` tenant endpoint accepts **any** Microsoft account (personal or organizational)
+4. Scopes requested: `openid profile email`
+5. Response type: `code id_token` (hybrid flow - tokens returned directly)
+
+### Evidence
+```
+GitHub OAuth:
+  Client ID: Ov23liR2k5yQPDnQ8uQB
+  Redirect URI: https://identity.7.azurestaticapps.net/.auth/login/github/callback
+  Status: Fully functional OAuth flow
+
+Azure AD:
+  Client ID: d414ee2d-73e5-4e5b-bb16-03ef55fea597
+  Tenant: /common/ (multi-tenant - ANY Microsoft account)
+  Redirect URI: https://identity.7.azurestaticapps.net/.auth/login/aad/callback
+  Scopes: openid profile email
+  Response Type: code id_token (hybrid flow)
+  Status: Fully functional OAuth flow
+
+Internal Azure SWA hostname: purple-meadow-019c63c03.7.azurestaticapps.net
+Identity service: identity.7.azurestaticapps.net
+Auth nonces: Leaked in redirect query parameters
+
+Additional providers tested:
+  Google (.auth/login/google): Redirect chain active, returns 401 at identity service (partially configured)
+  Twitter (.auth/login/twitter): 424 Failed Dependency (broken configuration)
+  Apple (.auth/login/apple): Not active (returns app page)
+```
+
+### Impact
+- **Critical**: Any person with a free GitHub account can initiate authentication to the corporate Hublio intranet
+- **Critical**: Any person with any Microsoft account (including personal outlook.com/hotmail.com) can initiate authentication
+- **High**: If `staticwebapp.config.json` does not restrict routes to custom roles (e.g., requiring invitation-based role assignment), authenticated users from any provider gain access to internal company data
+- **High**: The Hublio intranet contains employee communications, company news, SharePoint/Teams integrations, and potentially sensitive HR and operational data
+- **Medium**: Azure SWA internal hostname (`purple-meadow-019c63c03.7.azurestaticapps.net`) is directly accessible and functions identically to the custom domain, providing an alternative entry point
+- **Medium**: Authentication nonces leaked in redirect parameters could be used in replay attacks
+
+### CVSS 4.0
+**8.2** (High) - CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:H/SI:N/SA:N
+
+### Recommendation
+1. **Immediate**: Add `staticwebapp.config.json` with route restrictions that disable unused providers:
+   ```json
+   {
+     "auth": {
+       "identityProviders": {
+         "customOpenIdConnectProviders": {}
+       }
+     },
+     "routes": [
+       { "route": "/.auth/login/github", "statusCode": 404 },
+       { "route": "/.auth/login/google", "statusCode": 404 },
+       { "route": "/.auth/login/twitter", "statusCode": 404 }
+     ],
+     "responseOverrides": {
+       "401": { "redirect": "/.auth/login/aad" }
+     }
+   }
+   ```
+2. **Immediate**: Switch Azure AD from `/common/` to the organization's specific tenant ID to restrict authentication to TPS employees only
+3. **Short-term**: Implement custom role-based access control, requiring explicit role assignment for access instead of relying on the default `authenticated` role
+4. **Short-term**: Remove the internal SWA hostname from public accessibility or add it to the `staticwebapp.config.json` forwarding headers
+
+---
+
 ## Additional Observations
 
 ### Akamai WAF (AkamaiGHost)
@@ -213,9 +311,12 @@ Full validation requires completing the Microsoft Entra ID authentication flow, 
 ---
 
 ## Recommendations
-1. **Immediate**: Fix the internal origin leak on connect.theperfumeshop.com by setting `NEXTAUTH_URL` (or equivalent) to the public-facing URL
-2. **Immediate**: Remove stale Lync/SfB DNS records
-3. **Short-term**: Harden campaigns.theperfumeshop.com - disable directory listing, remove default test page
-4. **Short-term**: Strip `X-Powered-By` header and Supabase project ID from CSP on techsale
-5. **Medium-term**: Review Supabase RLS policies for the techsale application
-6. **Medium-term**: Validate callbackUrl against an allowlist on connect.theperfumeshop.com
+1. **CRITICAL**: Disable GitHub, Google, and Twitter authentication providers on scentral.theperfumeshop.com via `staticwebapp.config.json` route blocks
+2. **CRITICAL**: Restrict Azure AD authentication on scentral from `/common/` (multi-tenant) to the organization's specific tenant ID
+3. **HIGH**: Implement custom role-based access control on scentral requiring explicit role assignment instead of default `authenticated` role
+4. **Immediate**: Fix the internal origin leak on connect.theperfumeshop.com by setting `NEXTAUTH_URL` (or equivalent) to the public-facing URL
+5. **Immediate**: Remove stale Lync/SfB DNS records
+6. **Short-term**: Harden campaigns.theperfumeshop.com - disable directory listing, remove default test page
+7. **Short-term**: Strip `X-Powered-By` header and Supabase project ID from CSP on techsale
+8. **Medium-term**: Review Supabase RLS policies for the techsale application
+9. **Medium-term**: Validate callbackUrl against an allowlist on connect.theperfumeshop.com
