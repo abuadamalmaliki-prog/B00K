@@ -184,16 +184,16 @@ Full validation requires completing the Microsoft Entra ID authentication flow, 
 
 ---
 
-## Finding #7: Multi-Provider Authentication on Corporate Intranet (Unauthorized Access Risk)
-**Severity**: High (Authentication Bypass / Unauthorized Access)
+## Finding #7: Unnecessary Authentication Providers & Multi-Tenant Azure AD on Corporate Intranet
+**Severity**: Medium (Infrastructure Misconfiguration / Defense-in-Depth Failure)
 **Domain**: scentral.theperfumeshop.com
 
 ### Description
-The Scentral corporate intranet (Hublio platform, hosted on Azure Static Web Apps) has multiple third-party authentication providers enabled, including GitHub and Azure AD in multi-tenant mode (`/common/`). This allows **any person with a GitHub account or any Microsoft account** to initiate and potentially complete authentication to a corporate intranet that should be restricted to TPS employees only.
+The Scentral corporate intranet (Hublio platform, hosted on Azure Static Web Apps) has multiple third-party authentication providers enabled at the infrastructure level, including GitHub OAuth and Azure AD in multi-tenant mode (`/common/`). While the Hublio application layer enforces its own "Organisational accounts only" restriction (blocking unauthorized users at the app level), the underlying Azure SWA infrastructure accepts authentication from **any GitHub account or any Microsoft account**.
 
-Azure Static Web Apps has built-in authentication that, by default, enables GitHub, Azure AD, and other social providers. Unless these are explicitly disabled in `staticwebapp.config.json` and custom role restrictions are configured, any authenticated user receives the `authenticated` role and can access protected routes.
+**Confirmed behavior**: Navigating to `.auth/login/github` triggers a full GitHub OAuth redirect chain through `identity.7.azurestaticapps.net`, but after completing SWA-level auth, the Hublio app redirects the user back to its own login page ("Sign in with Microsoft 365 — Organisational accounts only"). The app-level auth currently mitigates full access, but the unnecessary SWA auth providers represent a defense-in-depth failure — if the Hublio app layer is ever bypassed, misconfigured, or removed, any GitHub/Microsoft user gains access.
 
-This is the same vulnerability class documented by Wiz Research in "BingBang" (2023), which found ~25% of multi-tenant Azure apps were vulnerable to authentication bypass.
+This is the same vulnerability class documented by Wiz Research in "BingBang" (2023). The infrastructure misconfiguration is real; the current mitigation relies solely on the third-party Hublio application.
 
 ### Steps to Reproduce
 
@@ -246,16 +246,20 @@ Additional providers tested:
   Apple (.auth/login/apple): Not active (returns app page)
 ```
 
+### Confirmed Test Result
+- `.auth/login/github` triggers GitHub OAuth flow → SWA authenticates the user → Hublio app redirects back to its own "Organisational accounts only" login page
+- The SWA infrastructure auth completes, but the Hublio app-level auth blocks unauthorized access
+- **Current state**: Not a direct access bypass, but a defense-in-depth failure
+
 ### Impact
-- **Critical**: Any person with a free GitHub account can initiate authentication to the corporate Hublio intranet
-- **Critical**: Any person with any Microsoft account (including personal outlook.com/hotmail.com) can initiate authentication
-- **High**: If `staticwebapp.config.json` does not restrict routes to custom roles (e.g., requiring invitation-based role assignment), authenticated users from any provider gain access to internal company data
-- **High**: The Hublio intranet contains employee communications, company news, SharePoint/Teams integrations, and potentially sensitive HR and operational data
-- **Medium**: Azure SWA internal hostname (`purple-meadow-019c63c03.7.azurestaticapps.net`) is directly accessible and functions identically to the custom domain, providing an alternative entry point
-- **Medium**: Authentication nonces leaked in redirect parameters could be used in replay attacks
+- **Medium**: GitHub OAuth app (client ID `Ov23liR2k5yQPDnQ8uQB`) is live and registered on a corporate intranet — unnecessary attack surface; any GitHub user can complete the OAuth flow at the SWA level
+- **Medium**: Azure AD uses `/common/` (multi-tenant) instead of the organization's specific tenant ID — any Microsoft account can complete SWA-level auth
+- **Medium**: If the Hublio application is ever reconfigured, updated, or experiences an error that disables its app-level auth check, the SWA-level auth alone would grant any GitHub/Microsoft user full access
+- **Medium**: Internal Azure SWA hostname (`purple-meadow-019c63c03.7.azurestaticapps.net`) is publicly accessible from the internet
+- **Low**: Authentication nonces leaked in redirect parameters; OAuth client IDs and redirect URIs exposed
 
 ### CVSS 4.0
-**8.2** (High) - CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:H/SI:N/SA:N
+**5.8** (Medium) - CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:N/VC:L/VI:N/VA:N/SC:L/SI:N/SA:N
 
 ### Recommendation
 1. **Immediate**: Add `staticwebapp.config.json` with route restrictions that disable unused providers:
