@@ -806,3 +806,111 @@ told apart by themselves, but the Necessary's existence and a possible's are not
 necessary, bodily — that belief stays fixed; (9) "existent" conflicts with none of the contrasting determinations; (10) "existence
 is not common" can cover all existents only if existence is one concept — self-refuting. ("Treated at length at the start of
 *Kitāb al-Wujūd wa-aḥkāmih*; repeated here with additions.")
+- **Against Avicenna's "God = pure, unattached existence" — twelve arguments** (L4918–5116):
+  1. Existence qua existence either requires self-subsistence (then *every* existence is self-standing and no possible exists)
+     or not (then no existence is self-standing qua existence) — "so clear that innate reason attests it admits no objection".
+  2. It requires inherence (then God's too), non-inherence (then possibles don't exist, or exist by existences identical with
+     them → equivocity), or neither (then God's non-inherence comes from an external cause → necessary through another).
+  3. What makes God's existence unattached? existence's nature (then all), something in it (concomitant → regress; separable →
+     God possible), a locus (then it inheres in a quiddity), or something separate (necessary through another).
+  4. Existence (shared) ≠ necessity (unshared); necessity entails existence (existence an accident of necessity), existence
+     entails necessity (the shared cannot entail the distinctive), a third entails both (both accidents of a quiddity), or
+     neither (existence separable → possible).
+  5. Being the principle of possibles: by existence alone (every existence would be a principle), + a negative qualification
+     (non-existence is no part of a cause), + a positive one (subject → existence inheres; accident → regress).
+  6. Reason cannot conceive anything whose whole reality is "being realised in re"; philosophers themselves say the existent is
+     "the very being-in-re" and that existence cannot be conceived alone. How could one nature be supremely independent in God
+     and so weak in possibles that it cannot even be thought by itself?
+  7. Philosophers hold (a) the concept of existence is self-evident and (b) **the kunh of God's essence is unknown to humans** —
+     incompatible if His reality is existence. **"Truly I am greatly amazed at these eminent men, how they combined these two
+     doctrines!"** (They cannot mean the *attributes* are unknown: they said "essence", and they reduce attributes to
+     negations and relations, which are known.)
+  8. Modal logic: "God is necessarily existent" has subject, predicate, copula, mode; if the subject were existence: "existence
+     must be existent" — absurd; so the subject is a reality other than existence.
+  9. Philosophers prove possibles' existence is extra because we can conceive the quiddity while doubting its existence; the
+     same holds for the Necessary — conceiving "what deserves existence by itself" leaves us doubting whether it exists
+     (otherwise conceiving it would suffice to affirm it). *(Razi rejects any ontological shortcut.)*
+  10. Subject "God" = existence → "existence is existent" (tautology, or two existences equal in quiddity with no reason for
+      one to be subject) → so existence is an attribute; we need not know the reality, only that it is or is not existence.
+  11. God is a determinate essence; existence is common; His essence = the common notion (no) or common + a determinant (a
+      negative one cannot be part of a positive essence; a positive one is either subject — Razi's view — or predicate, which
+      logic forbids and which would make the common uncommon).
+  12. Members of one species share concomitants, and existence would be one species in Necessary and possible; and (philosophers)
+      a species multiplies only through receptacles — the quiddities are the receptacles of existence.
+- **Avicenna's argument (*al-Ishārāt*), restated by Razi "at its strongest"**: if God's existence is not self-standing it needs
+  another → possible → caused either by the quiddity (conditioned on the quiddity's existing → doubling/circle/regress; or
+  unconditioned → the non-existent causes the existent) or by something else (necessary through another) → His reality is pure
+  existence.
+- **Razi's replies**: (1) existence may be self-sufficient yet inhere — as philosophers say form causes matter yet inheres in it;
+  (2) even if it needs the quiddity, *existence* cannot be "possible" (possible = may be with existence or non-existence — absurd for
+  existence itself); (3) **"the reliable answer"**: *the quiddity qua itself suffices to require its existence*, unconditioned by
+  being existent — just as possible quiddities *receive* existence without first existing, require possibility prior to existence,
+  and have receptivity as a pre-existential concomitant ("whatever you say of receptivity, why not of causation?"). Objection
+  ("then a non-existent causes") fails: receptivity doesn't need existence either; the quiddity qua itself is other than both
+  existent and non-existent.
+
+## L5202–5230 Qism 3 Q4: is the First Principle "neither existent nor non-existent"?
+"A quiddity qua itself is neither existent nor non-existent" can mean (i) it is *other than* both (true — a triangle can be thought
+without its existence and vice versa) or (ii) *devoid* of both (false). If a quiddity causes its own existence, the cause is the
+quiddity qua itself — so "the principle is neither existent nor non-existent" (sense i) and "the principle is existent, the most
+worthy of existence" (it cannot be devoid) are both true. Some said **"the First Principle is neither existent nor non-existent;
+He is just 'He' (huwa huwa), an ipseity inexpressible by existence or non-existence"**; the majority: existent, supremely. **Razi:
+"the dispute is purely verbal."**
+
+## L5236–5306 Qism 3 Q5: God differs from all possibles by His very essence, not by an added attribute
+- Majority of mutakallimūn: essences are equal qua essences and are distinguished by attributes; so God's essence differs from a
+  body's by a special attribute. **Razi: His essence is single, free of all composition, and different from all others by itself.**
+- Preliminaries — things can differ by themselves: (1) if essences differed by attributes, the attributes must differ — by
+  themselves (so self-difference is possible) or by further attributes (regress); (2) essence and attribute must differ, and not
+  by an attribute (circular); (3) "alike in some respects, different in others" is loose talk: each is composed of two parts; like
+  parts are alike by their whole reality, unlike parts differ by their whole reality → likeness/difference never comes from an
+  added thing.
+- Proof: if God's reality is not equal to others' qua itself, the difference cannot be from an attribute; if equal, His having the
+  distinguishing attribute is unpreponderated or regresses.
+- Opponents: essences are all "self-standing"; God's reality is either "essence" (then every essence is God) or "a specific
+  essence" (the specificity is extra); we can only define an essence by its attributes. Answers: **"being an essence" is a negative
+  concomitant** ("not following another in being"); sharing a concept does not mean sharing a quiddity (logic); their argument would
+  also make all *attributes* equal; the rest answered by the preliminaries. Summary: distinct realities may share a negative
+  concomitant; equal realities cannot have different concomitants.
+
+## L5314–5520 Qism 3 Q6: God is eternal and everlasting
+- Every necessary-by-itself is eternal (its reality does not accept non-existence); **not every eternal is necessary** — the
+  effect of a necessary cause lasts as long as its cause.
+- *Kalām route*: the world is originated → has a maker; an originated maker → regress → eternal; "what is proven eternal cannot
+  cease" → everlasting. **Razi's critique**: this does not show the *world's* maker is eternal or necessary: (1) the Necessary
+  (as chooser) might create another being and give it power to make bodies — an originated maker, no regress; (2) the Necessary
+  (as necessitating cause) might necessitate a non-bodily knowing, powerful being that makes the world — eternal but not
+  necessary; (3) even on the mūjib view, an eternal intellect/soul with successive particular conceptions might, at a certain
+  conception, become (by emanation) a knowing, powerful maker of the world. So: one maker created/caused by the First; one maker
+  of essences, another of attributes; different makers of different kinds…
+- Two ways out: **(a) the method of "the more fitting" (al-awlā wa-l-akhlaq)**: proofs establish a Necessary Being and none
+  establishes intermediaries → drop them (parsimony). **(b) Demonstration** — but the mutakallimūn's proofs are "flimsy
+  (wāhiya)": (1) "no rank is more fitting to be originated than another" — in reality? denied ("our minds are weak; not
+  everything we don't know is non-existent"); in our minds? then only suspension follows; (2) "no essence can cause another
+  (essences are equal)" — rests on the refuted equality of essences, and would let creator and created swap; (3) "the supreme God
+  is omnipotent, so a second maker would put one object under two powers" — needs "nothing but God's power affects anything",
+  which most people dispute (→ vol. 3 on divine power).
+- *Kalām proofs of everlastingness*: (1) **the Ashʿarīs' main proof**: an eternal's cessation would be by an annihilator
+  (annihilation is not an act — pure nothing; an eternal annihilator has no priority over its victim, an originated one is weaker),
+  by an arriving contrary (contrariety is mutual; arrival presupposes removal → circle; "repelling is easier than removing";
+  an eternal contrary → two eternal contraries; an originated one is weaker), or by loss of a condition (an eternal condition
+  raises the same question; an originated one cannot condition what precedes it). (2) **A proof Razi "devised for the
+  mutakallimūn"**: the eternal is necessary or possible; if possible, its cause is not a chooser (whatever is done by intention is
+  originated — self-evident) but a necessitating cause ending in the Necessary, and the effect lasts as long as it → cannot cease.
+  (3) Every eternal is necessary: a possible needs a cause either at origination (the eternal has none) or in existence (making
+  the made) → the eternal is necessary → cannot cease. ("This argument we summarised for the mutakallimūn.")
+- *Philosophical routes*: (1) cessation would need a cause → its existence would depend on that cause's absence → possible;
+  (2) equal receptivity needs a preponderator; awlawiyya refuted; (3) necessity-by-itself cannot change into possibility or
+  impossibility.
+
+## L5532–5582 Qism 3 Q7: the reality of azal and abad
+- *Illustrations*: (1) fill the outermost sphere with millet seeds, remove one every million years — the total, being finite
+  multiples of the finite, is "as nothing against existence" compared with azal; (2) **Indian numerals' positional system**: put a
+  world like ours (seven spheres, four elements) at every point of the greatest sphere, stretch them thin as garlic skin, cover all
+  surfaces with numerals — still nothing compared with azal. Reason cannot even reach the beginnings of these notions.
+- *Puzzles*: (1) God precedes today by a finite duration (then originated) or an infinite one (then an infinite has elapsed —
+  impossible); (2) azal and abad are contradictories, so must be distinguished, so the end of one adjoins the start of the other —
+  but any posited boundary has earlier points outside azal; (3) "was" and "will be" imply change; God is changeless; so "was",
+  "will be" and "is now" are all false of Him — then He would not exist (contradiction). Full treatment deferred to the book on
+  place and time (vol. 5).
+- **Colophon: "completed Friday, Dhū l-Qaʿda 603 [June 1207]."** End of vol. 1.

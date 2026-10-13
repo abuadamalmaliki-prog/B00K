@@ -16,3 +16,7 @@ Each row = a line range of `source_al-Matalib_al-Aliya.md` read in full, in orde
 | 10 | 3691–4110 | F23 end; F24 (Qurʾānic method verdict); Qism 2 F1–F2; start F3 | notes/vol1.md |
 | 11 | 4111–4510 | Qism 2 F3: historians (cont.), mystics' 4 arguments, plain-reason arguments; editor's excursus noted | notes/vol1.md |
 | 12 | 4511–4910 | Qism 2 F3 end; Qism 3 Q1–Q2; Q3 start (univocity of existence) | notes/vol1.md |
+| 13 | 4911–5310 | Qism 3 Q3 (vs. Avicenna's pure existence), Q4, Q5 | notes/vol1.md |
+| 14 | 5311–5710 | Vol.1 Qism 3 Q6–Q7, colophon; Vol.2 Tamhīd, Q1 F1 | notes/vol1.md, notes/vol2.md |
+| 15 | 5711–6110 | Vol.2 Q1 F1 end, F2, F3, F4, F5 start | notes/vol2.md |
+| 16 | 6111–6440 | Vol.2 Q1 F5 end, F6 shubuhāt, F7 start | notes/vol2.md |
