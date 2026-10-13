@@ -368,3 +368,127 @@ quiddity yields knowing its proximate concomitant".
   judgments "x now exists / has ceased" arise with the events.**
 - *Philosophers' argument 2*: a square flanked by two equal squares — the two flanking squares are distinguished only if they exist; not
   externally (we can imagine them when they don't exist, and God must know before He creates) → mentally …
+  … (cont. L9958) if the two flanking squares were in one mental substrate they would share quiddity, concomitants and receptivity to every
+  accident equally, so nothing could distinguish them; yet they are distinguished → they must sit in two substrates differing by position
+  (waḍʿ) and place → the perceiver of such forms is a body or bodily; God is neither → He cannot perceive them. *Razi's reply*: this rests on
+  perception requiring the known to be *present* (a form) in the knower's mind — already refuted "in ways that leave a rational person no doubt".
+- *Philosophers' argument 3*: knowledge "x exists / x does not exist" follows (tābiʿ) its object (a matching form depends on the object being
+  so, not vice versa). If God's essence were necessarily qualified by such knowledges, His essence would depend on the knowledges, which
+  depend on the contingent states of affairs → the Necessary would depend on possibles → possible in itself. Contrast: knowledge of quiddities
+  holds whether or not they are realised, so the essence suffices for it. *Razi's reply*: the same reasoning would forbid His being an agent
+  (taʾthīr) at all, since causing is a relation that is completed only by the other; "a difference can be drawn in some respects. God knows best."
+  — End of the deniers' case.
+- **Arguments FOR knowledge of particulars**: (1) His acts are precise and well-made (muḥkam mutqan), which requires knowledge of the act; and
+  precision shows itself only in *individual* existents → the very proof of His knowing is a proof of His knowing particulars. (2) An
+  individual has a quiddity plus an individuation (tashakhkhuṣ). If individuation = the quiddity, knowing the quiddity is knowing it; if it is
+  additional, it is itself a possible quiddity — and the philosophers grant that **knowledge of the cause yields knowledge of the effect**, so
+  His knowledge of His own essence yields knowledge of whatever produces this individuation → He knows the individual *as* that individual.
+  (3) Knowledge is perfection, ignorance deficiency; He is the most perfect. (4) **The argument from fiṭra**: the sincere and the zindīq, the
+  monotheist and the atheist, when struck by calamity all implore God to deliver them — even the fiercest denier of His knowing particulars.
+  The primordial nature testifies that the God of the world is able and knows secrets, "and the testimony of the original fiṭra is closer to
+  acceptance than these hidden divisions and obscure inquiries". ★ Razi's conjecture: **Abraham's words to his father, "why do you worship
+  what neither hears nor sees nor avails you anything?" (Q19:42), were said because his father "was of the religion of the philosophers" and
+  denied God's power and knowledge of particulars.** "This is what I have on this question. God knows best."
+
+### L10020–10121 Bāb 3 F7: God knows non-existents (maʿdūmāt)
+(MS (S) numbers it F6.)
+- Among those who affirm knowledge of particulars, **Jahm and Hishām**: He knows particulars only once they exist; before that only
+  quiddities. **The majority**: He knows them before they exist.
+- This depends on whether the non-existent can be known. Proofs that it can: (1) we know the sun will rise tomorrow, which does not exist now;
+  (2) a precise act presupposes the agent's knowledge, and the condition precedes the conditioned → His knowledge of His acts precedes their
+  existence; (3) quiddities are known without knowing they exist, and "non-existence" is itself conceived in "a thing is existent or
+  non-existent" → non-existent quiddities are conceivable; (4) the builder or tailor conceives the house or shirt first, then brings it to be.
+  Then **the generalisation argument**: His essence is what requires knowing; it is not more apt to require knowledge of some knowables than
+  others → either it requires none (false) or **all that can be known** (the thesis).
+- *Opponents (against prior knowledge)*: (1) **if He knew particulars before they occur, lordship and servanthood would both be void**: what is
+  known to occur is necessary, and the necessary is not within anyone's power, so neither God nor the servant has power — yet we find by
+  necessity that we can act or refrain at will; (2) the non-existent is sheer nothing and cannot be distinguished; and positing "fixed
+  quiddities in non-existence" (the Muʿtazilī *al-maʿdūm shayʾ*) does not help, since even they deny the non-existent essences are composed,
+  shaped, coloured or in place — yet you hold He knows they will be so; (3) knowledge is a relation, which presupposes both terms; the
+  non-existent object comes to be only by power, which presupposes knowledge → circle.
+- *Objections to His knowing ALL knowables*: (1) **infinite regress of reflexive knowings** (knowing that He knows, that He knows that He
+  knows, …), each grounded in the previous one → infinitely many causes and effects at once. To "why is knowing-that-one-knows distinct from
+  knowing?": the object differs; one can know while heedless of knowing that one knows; if identical, all levels would be actually present
+  whenever one knows anything, which is evidently false. To "the known isn't the cause of the knowing": the essence produces each level with
+  the prior level as a *condition*, and a cause's condition counts as the cause; besides, each prior level entails the next. (2) The infinite
+  cannot be distinguished from other things (what is distinguished is bounded by what lies outside it), but every known is distinguished →
+  the infinite is unknowable. (3) Infinitely many known objects → infinitely many attributes in His essence, whether knowledge is relations
+  (and they must be real, else He is not a knower) or the philosophers' matching forms; and they are distinct (knowing *this* contradicts not
+  knowing *this*, not not-knowing-at-all; one can believe He knows this while heedless that He knows that). But infinite existing attributes
+  are impossible: every existing number admits more and less → finite; and each known object itself carries infinite judgments (it differs
+  from infinitely many quiddities; an atom can occupy infinitely many places and times, alternately), so the infinite would be multiplied
+  infinitely, and multiplying belongs only to the finite.
+- ★ **Razi's answers**: (1) the lordship/servanthood objection "points to the claim that [this knowledge] entails *compulsion*" (text prints
+  al-ḥayyiz, almost certainly a misprint for **al-jabr**) — to be treated "in the question of jabr"; (2) already refuted at the start of this
+  faṣl; (3) the reflexive regress yields causes and effects **without a last term, not without a first** (so it is not the impossible kind);
+  (4) each item is distinguished from the others, which suffices to make each knowable; (5) these attachments (taʿalluqāt) are infinitely
+  many relations and *relations can be infinite and all obtain*: one is half of two, a third of three, a quarter of four …
+
+## L10132–10291 Bāb 4: God as willing (murīd)
+(MSS number it continuously: F17 (S), F7 (M), F8 (T). Plan: meaning of will; proofs; deniers' proofs.)
+### F1 The reality of will (L10148–)
+- *Issue 1, philosophers*: we find in ourselves that imagining a pure or preponderant benefit produces an inclination (mayl) to get it, and a
+  harm an inclination to repel it; these are what we call *irāda* and *karāha*. In this sense will is impossible for God, who is not subject to
+  pleasure, pain, benefit or harm. If something else is meant, define it.
+  *Mutakallimūn*: **will is an attribute that makes one side of a possible preponderate over the other, without necessitation and without
+  bringing into being (takwīn)**. Evidence: (1) the man choosing between two cups or two loaves, or the fugitive from a lion at a fork with two
+  equal roads, picks one with no added benefit; (2) the sick man craves fruit but does not will it, and the ascetic wills hard prayers without
+  craving them → will ≠ natural inclination.
+  *Philosophers' rejoinder*: (1) an influence "not by way of necessity" reopens the problem of the able agent: an agent with every condition
+  must act, one lacking any cannot, so "possible-to-influence" is unintelligible; (2) granted, how does will differ from power? "Preponderating"
+  is nothing but one side occurring through it, i.e. *takwīn*. Against the examples: the two loaves are never truly equal for the subject (one
+  seems nearer or easier; intense hunger fixes the gaze on the first one seen, and getting, keeping and recalling a mental preponderant are
+  three different things); and even granting a choice with no preponderant, what drives him is desire for food or flight from the lion, i.e.
+  benefit and harm. The sick man weighs present pleasure against future pain; the ascetic weighs present pain against great future benefit.
+  As said in the chapter on **"motives and deterrents" (al-dawāʿī wa-l-ṣawārif)**, cash beats credit (al-naqd khayr min al-nasīʾa) as such, but
+  a larger credit can outweigh it; if thought and imagination decide, preponderance follows; if not, he wavers. → "we know of will and
+  aversion nothing but natural inclination toward benefit and away from harm", impossible in God.
+- *Issue 2, the positions* (L10212): **al-Kaʿbī, al-Jāḥiẓ, Abū l-Ḥusayn al-Baṣrī**: His willing an act = His knowing it to be beneficial. For
+  oneself that is the motive of need (impossible in God); for others it is the motive of beneficence (dāʿiyat al-iḥsān), which is what applies
+  to God. The rest of the mutakallimūn: an attribute beyond that knowledge. Map: *negative* (He acts without being coerced) vs *positive*;
+  positive either necessitated by His essence or by an entity (maʿnā) that is either eternal and unchangeable or originated, the originated one
+  being in His essence (**Karrāmiyya**) or **in no substrate ("a large group of Muʿtazila")**. In another substrate: "held by no one".
+- *Proof for will (the specification argument)*: the world, being originated, began at a definite time though it could have begun earlier or
+  later; a specifier is needed. Not power, which relates equally to all times. Not knowledge: knowing the welfare in it would ground God's acts
+  in purposes (refuted), and knowing *that* it will occur follows the occurrence, which follows the specification (circle). Life, hearing,
+  sight and speech plainly cannot do it → a further attribute; and since it does not act by necessity, it is what was sought. "This is the
+  argument in its best form."
+- ★ **Razi's objections**: an influence neither necessitating nor bringing-into-being has been shown impossible, so "what we said is a decisive
+  proof against what you said". And why not power? Either the will can fit other times too (then it too needs a preponderant, or if not, power
+  doesn't need will) or it can attach *only* to that time (then, being eternal and unremovable, God becomes a **necessitating cause by essence
+  (mūjib bi-l-dhāt)**, and this issue is a branch of affirming the free agent, and a branch that ruins its root is void; and if the will can be
+  fixed to one option, why not power, making will superfluous?).
+- *Issue 3, deniers' four arguments*: (1) complete in its causal conditions → the act is necessary; incomplete → impossible; (2) we understand
+  will only as inclination to benefit or from harm; (3) it would be eternal or originated, both void; (4) its requiring of preponderance is
+  either necessary (→ mūjib bi-l-dhāt) or possible (→ no preponderance amid equality). The bāb closes there, with no further verdict from Razi.
+  [Note: Razi's objections in this bāb are entirely on the deniers' side. The bāb ends on aporia, consistent with vol. 3's earlier
+  determinism: dāʿī + power → necessary act.]
+### F2 Pleasure and pain (L10272–10290)
+(MS S: F18.) Bodily pleasure is impossible for God, who is not a body. **Spiritual pleasure: the philosophers unanimously affirm it of the
+Necessary.** (a) He loves Himself: knowing a thing's perfection produces love of it, by induction: hearing of the bravery of **Rustam and
+Isfandiyār** produces strong love in us, caused only by our belief in their perfections; His knowledge and perfection are supreme → supreme
+love. (b) He delights (ibtihāj) in and enjoys His perfections, since knowing one's own perfection produces delight. Corollaries: His delight
+relates to ours as His knowledge and perfection relate to ours, i.e. there is **no proportion**; the separate beings (**angels in the
+Sharīʿa's tongue, intellects and souls in the philosophers'**) all delight in themselves by degree of perfection, and "the most majestic
+self-delighter is the First". [Razi reports this without objecting in this short faṣl.]
+
+## L10294– Bāb 5: God as hearing and seeing (samīʿ baṣīr)
+(MS M: F9.) Plan: the quiddity of hearing and seeing; proofs for God; deniers' proofs.
+- *Inquiry 1, quiddity (L10304–10354)*: look at Zayd with full knowledge of his form, then shut your eyes: there is a self-evident difference
+  though the knowledge persists → **seeing is a state additional to knowledge**. One party: the difference is the form imprinted in the pupil.
+  Evidence for imprinting: after-image of the sun's disc after a long look, which one cannot will away; after staring at a green meadow a white
+  thing looks greenish-white; the face's image is seen in another's pupil; staring at the sun fatigues and weakens the eye. Another party:
+  imprinting happens, but **visual perception is itself distinct**: (1) we see half the sphere of the world, which cannot be imprinted in the
+  small eye (the great is not imprinted in the small); (2) being affected is just receiving a matching form, not *unveiling and disclosure*
+  (inkishāf, tajallī), which seeing is; (3) if seeing were the impression, a stronger impression would mean better sight, but gazing at the sun
+  intensifies the impression while sight weakens. Hearing likewise: we can know what a sound is before hearing it, and hearing is
+  self-evidently different. One party reduces the difference to air-waves striking the eardrum (loud sounds can tear it; trumpets feel as if
+  they split the brain). Against reducing hearing to that: (1) speech heard *perfectly* through a wall: the wave's shape cannot survive passage
+  through dense matter and narrow pores (the open-vs-closed-door point is considered and rejected); (2) we hear a sound *as coming from the
+  right or left*, i.e. in its place, while touch, which perceives only what reaches the organ, cannot tell direction; (3) as with sight, more
+  impression does not mean more hearing. → ★ **Seeing and hearing are each a state beyond knowledge and beyond the organ's affection, a
+  more perfect and stronger unveiling than "knowledge".**
+- *Inquiry 2, is there proof of such unveiling for God?* (L10356–): ★ Razi: "though we have shown this state differs from the affection of
+  eye and ear, **we suspend judgment (mutawaqqifūn) at another level**": it may be *conditioned* on the organs' affection (impaired organs
+  impair the perceptions, sound organs give sound ones); or, though conditioned on organs *for the human soul*, it may occur to the separate
+  beings without organs, as existence is conditioned on an agent for possibles yet belongs to the Necessary by Itself without one …

@@ -29,3 +29,4 @@ Each row = a line range of `source_al-Matalib_al-Aliya.md` read in full, in orde
 | 23 | 8696–9109 | Vol.3 Bāb 2 (qādir vs mūjib) end; Bāb 3 F1–F2 start | notes/vol3.md |
 | 24 | 9110–9509 | Vol.3 Bāb 3 F2 objections, F3, F4 (Avicenna's routes) | notes/vol3.md |
 | 25 | 9510–9957 | Vol.3 Bāb 3 F4 end, F5, F6 (particulars) start | notes/vol3.md |
+| 26 | 9958–10359 | Vol.3 Bāb 3 F6 end, F7 (non-existents); Bāb 4 (will, pleasure); Bāb 5 (hearing/seeing) start | notes/vol3.md |
