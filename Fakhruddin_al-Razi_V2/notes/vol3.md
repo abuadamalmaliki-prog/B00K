@@ -252,3 +252,119 @@ accept the certain and drop the unproven intermediaries; (b) once God is shown p
 (2) What is "precision"? Conformity to welfare in some respect — the ignorant achieve that too; in every respect — who can show it?
 (we do not know whether a larger or smaller sun, other celestial arrangements, or another human form would be better; the alternatives
 are infinite) …
+- (3) Does precision imply knowledge? (a) the ignorant sometimes produce one precise act (a line of verse, one well-formed letter); "like
+  has the like's judgment" → in principle always; (b) **bees build perfect hexagons without ruler or compass (which wise men cannot),
+  spiders build marvels, ants split grains so they won't sprout** — if precision implied knowledge, animals would be wiser than men;
+  (c) the master scribe writes best while thinking of something else; deliberation may even hinder; (d) philosophers ascribe the forming of
+  bodies to unconscious nature, and people praise a perfected craft as "become nature"; (e) **the mutakallimūn's own answer to the
+  time/place question** — a chooser may specify without a preponderator — means mere power could produce this welfare-conforming
+  arrangement without knowledge. (4) Opinion might suffice: artisans work by conjecture (no scribe has certainty about pen-tip, paper,
+  ink, finger motions) — and the world's defects might come from a conjecturing maker. (5) **The world is full of evils** — blindness,
+  chronic illness, crushing poverty; "**the man perfect in knowledge and practice deprived and humiliated under the ignorant and base,
+  while the lowest of creatures dominate**"; either God made the world for wisdom (then the evils show a lack of knowledge or power) or by
+  mere power (then its fitness was not intended and power suffices). The reply "evils don't prove ignorance — a knower can do bad acts"
+  misses the point: reason says precision implies knowledge, and equally that one who is powerful, knowing and merciful would not inflict
+  pain on the weak; if you can override the second judgment, others can override the first. (6) **On al-Ashʿarī's principles the
+  argument is unavailable**: for him structure (binya) is no condition of life, knowledge, power — a single atom could be the most knowing
+  of creatures; organs work only by God's custom (ʿāda); so "the eye is made for sight, the stomach for digestion" — the anatomists'
+  "uses of the parts" — has no basis, and with it "precision" vanishes.
+
+### L9214–9236 F3: a stronger route from God's being a free chooser
+(a) *Conception*: a chooser acts by intending; intending presupposes conceiving the quiddities → God conceives them. (b) *Judgment*:
+quiddities are mutually entailing, excluding, or neither; mediated entailments are chains of immediate ones, each due to the quiddity
+itself → conceiving the quiddities yields knowing every relation step by step → everything is known. "**More precise and further from
+objections.**" Variant: to intend existence He must conceive "existent", which divides into necessary and possible → He knows both;
+knowing a universal yields its division into particulars, and so on — "a good route, strengthened by the logical point that knowing a
+quiddity yields knowing its proximate concomitant".
+
+### L9240–9509+ F4: Avicenna's three routes to God's knowledge, examined
+- Route 1 (knowing Himself → knowing all); Route 2 (knowing others → knowing Himself); Route 3 (an immaterial substance united with an
+  immaterial form intellects; the immaterial-by-itself is all the more intellect, intellecter and intellected).
+- **Route 1(a)** — He is self-subsistent and immaterial, hence knows Himself: knowledge = presence of the quiddity to the knower; what is
+  self-subsistent is present to itself; we know ourselves not by a likeness (two likes; which would be subject?) but by the self's presence
+  to itself. *Objections*: knowledge is not presence of a form (refuted); presence is at most a condition; presence is a relation needing
+  two — replies: "presence to a thing" is wider than "to another" (Razi: very weak — it would allow self-moving and self-causing), an
+  individual = quiddity + individuation + whole (some difference — "better"), people say "my self" (relation of self to self); and even
+  granting it for us, our souls differ in quiddity from God.
+- **Route 1(b)** — knowing Himself, He knows He causes everything, hence everything in descending order. *Razi*: (i) it works only for a
+  necessitating cause, not for a chooser; (ii) "A is A" ≠ "A causes B" (tautology vs information; essence vs relation; each knowable
+  without the other) → knowing the essence ≠ knowing its causality, unless "knowing a thing yields knowing its concomitants" — which is the
+  conclusion → circular. Evidence that knowing a quiddity does *not* yield its concomitants: every quiddity stands in relations to all
+  others, so knowing one would mean knowing infinitely many; we know body's quiddity intuitively but not whether it is eternal or
+  originated; our soul is immaterial and self-present yet doesn't know intuitively that it is immaterial, originated or everlasting; the
+  cause is a concomitant of the effect too, so knowing ourselves would reveal the higher causes. (Possible rejoinder: knowing a cause gives
+  its effect, but knowing an effect gives only *some* cause, not this one — "a clear, reasonable difference".)
+- **Route 2** (Ishārāt, namaṭ 3, on the earthly soul — editor quotes it): we can know God together with other things; knowing = an imprinted
+  form; the co-presence of two forms in the mind is possible, and that possibility can't be conditioned on their being mental (else
+  possibility would depend on actuality) → even in re God's essence can be accompanied by the forms of intelligibles, which *is*
+  intellection; whatever is possible for God is necessary for Him (else change: His essence suffices for it, excludes it, or neither →
+  dependence → possible) → He knows others; whoever knows can know that he knows → He knows Himself.
+  *Objections*: (1) the philosophers' own thesis that God's essence is unknown to humans → we can't know Him together with anything;
+  (2) the mind cannot attend to two things at once, and strong objects drown weak ones (**a lamp before the sun, a mosquito's whine in
+  thunder**); "knowing the world depends on the Necessary" is knowing an attribute, not the essence; (3) induction can't cover infinitely
+  many objects; (4) what holds of each needn't hold of all; (5) co-presence of objects ≠ of cognitions (imprint theory again); (6) **three
+  species of co-presence** — two inherents in one locus, an inherent with its locus, a locus with its inherent — differ in quiddity: our
+  mental co-presence of God's form with others is the first, soul-with-form the second, God-in-re-with-forms the third → no inference →
+  "pure sophistry"; (7) a mental quiddity is an accident, an extra-mental one a substance; the argument needs our mental form of God to
+  equal God in quiddity (making Him a species with individuals — false by agreement) …
+  … (3) a mental image of the sky equal in quiddity to the sky would itself be a sky; (4) by the same parity, since the mental form of God
+  needs a locus, God would need one; (5) since things outside the mind know, mental forms equal to them would know. — Q8: even granting
+  co-presence, knowledge is not co-presence but a relation conditioned on it, possibly with further unmet conditions. Q9: possibility is
+  not enough — a cause is required; if His essence does not require it, nothing else can → it stays absent although receivable.
+  Q10: "knowing others → able to know that He knows → knows Himself": (a) we judge "this individual is human" — particular subject,
+  universal predicate → one faculty grasping both, which Avicenna holds impossible (particulars are perceived bodily, universals
+  immaterially); (b) the infinite orders of knowing-that-one-knows, all actual in God → infinitely many cognitions and causal chains at once.
+- **Route 3** (*al-Mabdaʾ wa-l-maʿād*): the soul knows by receiving an immaterial form; a self-subsistent immaterial form would know all the
+  more (as heat, were it self-subsistent, would heat all the more) — **"taken from the method of the more fitting; it yields only weak
+  opinion."**
+- Others: (1) God is the most perfect; knowledge is a perfection → He knows everything; (2) our knowledge comes from Him; a perfection in the
+  effect is more fitting in the cause.
+
+### L9572–9780 F5: questions branching from God's knowledge
+1. *Does God know Himself?* Some deny: knowledge is a relation needing distinctness; our soul is composite (so relations are possible),
+   God is simple; "knower/known" aspects are posterior to the knowing → circular. Razi affirms (He is immaterial and self-present; whoever
+   knows can know he knows) and answers: **God's essence is a determinate essence — quiddity, individuation, and their sum — enough otherness
+   for relations.**
+2. *Avicenna: "He is intellect, intellecter and intellected, all one."* Razi: the three terms are synonyms (then pointless) or distinct —
+   positive (knowledge isn't negative) attributes → plurality; knowledge is relational → not identical with the essence; they depend on one
+   another in order → not one notion.
+3. *The kalām proof that He knows everything*: He can know each object (being living, nothing bars any knowing); the cause of His knowings
+   is His essence (knowing is a relation, so an attribute, so possible, so caused — by His essence); His essence relates equally to all →
+   He knows all. *Objections*: "the living can know all" is either self-evident (then drop the proof) or unproven; His essence might
+   necessitate some knowings only — "no more fitting" in reality is denied (knowings of different objects differ; mutakallimūn themselves
+   make each knowing a distinct quiddity bound to its object). **"The better course: God is the most perfect, ignorance of anything is a
+   defect → He knows all; and this is also the safer view (iḥtiyāṭ)."**
+4. *Deniers of divine knowledge as such*: (1) His knowing is His essence (no: "the Necessary exists" is empty, "the Necessary knows" informs;
+   their contradictories differ; one can be doubted while the other is known; a relation is not a self-subsistent essence) or other —
+   inhering, needing a cause, i.e. His essence (one producing many; receiver and agent; and the eternal cannot be caused); (2) if knowledge
+   is a perfection, God is perfected by another; if not, deny it; (3) knowledge is a relation, so God depends on the other relatum; (4) many
+   objects → many knowings → infinite attributes → composite → possible; "attributes are not God" — then God is either essence + attributes
+   (possible) or the bare essence (attributes extraneous → deny them). *Answers*: (1) rests on refuted principles (from one only one; not
+   receiver and agent; need grounded in origination); (2) **His essence is perfect by itself, and among the concomitants of that perfection is
+   that it necessitates knowledge**; (3) the same would refute His causing the world (causality too is a relation); (4) **unity is half of
+   two, a third of three … — infinitely many relations do not impair essential unity.**
+
+### L9784–9957+ F6: does God know particulars?
+- The report that philosophers deny it "needs scrutiny": He knows His own determinate essence (a particular) and His first effect. Correctly:
+  **they deny He knows changing things *qua* changing, and bodily things in their specific magnitudes.**
+- *Argument 1 — Zayd sits, then stands*: the knowledge "Zayd is sitting" either persists (ignorance) or ceases (change in God). Two kalām
+  camps: (a) **the knowledge stays, the object changes**: one knowledge covers many objects, so changing ones too; a mirror shows each
+  passer-by without itself changing (editor objects to the analogy); the belief "Zayd will enter tomorrow", persisting, becomes "he is entering
+  now"; knowledge is a real attribute whose *relation* changes (as one becomes "to the left" when a neighbour moves). (b) **the knowledge
+  changes**: the man in a dark room who keeps believing "Zayd enters tomorrow" does not know Zayd is entering now unless he also knows it is
+  tomorrow (a third knowledge is generated); "will exist" and "exists now" are different quiddities, and quiddities cannot turn into one
+  another; one presupposes present existence, the other excludes it — like contraries; forms matching different quiddities differ — "near
+  self-evident". *Razi's replies to (a)*: knowledge does multiply with objects (on either theory), and multiplicity ≠ change; **"in *Kitāb
+  al-ʿIlm* we said knowledge is nothing but this unveiling; positing an attribute beyond the relation lacks proof — and if such an attribute
+  necessitated the relation, the relation's removal would remove it"**; most mutakallimūn hold accidents (beliefs) do not endure, so how do they
+  know what would happen if one did? and the dark-room case refutes them.
+- *Camp (b) in detail* — **Abū l-Ḥusayn al-Baṣrī, Jahm b. Ṣafwān, Hishām b. al-Ḥakam**: His essence necessitates knowledge of a thing on
+  condition of the thing's state; when that lapses, one knowledge ceases and another arises. Later mutakallimūn's objections: (1) a new
+  knowledge needs a maker who knows it (precision) → regress — *weak*, since they say the essence necessitates it, not produces it by choice;
+  (2) it would arise in God (making Him a locus of events), elsewhere, or in no locus — "locus of events" just restates the thesis; (3) the
+  essence suffices for the attribute, for its absence, or neither (dependence → possible) — **"good" (jayyid)**; (4) the eternal knowledge "the
+  world does not exist now" either persists (contradiction) or ceases — an eternal cannot cease, an originated one needs a prior knowledge
+  (regress, beginningless events) or a first (prior ignorance). Jahm and Hishām: **the eternal knowledge is of quiddities (conceptions); the
+  judgments "x now exists / has ceased" arise with the events.**
+- *Philosophers' argument 2*: a square flanked by two equal squares — the two flanking squares are distinguished only if they exist; not
+  externally (we can imagine them when they don't exist, and God must know before He creates) → mentally …
