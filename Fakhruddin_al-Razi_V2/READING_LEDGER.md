@@ -20,3 +20,7 @@ Each row = a line range of `source_al-Matalib_al-Aliya.md` read in full, in orde
 | 14 | 5311–5710 | Vol.1 Qism 3 Q6–Q7, colophon; Vol.2 Tamhīd, Q1 F1 | notes/vol1.md, notes/vol2.md |
 | 15 | 5711–6110 | Vol.2 Q1 F1 end, F2, F3, F4, F5 start | notes/vol2.md |
 | 16 | 6111–6440 | Vol.2 Q1 F5 end, F6 shubuhāt, F7 start | notes/vol2.md |
+| 17 | 6441–6743 | Vol.2 Q1 F7 end, F8, F9, F10 (vision), F11 start | notes/vol2.md |
+| 18 | 6744–7077 | Vol.2 Q1 F11 end – F17; Qism 2 F1 start | notes/vol2.md |
+| 19 | 7078–7427 | Vol.2 Qism 2 F1 (philosophers' unicity proofs + Razi's critique), F2 tamānuʿ objections | notes/vol2.md |
+| 20 | 7428–7815 | Vol.2 end (tamānuʿ answers, other proofs, dualists, unity), colophon; Vol.3 Bāb 1 F1–F4 | notes/vol2.md, notes/vol3.md |

@@ -173,3 +173,231 @@ Ibn Taymiyya's al-Jawāb al-ṣaḥīḥ.)*
   bodies**; and **relations exist in re** (proved in the chapter on accidents) yet are neither in the body (half the father would
   bear half the fatherhood) nor separate (fatherhood would be a self-standing substance). Further: "either X or Y" expresses
   receptivity to division, which is privative (receptivity is privative, else regress), and privatives have no cause …
+  … *Against shubha 5 (the Karrāmiyya's favourite)* — ten objections: (3) "the visible existent divides into adjacent/separate" is
+  really two judgments with two causes (accident → adjacent, substance → separate); the *possibility of the division* belongs to
+  no existent at all; (4) exhaustive-seeming surveys give no certainty ("not finding is not finding non-existence" — logic);
+  (5) other candidate grounds: being sensibly pointable (which is the very point in dispute → circular), or the shared feature by
+  which substance and accident differ from God; (6) origination could be the ground; ignorance of a cause doesn't entail ignorance
+  of its effect (people know health without knowing its causes; Dahrīs know the world without knowing God's power) — and if knowing
+  the ground gave the effect, everyone who knows God exists would know He is adjacent/separate, which the tanzīh people don't;
+  (7) the argument needs God's existence to be the *same* as possibles' — i.e. existence extra to quiddity, which most Karrāmiyya
+  reject; (8) a ground may be present while the effect is blocked (being alive grounds desire, pain, death — yet God is living
+  without them); (9) if existence were the ground, each substance and accident could be both adjacent and separate; (10) the same
+  reasoning would prove God *could be originated* ("possibility of origination" is common to all things but God, hence grounded in
+  existence), could move, or is a volume. "We dwelt on it because the Karrāmiyya rely on it and think it irresistible."
+- *To shubha 6 (raised hands)*: heaven is where blessings come from (light, rain) and habit inclines us there; and "above" one town
+  is right or left of another (when the sun is at the start of Cancer it lights the bottoms of wells in Mecca and Medina, not in
+  northern lands) — God could be above all lands only if He were a sphere surrounding the earth.
+- *To shubha 7 (scripture)*: ★ **the call to mankind must take the most effective form; explicit tanzīh is beyond common minds, so
+  revelation uses wording that suggests tashbīh while signalling absolute tanzīh** — a pedagogical theory of anthropomorphic language.
+- *To shubha 8 (vision)*: if mere unlikelihood counted, a non-spatial God would already be excluded; many affirm vision of what is
+  not in a direction, and opponents offer nothing but unlikelihood.
+
+## L6524–6564 F8: God is not the infinite void
+Some held that infinite space is God: everything is either space or in it; space needs no further space; its non-existence is
+inconceivable (we'd still distinguish front from back — that *is* space) → necessary; infinite; unbreakable; "with you wherever
+you are" (57:4), "nearer than the jugular vein" (50:16); mixing with filth is no defect since space is unaffected — as God coexists
+with events in time without defect. **Razi**: space is either nothing (not God) or an existent that is measurable (the void between
+a portico's walls is smaller than between a city's) → divisible → composite → possible. Their reasoning is a second-figure syllogism
+with two affirmative premises — sterile.
+
+## L6570–6600 F9: what "God is infinite (ghayr mutanāhī)" means
+"Unlimited" by *negation* (salb: having no magnitude, hence no limit) vs by *ʿudūl* (having magnitude without end) — we mean the
+first. In *duration*: no past point without Him before it (permanence needs no time — time's own permanence needs no further time).
+In *attributes*: power over the infinite = never reaching a limit after which He could not create, **not** that non-existent objects
+are already individuated (against "the non-existent is a thing"); knowledge of the infinite is harder, since knowledge conforms to its
+object "as it is", which seems to require determinate objects beforehand — "an obscure inquiry". Eternalists' infinite past: the
+totality exists neither in re nor in mind; it means each event is preceded by another. The future is always finite in act and in
+potency, and infinite neither in act nor potency relative to a final end. Ancient philosophy's "God is the reality of infinity": true
+if it means infinite in essence, duration and attributes; false if God = the *concept* of infinity (a mental consideration).
+
+## L6614–6702 F10: can the Necessary Being be seen?
+- *Preliminaries*: (1) **three grades of cognition**: (a) knowing a builder exists from the building (only a relational attribute);
+  (b) knowing a colour's quiddity with eyes shut, having seen it; (c) actually seeing it — a further unveiling. **Our knowledge of God
+  is only grade (a)**: existence + a relation (others depend on Him) + a negation (He depends on none). Grade (b): has anyone it — or
+  is it possible for angels only, prophets, all? Grade (c) is what "seeing God" means. (2) Seeing a non-spatial being is not
+  self-evidently impossible; mere unlikelihood would equally rule out a non-spatial existent (which Muʿtazila and philosophers
+  accept) — inconsistent. (3) The organ of such vision: the eye — very unlikely; the rational soul — more reasonable.
+- *Deniers*: (1) **eight conditions** (sound organ, visibility, not too near, not too far, not too small, not too subtle, no veil,
+  facing); when all hold, vision is necessary (else hills and trumpets could be before us unseen — sophistry); for God only the first
+  two apply and both hold now → we'd see Him now → we don't → impossible; (2) facing is required; (3) an image must be imprinted on
+  the pupil; (4) the visible must be coloured and shaped.
+- *Razi: "base and very weak"*: (1a) a tray of flour is seen = each mote seen; a mote's visibility either depends on others (circle,
+  or unpreponderated asymmetry) or not — then each mote alone is visible yet unseen → the conditions don't necessitate vision;
+  (1b) **vision of God would differ in quiddity from vision of bodies — "a clear, strong objection; I am greatly amazed they
+  overlooked it"**; (1c) full unveiling of immaterial things belongs to the holy soul, under conditions absent now; (2) facing
+  conditions the unveiling of spatial things only; (3)(4) unveiling conforms to its object — the shapeless is unveiled shapelessly.
+- *Affirmers*: "God exists; every existent can be seen" — Razi says he raised "strong objections that cannot be repelled" to this in
+  the rules of existents.
+- ★ **Verdict: both sides' proofs are weak → suspension; but prophets report the vision, and mystics report states like its
+  preliminaries → strong opinion that it is possible.** *(Editor's footnote dissents: no rational proof; Q 6:103; Exod. 33:20;
+  John 1:18; ʿĀʾisha's hadith; "visions do not establish doctrine".)*
+
+## L6706–6743+ F11: do we know God's essence in this life? — No
+(1) All we know is (a) His existence (from the originated world), (b) modes of that existence (necessity, eternity), (c) negations
+(not spatial, not in a substrate, not coloured, not composite), (d) relations (ability to act/refrain; knowing = a relation). None of
+these *is* or *entails* knowledge of the specific essence: we find in ourselves only "a something, we know not what, qualified by these
+four". (2) All concepts come from four sources (sense; inner experience; intellectual primitives; composites made by imagination or
+intellect) …
+  … God's reality is none of these (even "partner of God" is a composite: "something related to God as one partner to another among
+  us"). (3) Philosophers: knowing a cause's quiddity entails knowing its effects; God's essence is the cause of all possibles; whoever
+  knew it would know all possibles in order — no one does. (4) Philosophers: knowledge = a form equal in quiddity to the known; knowing
+  God's essence would make it a species with individuals — impossible. "Were knowledge really such a form, this would be a certain proof
+  that knowing that essence is impossible for every creature." (5) A universal qualified by universals stays universal ("man",
+  "knowing man", "ascetic knowing man" …); all we know of God — existent, necessary, not body, knowing, powerful, living, even "one and
+  unshareable" (true whether that one is A or B) — is such a universal; His essence is a particular → unknown. (6) The ancients: He is
+  infinite, minds finite: subtract any finite count from azal and azal is undiminished → a fortiori the One qualified by azal. (7)
+  Knowledge is a kind of mastery over the known; creatures cannot master the Real. (8) The mind cannot hold two knowns at once — how the
+  greatest?
+- *Opponents* ("we know His essence"): (1) "His reality is unknown" needs a conceived subject → contradiction; (2) attributes need a
+  conceived subject; (3) we know either the essence, an attribute as such, or an attribute as inhering (which presupposes knowing the
+  essence); (4) we know He is a "self-standing essence" — whole, part or external. *Answers*: (1)(2) the rule "what is not conceived
+  cannot be judged" is itself a judgment about the unconceived — self-refuting; (3)(4) "essence" = self-standing = not needing
+  another, a negative notion outside quiddities. Whether angels know Him: suspension.
+- ★ **"When inquiries in theology reach these straits, minds are bewildered and thoughts halt; nothing remains but to take refuge in
+  God, that He bestow real cognitions."**
+
+## L6844–6866 F12: God is free of qualities (kayfiyyāt)
+Not a body → no quantity, shape. Colours, tastes, smells seem bodily, but different quiddities can share attributes. Standard argument:
+none of them is a perfection whose contrary is a defect; nothing makes some fitter than others → all (contraries together) or none.
+Razi's objections: (1) light is a perfection, darkness a defect — could He be "light" without body? (2) "no priority" holds only in our
+minds → suspension; (3) black and white might combine into a compound mode. Razi's resolution: since He is not spatial, a "colour" in
+Him could not be spread over a surface; it would be a different quiddity, not colour as we understand it → colours *as we know them* are
+denied of Him.
+
+## L6870–6906 F13: God does not inhere (ḥulūl) in anything
+- Standard proof: inhering necessarily (He'd need the locus → possible; an eternal locus that the Necessary needs would be "more
+  necessary" → two necessary beings) or contingently (the self-sufficient becoming needy). *Objections*: His essence might necessitate
+  the locus and His inherence in it (effects don't make a cause needy); a body enters a place without needing it per se. **"These
+  objections are hard to answer."**
+- Better: analyse ḥulūl — (a) being in a place by following one's locus (colour in body) — only for spatial things; (b) belonging to
+  something while needing it (attribute in subject) — impossible for the Necessary; a third sense is unintelligible. Also, whoever
+  allows ḥulūl must doubt whether He inheres in this bedbug, ant or mosquito.
+
+## L6910–6920 F14: no union (ittiḥād)
+"x became y" = (a) a substrate exchanging qualities (water became air) — fine; (b) one reality becoming another: if both survive they are
+two; if both perish a third arises; if one survives, existent = non-existent → impossible. *Objection*: since existence is extra to
+quiddity, union could mean two quiddities losing their separate existences and sharing one existence. *Reply*: impossible for God,
+whose own existence is necessary to Him and cannot be lost.
+
+## L6924–7000 F15: can God be a locus of originated things (maḥall li-l-ḥawādith)?
+- "They say only the Karrāmiyya hold it. **I say: most schools hold it.**" *Ashʿarīs*: (1) eternal power to create body X ceases to
+  apply once X exists (creating the existent is impossible); (2) "pray now" cannot be addressed to Zayd in eternity, but is once he
+  exists — "only new relations"? relations are real (then new attributes) or not (then no demand); (3) hearing Zayd's voice and seeing
+  his form arise with them. *Muʿtazila*: Abū ʿAlī and Abū Hāshim — new attributes of willing/averting, hearing/seeing arise in His
+  essence; **Abū l-Ḥusayn al-Baṣrī — God's knowledge changes as its objects change, new knowledges arise in Him**. *Philosophers*: for
+  them relations are real existents, and God is before/with/after each event → new relations in Him. "**So all sects in fact hold
+  originated attributes in God.**"
+- Three kinds of attribute: real non-relational (colour, existence, life), real with a relation (knowledge with its attachment), pure
+  relations (right/left; becoming an uncle). Relational novelty must be admitted; the dispute concerns real attributes.
+- *Against*: (1) the receptive is never devoid of what it receives (receptivity is a concomitant, else regress; receptivity of the
+  originated has a beginning) → never devoid of originated things → originated; (2) a new attribute is a perfection (then He lacked it)
+  or not (all His attributes are perfections); (3) His essence suffices for the attribute's existence (permanent), non-existence
+  (permanently absent), or neither (dependence → possible); (4) "change" — begs the question or is not entailed: "weak".
+- *For*: knowledge of particulars changes with them; will intends at the time of origination; hearing/seeing need their objects.
+- ★ **Razi: "the proofs that nothing originates in God's essence are all *problematic* because of the relational attributes" — which
+  must be admitted although the same proofs apply to them.**
+
+## L7006–7038 F16: pain and pleasure
+Pain: impossible (agreed). Bodily pleasure: impossible (agreed). Arguments: (1) pleasure = perceiving the agreeable, which needs a being
+open to increase/decrease (a body) — *weak*: pleasure may be a distinct state accompanying perception, and could have other causes;
+(2) eternal pleasure needs an eternal object (world eternal); an originated one would have been produced earlier (He always knew He could
+and nothing prevented) → eternal anyway. *Intellectual pleasure* (delight in His own perfection): **philosophers affirm, mutakallimūn
+deny**; philosophers: He knows His perfections and such knowing gives delight (induction from ourselves), incomparably. *Razi's
+objection*: our perfections differ in quiddity from His — no inference.
+
+## L7042–7066 F17: may "jawhar" be said of God?
+Atom — no; subject of successive contraries — no; "a quiddity which, existing, is not in a subject" — only where existence ≠ quiddity,
+so for Avicenna no, **"but for us, since God's existence is an attribute of His specific essence, He is a jawhar in this sense"**;
+"existent independent of any locus" — God most of all. Some prefer "self-subsistent" (qāʾim bi-l-nafs), which is doubly metaphorical
+("standing" for independence; *nafs* is equivocal between blood/body and self); *jawhar* comes from *jahāra* (manifestness), and the more
+independent the more lasting and "manifest". Objection: substance is a genus → genus + differentia. Reply: independence from a locus is
+negative, and a negative notion cannot be part of a quiddity → not a genus.
+
+## Qism 2: God is free of contrary and peer (ḍidd, nidd)
+### L7074+ F1: the Necessary Being is only one — a survey of all proofs …
+- **Philosophers' proof 1**: two necessary beings would share necessity and differ in individuation → each composed of necessity +
+  individuation → (a) a composite needs its parts → possible; (b) its parts must be necessary (else it depends on a possible) → they too
+  share necessity and differ → endless composition, and no genuine "one" anywhere in the plurality; (c) necessity entails the
+  individuation (then only one), individuation entails necessity (necessity caused → necessary through another), or neither (joined by an
+  external cause); (d) the Necessary is its individuation or entails it (one) or is individuated from outside (possible).
+- **Philosophers' proof 2**: if predicated of many, "necessary" is a genus over species (genus + differentia → composite; the
+  differentia would give existence to necessity — impossible) or a species over individuals (individuation from the quiddity → one;
+  from outside → caused).
+- ★ **Razi's critique** (L7138–7308):
+  - *Q1 — necessity may be negative*: if necessity is privative, sharing it implies no composition; they may differ by their whole
+    quiddities. Five arguments that necessity is negative (predicated of non-existence: "necessarily not existent"; the whole/part/
+    external trilemma; a positive necessity would share existence and differ in quiddity → regress; "necessity-by-itself" = necessity +
+    "by itself" → composite; necessity = "not needing a cause" (negative) or "the quiddity requiring its existence" (requirement is no
+    extra existent)). Counter-arguments ("necessity confirms existence"; "non-necessity is true of non-existents, so necessity is
+    positive") are rebutted (the second by parity: "not specially-possible" is true of the impossible, so special possibility would be
+    positive; necessity negates both special possibility and impossibility → if one negation makes it positive, the other makes it
+    negative). And **sharing negations never entails composition**: simple quiddities must exist, and any two simples share the negation
+    of everything else.
+  - *Q2 — individuation may be negative*: (1) a positive individuation shares "individuation" with others → regress → infinitely many
+    causes; no "one" would be truly one; "this black = black + individuation, each individuating the other" fails (universal +
+    universal stays universal); (2) each individuated thing would be two things, then infinitely many; (3) to attach *this*
+    individuation to *this* portion presupposes a prior distinction; (4) individuation would be composite — necessary parts → many
+    necessaries, possible parts → nothing determinate is necessary; (5) individuation = "this is not that" — a negation. Opponents:
+    individuation is extra ("black" vs "this black"; shareable vs unshareable; "this black" = "this" + "black") and positive ("this"
+    is part of an existent; if privative, it negates other individuations, which are themselves negations → negation of negation =
+    positive). → **"The proofs contradict each other and doubt remains; and the proof of God's unicity, depending on what is doubtful,
+    is itself doubtful."**
+  - *Q3 — the imputed multiplicity holds even with one Necessary*: (1) the First Principle is not the universal "necessity" but an
+    individuated essence qualified by necessity → its individuation is extra → an attribute → needs a subject → possible → so every
+    existent in re would be possible (!); (2) necessity is a modality of the copula, outside quiddity → possible and caused, one God or
+    many; (3) some quiddities necessarily entail others (three → odd, four → even) — many "necessities by themselves" (objection: these
+    are relations, not self-standing essences — reply: your proof was built on "necessity by itself", which they have); (4) "every
+    composite is possible" — but necessity-by-itself is composed of genus (necessity) + differentia (by itself).
+  - *To proof 2*: it needs necessity to be positive and inside the quiddity; it is negative, so its predication is like neither genus
+    nor species.
+
+## L7322–7427+ F2: the mutakallimūn's proofs of unicity — above all **tamānuʿ** (mutual hindrance)
+- Two omnipotent gods; one wills a body to move, the other to rest: both happen (contradiction), neither (each is blocked only by the
+  other's *realisation* → if both are blocked, both are realised; and, if accidents don't endure, the body would be neither moving nor
+  resting), or one (equal powers → unpreponderated; and the loser is impotent, hence no god).
+- **Six objections**: (1) it presupposes that conflicting wills are possible; "each alone could will it" — but alone each *could
+  achieve* it, together not; so what holds alone needn't hold together. (2) Conflict is impossible: both know which outcome will
+  occur, and will follows knowledge; or one side is better and both will it; or neither is, and both know preferring is impossible; and
+  each knows a conflict would fail. (3) Possible conflict ≠ actual conflict. (4) Each might be blocked simply by *knowing* the other
+  would block him. (5) One might prevail without a preponderator — just as God specified the moment of creation without one (the
+  reply "that moment was best for the creatures" fails: either times are equal, or the difference is from the time itself — then
+  time could cause the world — or from the agent → regress or unpreponderated choice). "An eternal impotent is impossible"? — **God
+  in eternity could not act** (an act has a beginning, azal none), so He was "unable" then; why not unable for one act at one time?
+  (6) The same division would make **human agency impossible**: if God wills an atom to move and man wills it to rest, God's power over
+  one indivisible motion cannot exceed man's over its rest → unpreponderated. But human agency is known by necessity: praise and blame
+  are self-evidently fitting (benefactor/harmer), they depend on the agent's acting (thrower vs stone), and the root of a necessary
+  branch is necessary. (7) It doesn't exclude two gods with partial domains, or a powerless (living or dead) second necessary being.
+- Answers begin: (1) each alone could intend; together they must stay as they were; that yields contradiction → two gods are impossible —
+  "this confirms the proof rather than impugning it" …
+  … (2) "both know which outcome will occur, so their wills agree" → knowledge of an occurrence *follows* the occurrence, which follows
+  the will → circular. (3) "both will the better side" → either acts depend on motives — then **motives are created by God, so all
+  human acts are by God's making, and God's agency does not depend on welfare (maṣlaḥa)** — or they don't, and with equal sides conflict
+  is possible. (4) "each is deterred by knowing he'd fail" concedes conflict is possible absent the deterrent. (5) *Key premise*:
+  whatever is possible entails no absurdity when supposed actual; conflict was shown not impossible in itself; supposing it yields
+  absurdity → the absurdity comes from positing two gods. (6) Those who allow preference without a preponderator require that the
+  agent *could* have done otherwise; here the loser couldn't → that impugns his power. (7) Human agency → deferred to the jabr/qadar
+  volume. (8) The aim was only to exclude two *omnipotent* gods.
+- *Kalām proof 2*: two omnipotent gods each have power over the very same object; produced by both (each sufficient → contradiction),
+  by neither (each is blocked only by the other's producing it → both produce), by one (unpreponderated). (Proof 1 concerned contrary
+  objects; this one the same object.)
+- *Proof 3*: two omniscient gods' knowledges have the same object in the same way → alike → each could inhere in the other → a
+  specifier → originated knowledge → no god. "Many obscure inquiries here."
+- *Proof 4*: two eternal, non-spatial gods could differ neither by time nor place → no distinction → no plurality. Objection: they could
+  differ by quiddity (as knowledge and power in one atom). Reply: the distinguishing feature is either required for divinity (the
+  other lacks it → no god) or not (both could lack it → no distinction).
+- *Proof 5*: one god suffices; a second is known neither by necessity nor by proof (the world's possibility or origination needs only
+  one) → not to be affirmed.
+- **Dualists**: (1) the world has good and evil; the doer of good is good, of evil evil; none is both; (2) "necessary existent" as such
+  doesn't exclude sharing (else that would be self-evident); whatever is added is universal and still shareable; if nothing is added,
+  sharing is not impossible — and the sharers can't be merely possible → many necessary beings; (3) one is the lowest, most deficient
+  rank of being. *Answers*: (1) the good god either cannot stop the evil one (deficient), can and does (the evil one is impotent, no god),
+  or can and doesn't (consenting to evil → evil); (2) the Necessary's quiddity requires that very individuation → one; (3) if all
+  humanity were in one individual, its whole quiddity would be there — that is *more* perfect.
+
+## L7540–7564 F3: is God's unity His essence or an attribute?
+Against attribute: unity's own unity → regress. For an added attribute: "one" divides into necessary/possible; "one" opposes "many"
+while "necessary" opposes "not necessary"; we can think "one" while doubting "necessary"; "one" is predicated of possibles. And unity is
+not negative: if it were the negation of number, and number a sum of units, then if units were negative number would be negative, and
+unity the negation of a negation — positive. → **Unity is a positive attribute additional to necessary existence.**
+**Colophon: "This book was completed at Jurjāniyya of Khwārazm in the latter half of Rabīʿ I, 605 [Oct. 1208]."** End of vol. 2.
