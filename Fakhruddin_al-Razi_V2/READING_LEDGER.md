@@ -32,3 +32,4 @@ Each row = a line range of `source_al-Matalib_al-Aliya.md` read in full, in orde
 | 26 | 9958–10359 | Vol.3 Bāb 3 F6 end, F7 (non-existents); Bāb 4 (will, pleasure); Bāb 5 (hearing/seeing) start | notes/vol3.md |
 | 27 | 10360–10875 | Vol.3 Bāb 5 end; Bāb 6 (speech); Bāb 7 (eternal/enduring); Bāb 8 (living); Bāb 9 F1–F2 start | notes/vol3.md |
 | 28 | 10876–11385 | Vol.3 Bāb 9 F2 end (Razi: attachments explained by essence; delete intermediaries), F3, F4 (takwīn), F5 divine names start | notes/vol3.md |
+| 29 | 11386–11977 | Vol.3 Bāb 9 F5 divine names (oneness, Ṣamad, Qayyūm, names of power and knowledge; interrupted), F6 wisdom start | notes/vol3.md |

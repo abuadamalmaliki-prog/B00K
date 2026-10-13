@@ -751,3 +751,113 @@ regress. No verdict here: "we will return to this in the book on origination and
   adding or removing (a man without a hand); (iii) what is not a number, a number being half the sum of its two flanks (2 = (1+3)/2), while
   one has only one flank. On (iii) the atom is a true unit; objection: then "one" suggests the least of the least, a deficiency. Reply: the
   atom is called small because it can be touched and joined by others …
+  … (cont. L11396) the atom's smallness comes from its being able to be joined by others (alone it is "small", joined "large"); God cannot be
+  joined, so this "one" implies no smallness.
+  - *Deniers of attributes on oneness*: whoever affirms many attributes subsisting in the essence cannot hold divine unity, since essence plus
+    attributes are many and admit "adding and removing" ("able but not knowing", until disproved). Some said: **whoever affirms eight
+    attributes makes God "the ninth of nine"; Q5:73 declares unbelief on whoever says "the third of three", so a ninth of nine is "three times
+    three", deeper in unbelief.** [Editor's fn: the verse condemns the Catholic Christians' three gods.] *Oneness in sense 2* (no equal):
+    nothing equals Him in necessity of existence, knowledge of infinitely many knowables, or power over all possibles; the deniers say "no
+    equal in eternity", which those affirming eternal attributes contradict.
+  - *Corollaries*: (1) **one in essence** (no quantitative-sensible composition like a body's, no intellectual one like genus plus
+    difference), **in attributes** (nothing equals Him in existence by essence, all-knowledge, all-power, independence), **in acts** (nothing
+    else is the source of all possibles, directly or through intermediaries); (2) *aḥad* vs *wāḥid*: wāḥid begins counting (one, two, three),
+    aḥad does not; in negation aḥad is more general ("mā fī l-dār aḥad" is total negation); in affirmation **aḥad is said only of God (He has
+    reserved it), as al-Raḥmān (exclusive) vs al-Raḥīm (shared)**, hence no article in "huwa Allāhu aḥad", since it is already definite;
+    (3) ★ **the three names of Q112:1 as three stations of the travellers to God**: (i) *Huwa* for **the muqarrabūn** (highest), who look at
+    quiddities as such, see that the possible taken without its cause is pure nothing, and so "see no existent but God"; an absolute pointer
+    is determinate only if there is one thing, so "He" suffices and needs no distinguishing attribute; (ii) *Huwa Allāh* for **aṣḥāb
+    al-yamīn**, who see other existents alongside the Real and need an attribute to distinguish Him; (iii) *Allāhu aḥad* for **aṣḥāb al-shimāl**
+    (weakest), who allow more than one god, to annul shirk. Further: creatures point first to relational attributes and second to negative
+    ones; "Allāh" (He who deserves worship, i.e. independent in making and originating, i.e. perfect power and wisdom) gathers all the
+    relational attributes, and "Aḥad" gathers all the negative ones (no sensible or intellectual composition, hence not spatial, not in a
+    substrate or substrate of anything, no like, contrary or rival; two necessaries would be composite). Objection: a reality qualified by
+    aḥadiyya makes reality plus aḥadiyya plus their sum, "a third of three". Answer: aḥadiyya is a *concomitant* of the reality "which can be
+    expressed only by *Huwa*", hence **"the most majestic name for the verifiers (muḥaqqiqūn) is *Huwa Allāh*"**. "Huwa Allāh" shows all depend
+    on Him and "Aḥad" that He needs none: this is the true master (sayyid), hence **al-Ṣamad**. Ṣamad as "solid, without cavity" is
+    impossible for God, so it means freedom from all composition, i.e. the *proof* of aḥad. Three branches: **"He begets not"** (a child is a
+    separated part producing a like whole, impossible for the partless; **another reading: no necessitating-by-essence (ījāb) or generation
+    (tawallud) in His acting on creatures**); **"nor is begotten"** (the sayyid needs none); **"none is equal to Him"** (a second necessary
+    would make both composite). (4) *Waḥīd* (Q74:11 "Leave Me with the one I created alone"): if "alone" describes the Creator, Waḥīd is a
+    name: alone in eternity; independent in governing mulk and malakūt, without matter, duration, instrument or equipment (mādda, mudda, āla,
+    ʿudda); unique in majestic attributes. (5) *Tawḥīd* = judging or knowing a thing to be one. ★ **"The station of tawḥīd is too narrow for
+    speech: when you predicate anything of the Real there is a subject, a predicate and their sum, which make three; the intellect knows it,
+    speech cannot reach it."**
+- (11) **al-Ṣamad**: from *ṣamada* (to resort to in needs), or without cavity, meaning free of composition. (12) **al-Badīʿ** (Q2:117):
+  matchless, or *mubdiʿ* (originator), whose acts come at once without prior matter, duration, instrument or equipment. (13) **al-Ghaniyy**
+  (Q10:68; Q47:38): the necessary by itself cannot become necessary by another (if the other is removed and it remains, it was not necessary by
+  it; if it does not remain, it was not necessary by itself), so it has no attachment to another; everything else needs Him in quiddity,
+  existence and attributes. (14) **al-Qayyūm** (Q2:255, Q20:111; **ʿUmar's reading "al-Ḥayy al-Qayyām"**): self-subsisting (Q3:18 "maintaining
+  justice") and making others subsist. *Concomitants*: unicity; not spatial (every spatial thing is divisible quantitatively, and also
+  intellectually, by its general spatiality plus its specificity), so not in a direction; not in a substrate (neither an accident in a subject
+  nor a form in matter); (some say) knowledge = presence of the known's reality to the knower, so the self-subsistent knows itself and,
+  being cause of all, all things; (for originationists) all else is originated; (6) ★ **all possibles rest on Him, mediately or immediately,
+  "so the doctrine of *qaḍāʾ and qadar* follows necessarily"**. → "*al-Ḥayy al-Qayyūm* encompasses all the high inquiries of theology."
+  Qayyūm is negative (independence) and relational (making others subsist). **Ibn ʿAbbās: "the greatest name of God is al-Ḥayy al-Qayyūm"**;
+  whoever knows this cuts his heart off from creatures. **Abū Yazīd al-Bisṭāmī**: "Enough trust (tawakkul) for you: see no helper but Him, no
+  cultivator of your provision but Him, no witness of your deeds but Him."
+- (15–16) **al-Jalīl / Dhū l-Jalāl** (Q55:27, 78; "jalīl" itself is not Qurʾānic): **al-Kabīr = perfection of essence, al-Jalīl =
+  perfection of attributes (negative and positive), al-ʿAẓīm = perfection of essence, attributes and acts.** Faʿīl read as masdar (He honours
+  believers), passive (deserves honour) or active (has majesty); two Sufi sayings. (17) **al-ʿAẓīm**: not bulk; great in essence (intellect
+  cannot encompass it, as sight cannot a huge body), in attributes (no proportion), in acts (owner of dominion): negative, relational and
+  active respectively. (18–19) **al-Mājid, al-Majīd** (Q85:15): perfect nobility (Q50:1), or amplitude and generosity. (20) **al-Subbūḥ**:
+  not Qurʾānic but agreed on by the umma; morphology (faʿʿūl normally has fatḥa except subbūḥ, quddūs, dhurrūḥ); tasbīḥ = "removing God from all
+  evil" (a ḥadīth) or from *sabaḥa*, going about (Q73:7). Angels' tasbīḥ (Q21:20, 2:30, 37:165–6); a report on the three heavens' angels
+  (standing, bowing, prostrating), which shows **degrees of the angels in gnosis, love and servanthood**. "Everything glorifies Him with His
+  praise but you do not understand their glorification" (Q17:44): one party says it is *verbal* tasbīḥ, since the indication of artefacts to
+  the Maker would be understood (Q31:25); the verifiers answer that **creatures' indication of His transcendence is one of the subtlest
+  branches of gnosis**, so not understood by all; and **the indication of being (dalāla dhātiyya) beats that of speech**: speech can lie, is
+  conventional and changeable, reaches only the outer ear (the essential one reaches the intellect, which is nobler), and vanishes (the
+  rational indication endures). (21) **al-Ṭāhir**: pure of defects (Q33:33, the Prophet's family; Q9:28, "the polytheists are najas").
+  (22) **al-Ṭayyib** (ḥadīth "God is good and accepts only the good"): pure *and* beneficial. (23–24) **al-Fard, al-Witr** (ḥadīth "God is witr
+  and loves witr"): seven reasons odd is nobler than even (oneness is His attribute and pairing creatures'; every pair needs the one; an odd
+  number contains both an odd and an even part; indivisibility is strength; all numbers arise from one; odd plus even is odd, so odd
+  "prevails"; unity attaches to every numerical rank, "one ten, one hundred").
+- **Names of power**: **al-Qādir** (Q6:65, 77:23); **al-Qadīr** (not among the 99 but frequent; Q67:1). Morphology: *faʿʿāl* for frequency
+  (craft names: ḥaddād, bannāʾ, najjār, fallāḥ, khayyāṭ); *faʿīl* or *faʿūl* when the quality is like a fixed disposition (qadīr, khabīr,
+  naṣīr; ṣabūr, shakūr, ghafūr), hence qadīr and ʿalīm outnumber qādir and ʿālim in the Qurʾān. **al-Muqtadir** (Q54:55): iftaʿala signals
+  complete power (acting as He wishes, unhindered); compare *kasaba / iktasaba* (Q2:286): **good is "kasb" and evil "iktisāb" because one does
+  good for self and others with less zeal, but evil only for oneself, for pleasure, with more effort, and against constant legal
+  deterrents**. **al-Qawiyy al-Matīn**: active power vs strong disposition not to be affected (matn = back, the support of animals), i.e.
+  He cannot be affected, being necessary in essence and all attributes.
+- **Names of knowledge**: ʿilm (Q31:34, 2:255, 4:166, 35:11, 11:14), ʿĀlim (Q59:22), ʿAllām (Q5:116), Aʿlam (Q17:54); *muʿallim* (Q55:2, 4:113)
+  is not used of God "because it suggests a kind of lowliness"; ʿAlīm (Q67:13); *ʿallāma* not allowed, since it is said of one who passed from
+  little to much knowledge by effort and exercise. (2) **al-Laṭīf** (Q67:14): (i) so small as to be imperceptible, impossible for Him, so
+  read as its concomitant: the senses cannot reach Him (tanzīh); (ii) knowing subtleties ("laṭīf al-yad", a skilled craftsman); (iii) kind
+  to servants in ways they do not know (Q42:19); (iv) **al-Ghazālī** (in *al-Maqṣad al-Asnā*): whoever knows the subtleties of welfare and
+  delivers it gently, without harshness. Not the wisdom in heavens, stars, four elements and three kingdoms, only **the morsel**: countless
+  people (preparers of the soil, sowers, irrigators, reapers, cleaners, millers, bakers) cooperate in a mouthful, "whose explanation would not
+  fit in volumes". He is Ḥakīm in governing, Jawād in bringing to be, Muṣawwir in ordering, ʿAdl in placing everything right, Laṭīf in
+  leaving no subtle kindness undone; "no one knows these names who does not know these acts." (3) **al-Khabīr**: knows the inner reality (for
+  creatures, knowledge reached by testing), or = *mukhbir* (informer). (4) **al-Shahīd** (Q41:53, 3:18): ʿAlīm absolutely, Khabīr of hidden
+  things, Shahīd of manifest ones; present (Q2:185) by knowledge or sight; the witness who settles disputes, i.e. who made His unicity, justice
+  and majesty clear by proofs; or the one witnessed to by servants. (5) **al-Ḥafīẓ** (Q2:255, 12:64, 15:9): opposite of forgetting, i.e.
+  unalterable knowledge, or opposite of neglect, guarding heavens and earth and the divine books from distortion (editor: the Jews distorted
+  the Torah, the Christians the Gospel). (6) **al-Raqīb** (Q5:117, 50:18): al-Khaṭṭābī: among humans, one charged with guarding, vigilant;
+  **murāqaba** = the servant's continuing knowledge that God watches him, "the key of all goods". (7) **al-Muhaymin** (Q59:23): knowledge of
+  a thing's states, complete power to secure its welfare, and constancy in doing so. ★ **"When we reached this place, something occurred
+  that compelled cutting off this kind of discourse."** [Autobiographical interruption: the names catalogue is left unfinished.]
+- *Two closing inquiries*: (1) God's power in creating genera, species, kinds and individuals, in essences, attributes and the wisdom of
+  their making, is nearly infinite; hence a special name for each, and **whoever knows more of creation's divisions and the traces of wisdom
+  has more knowledge of God's names: "this is the secret and the mainstay of this chapter"**. (2) **Incantations and spells (ruqā, ʿazāʾim)
+  in unintelligible words** are names of God, of angels or of devils; God's names are noblest and strongest in effect; since names reduce to
+  these divisions, the unknown words must ultimately signify these attributes. ★ Razi's conjecture on why they work: **the reciter, not
+  understanding them, is seized by fear and awe, and at that moment the rational soul's substance connects with the world of the separate
+  and holy beings, so its effects grow stronger.**
+
+### L11934– Bāb 9 F6 God as wise (ḥakīm)
+(Orig. F18.) Wisdom is (1) *theoretical* (knowing realities; His knowledge is most perfect, so His wisdom is) and (2) *practical*: acts
+leading to benefit or away from harm. For oneself = **motive of appetite (dāʿī al-shahwa)**, impossible in God; for others = **motive of
+wisdom (dāʿī al-ḥikma)**. Two routes to proving He has the latter, philosophical and Muʿtazilī, "each in its best form".
+- *Philosophers' route* (the Avicennian theodicy): things are pure good; mostly good with some evil; equal; mostly evil; or pure evil. Pure
+  good must be created; mostly good too, since **"abandoning much good for a little evil is much evil"** and the good may be rationally
+  inseparable from that little evil (so "why not create it without the evil?" fails); weighing the two evils, bearing the lesser is better.
+  Equal is not required; the last two are against wisdom. Creatures are pure goods or preponderantly good: the hungry are many but the sated
+  more, likewise the sick vs the healthy, the defective vs the sound → all creation is wise. **Good is willed and approved; evil is willed and
+  disliked: disliked in itself, willed by accident and consequence** as a concomitant of the good. Verse of "the wisest of poets": grey hair
+  is hated, yet hated too is parting [from life]; how strange a thing loved despite hatred. Grey hair is disliked in itself, but life is
+  impossible without it, so it is loved by accident.
+- ★ **Razi's comments, first point**: "why did this agent do good / evil?" makes sense only for a **free chooser**; for a necessitating
+  cause the question drops. Its knowing what proceeds from it does not make the question proper without choice: **a rational man who falls
+  from a roof onto another and kills him cannot properly be asked "why did you kill him?"**. Since **the philosophers' First is a mūjib
+  bi-l-dhāt, this whole inquiry does not fit their system; it fits only those who hold God a free agent** …
