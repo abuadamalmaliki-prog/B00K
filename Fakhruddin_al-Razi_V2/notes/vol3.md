@@ -628,3 +628,126 @@ by the essence, or by an entity that necessitates the relations?
   essence idle; neither → whatever arises at their union regresses or adds nothing → divinity is a concomitant of the essence as such.
   **Against knowledge specifically**: (1) a knowledge would attach to what ours attaches to, in the same respect, so would be like ours →
   both eternal or both originated …
+  … (cont. L10876) (2) He would know by one knowledge (impossible: one can know He knows *this* while heedless that He knows *that*), by
+  finitely many (then one knowledge would attach to many objects, since His knowables are infinite), or by infinitely many (every existing
+  number is finite); (3) a knowledge would be known either by itself (a relation of a thing to itself is impossible) or by another → circle or
+  regress.
+- ★ **Razi's answers**: to the philosophers: (1) rests on "one thing cannot be both receiver and agent", already refuted; (2) why not say the
+  essence is necessary in itself and *necessitates* the ʿālimiyya and qādiriyya? To the Muʿtazila (editor's gloss on "if you mean": "O Qāḍī",
+  i.e. ʿAbd al-Jabbār): (1) if "necessary" means necessary by the essence itself, that is the very point at issue; if necessary absolutely, a
+  chain essence → maʿnā → ʿālimiyya keeps it necessary; (2) they themselves admit ʿālimiyya and qādiriyya (aḥwāl), so whatever they say
+  against the maʿnā we turn on those; (3) "distinct eternals": if "distinct" means different realities, granted, and that is the question
+  itself; if it means separable in place or time, who says every two existents must be? (4) the spatial account of inherence was refuted in
+  the chapter on substance and accident, and "this is no more apt than that" is "a feeble, weak premise"; (5)–(6) why not: essence →
+  maʿnā → ʿālimiyya? Against knowledge specifically: sharing an effect (attachment to the same object) does not entail sharing the
+  quiddity of the cause; arguments 2–3 apply equally to *attachments*. "All these proofs are weak", and **they only touch those who explain
+  the attachments by attributes or entities subsisting in the essence; "we do not say that: we have shown the attachments are additional to
+  the essence, and for us they are explained by the essence itself (muʿallala bi-nafs al-dhāt)"**, so none of them touches us.
+- *Station 2* (L10912): qādiriyya (validity of making and leaving) and ʿālimiyya (a specific relation) are not self-standing, hence possible
+  in themselves, hence caused, and the cause is the essence (anything else would make the Necessary depend on another for its concomitants).
+  Concomitants are immediate or mediated; the essence may produce them directly or through one or several intermediaries; both possible. ★
+  **"But since the essence must be admitted to necessitate these relations, directly or not, and the intermediary is unknown, by *al-awlā
+  wa-l-akhlaq* we must delete the intermediary."** Parallel: proving a free agent from the world's origination, asked "why can't the free agent
+  be the effect of a necessitating cause?", we say: since we must admit a necessary existent and a free agent, it is more fitting to identify
+  them and delete intermediaries. The same principle applies to the attributes in His essence. [This is Razi's Ockham-like principle.]
+- *Proponents of maʿānī (entities)*: (1) knowledge "here" (shāhid) is an attribute that attaches, so "there" (ghāʾib) too, since quiddities do
+  not differ between seen and unseen; (2) in us ʿālimiyya arises after not being, so knowledge is an existing attribute, and the bare body
+  cannot attach to the known; (3) knowledge is what attaches to the known, so if the essence attached, God's essence would *be* knowledge.
+  Replies: (1) knowledge here too is nothing but this attachment, this awareness; (2) when this relation arises in a body, knowledge and
+  awareness have arisen; a further attribute bearing it is denied; (3) knowledge is not "a thing attached" but the attachment itself, so the
+  essence's having the attachment does not make it "knowledge".
+
+### L10938–10948 Bāb 9 F3 Enumerating God's attributes
+(Orig. F15.) The philosophers agree that His attributes are *negations* (not a body, not a substance, not spatial), *relations* (generous,
+bringer-to-be, bestower) or compounds of the two. ★ Razi: they themselves undo this, since for them knowledge is a matching *form*, which
+is neither negation nor relation, so they admit a real attribute (ṣifa ḥaqīqiyya) in His essence. "We showed that this restriction can be
+established only by way of *al-awlā wa-l-akhlaq*"; and if knowledge is a relation, affirming it does not breach the restriction.
+
+### L10952–10974 Bāb 9 F4 Is bringing-into-being (takwīn) the thing brought into being, or other?
+(Orig. F16. The Māturīdī question of *takwīn*, though Razi does not name the Māturīdīs.) Analogues "here": is moving the motion, blackening the
+blackness? "Obscure, with great depth." *For difference*: we explain "why did it come to be?" by "because the able one made it", so if making
+= its existence, it would exist by itself and the agent would have no effect; and takwīn is not power (He can create many suns and moons
+without creating them) → a third attribute. *Against*: an eternal takwīn implies an eternal product (takwīn holds only with the coming-to-be;
+while the act stays in non-existence, the agent has done nothing to it) → eternity of the world; an originated takwīn needs another takwīn →
+regress. No verdict here: "we will return to this in the book on origination and eternity" (i.e. vol. 4).
+
+### L10982– Bāb 9 F5 Dividing God's names (taqsīm asmāʾ Allāh)
+(Orig. F17.) [Razi's *Lawāmiʿ al-Bayyināt*-style material.]
+- **Division 1: a name signifies the essence, a part of it, or something outside it.**
+  (a) *Names of the essence itself*: objection: His particular essence is unknown to creatures, and naming requires the meaning to be known to
+  speaker and hearer → impossible; "the ancient philosophers said: a reality created intellects cannot grasp has no name, except to explain it
+  as *necessary of existence by itself*". ★ **Reply**: what is established is that *we* do not know it, not that knowing it is rationally
+  impossible; even if it is, God may honour some servants with that knowledge; or the angelic holy spirits may know it; or the reality may have
+  a specific name which **God teaches to some servants, whose mention makes the pure holy spirits obey, or gives its rememberer a power of
+  spirit attainable no other way** — "all these are possible". [The Greatest Name; compare *al-Sirr al-Maktūm*.]
+  (b) *Names of a part*: impossible, since He is simple.
+  (c) *Names of something outside*: a real attribute, a relation, a negation, or their combinations (seven sorts).
+- **Real attributes**: existence, modes of existence, or a third.
+  *Existence*: "mawjūd" can mean "found" (as in Q4:64 "they would have found (la-wajadū) God relenting") or "really there", so it is not
+  univocal; hence **"some monotheists expressed His existence by the Persian *hastī* (al-hasqiyya, sic)"**, which is unambiguous. Names
+  signifying the essence-as-existent:
+  (1) **al-Ḥaqq**: ḥaqq = existent, bāṭil = non-existent; a belief or avowal of what is necessary "deserves" affirmation, of what is
+  impossible deserves removal. The necessary in itself is pure ḥaqq; the impossible is pure bāṭil; **the possible, taken in itself, is
+  non-existent, i.e. bāṭil and hālik, "everything perishes save His face" (Q28:88), and perishes *forever* since possibility never leaves it.
+  "Hence they said: there is no existent in reality but God."** He "verifies the truth by His words" (Q10:82): He makes other things ḥaqq.
+  His knowledge and avowal are the truest of truths, since their object cannot change.
+  (2) **Shayʾ ("thing")**: **Jahm b. Ṣafwān** forbade it, not denying His existence, only the name. *For*: "Say: what thing is greatest in
+  testimony? Say: God" (Q6:19); "everything perishes except His face" (Q28:88; face = essence, and the excepted belongs to the class); in
+  language, "thing" is either synonymous with "existent" (for those who deny that the non-existent is a thing) or more general (for those who
+  affirm it), so it applies either way. *Against*: "Creator of every thing" (Q6:102), which would make Him create Himself, and specification
+  is unacceptable here (you may except a small part from "all", never the greatest); "there is nothing like His like (laysa ka-mithlihi shayʾ)"
+  (Q42:11) says the like of His like is not a thing, and He is the like of His like, and taking the *kāf* as redundant is far-fetched since
+  this lofty book should be read as meaningful; "to God belong the most beautiful names" (Q7:180), and "thing" names what is common to vile
+  and noble alike, so it is not beautiful. "**A purely verbal question.**"
+  (3) **Māhiyya**: from "mā hiya?". Pharaoh's "And what is the Lord of the worlds?" (Q26:23) went unrebuked by Moses. ★ **"A lofty and noble
+  inquiry"**: Pharaoh debated Moses twice (editor: one session repeated). First he asked **"who (man) is your Lord?"** (Q20:49), which asks
+  for an attribute, and Moses answered "who gave each thing its creation then guided" (Q20:50): **creation = governing bodies, guidance =
+  governing spirits**, which covers everything self-standing besides God (spatial or not), so Pharaoh was silenced. Later he asked with
+  **"what (mā)"**, which asks for the quiddity; Moses answered with attributes ("Lord of the heavens and earth"); Pharaoh: "do you not hear?"
+  (the answer doesn't fit the question); Moses again with an attribute; Pharaoh: "your messenger is mad"; Moses: "Lord of east and west … if
+  you would understand" (Q26:28), i.e. if you were rational you would know there is no other answer. Reason: a thing is defined by itself
+  (circular), by its parts (He has none), or by its concomitants and effects, which must be manifest, and **the most manifest is the creation
+  of this world → God's essence can be made known only through His creatures**.
+  (4) **Ḥaqīqa**: faʿīla is active or passive; in God's case active, **He who makes realities real (yuḥaqqiq al-ḥaqāʾiq)**; in possibles'
+  case passive.
+  (5) **Dhāt**: a word for possession ("dhāt māl"); essences as such are unknown and known only by attributes, so "dhāt" names what is fit to
+  bear attributes; God's is the most deserving, being most self-standing and needing no substrate or recipient.
+  (6) **Nafs**: "You know what is in my soul and I know not what is in Yours" (Q5:116); for Him nafs means essence, not body.
+- **Names of modes of existence**, *necessity*: (1) **wājib al-wujūd li-dhātihi**, close to the **Persian *Khudāy* < *khud-āy*, "came by
+  itself"**, i.e. existed by itself, exactly matching wājib al-wujūd; (2) **al-Qawī** (Q51:58): what cannot be changed; or ("better") *qawī* =
+  affecting others, *matīn* = unaffected by others; (3) **al-Qayyūm**: self-subsistent (existing by and for Himself, needing nothing) and
+  making others subsist (bringing all else to be) → perfect in subsisting.
+  *Permanence*: (1) **al-Qadīm**: without beginning (also used for "long-lasting": Q12:95, Q36:39). Those who make eternity a *negative*
+  attribute are wrong, since it is the negation of prior non-existence and negation of negation is affirmation; those who say He is eternal by
+  an eternity subsisting in Him are wrong too (regress); (2) **al-Azalī**; (3) **al-Abadī**: no end; (4) **al-Bāqī** (Q20:73): definitions
+  listed, including "the Real endures by His endurance, creation by His making-endure". Past permanence = qidam and azal; future = abad and
+  sarmad (from *sard*, continuity, with an intensifying *mīm*). (5) **al-Wārith** (Q19:40, Q57:10): He lent possessions to servants, who die,
+  and they return to the true Owner; "Whose is the kingdom today? God's, the One, the Subduer" (Q40:16). (6) **al-Awwal, al-Ākhir, al-Ẓāhir,
+  al-Bāṭin**: descending from cause to effect He is First; ascending from effect to cause He is Last; **Manifest because effects show the
+  cause's existence; Hidden because knowing the effect gives no knowledge of the cause's quiddity.** "Secrets of these four": the First is the
+  unique prior one, proved by the contingency argument (not all existents possible, since the whole depends on possibles; not all necessary,
+  since two necessaries are impossible; so one Necessary, principle of all, prior by essence and causality). **The mutakallimūn add**: need
+  cannot be in the state of endurance (that would be making the existent), so all else is originated, and **He is First also in time**
+  (existing when all else did not).
+- **Names of transcendence (tanzīh)**: (1) **al-Quddūs** (Q59:23, Q62:1): *quds* = purity (Bayt al-Maqdis; the Garden as *ḥaẓīrat al-quds*;
+  Gabriel as *rūḥ al-quds*, pure of betrayal in transmitting revelation). (2) **al-Salām**: Quddūs = free of deficiency in essence and
+  attributes, Salām = in acts. (3) **al-ʿAzīz**: three conditions (rare, greatly needed, hard to reach); the sun is unique and greatly
+  needed but easy to reach, so not ʿazīz; perfection in each (unique and impossible to duplicate, not just actually unique like the sun; the
+  source of all benefits; impossible to comprehend and known only by His guidance, His blessings beyond all thanks) belongs to God alone →
+  **the absolute ʿAzīz**. (4) **al-Jabbār**: (i) lofty and unreachable (a tall palm is *jabbāra*), beyond thoughts, sight and the knowledge of
+  sages; (ii) the mender (jabartu l-kasr), who sets right creatures' bodies and souls; (iii) **from ijbār, compelling: "He compelled creatures
+  to what He willed, whether they willed it or not; nothing runs in His dominion but what He wills."** (5) **al-Mutakabbir**: who sees all as
+  small beside Himself; true seeing makes pride rightful and false seeing makes it blameworthy; ḥadīth qudsī "Grandeur (kibriyāʾ) is My cloak,
+  majesty (ʿaẓama) My waist-wrap" (editor: a solitary ḥadīth, āḥād). (6)–(7) **al-ʿAliyy, al-Kabīr**: height is sensible (the Throne above
+  the Footstool, only for bodies, so not His) or intelligible (Q58:11, degrees). Every scale of perfection (cause/effect, necessary/possible,
+  absolutely perfect/not; knowledge, power, life, permanence, existence, mercy) has God at its top → **His "aboveness" (fawqiyya, Q6:18,
+  Q16:50) is rank, not place or direction**. It reduces to a negative name (nothing equals Him in nobility) or a relational one (He has power
+  over all). Kabīr / Mutakabbir / Akbar / Kibriyāʾ: Kabīr is not by bulk but by rank ("great in religion"), as greatest of beings or as too
+  great to resemble creatures (names of tanzīh). **"Allāhu akbar" opens the prayer so that the worshipper, knowing God is greater than all
+  else, attaches his mind and heart to nothing but God.** Kibriyāʾ as the "cloak" shows it is higher and further from creatures' imaginings
+  than ʿaẓama (the waist-wrap).
+  (9)–(10) **al-Wāḥid, al-Aḥad** (Q2:163, Q112:1): oneness means no multiplicity in the essence, or no contrary or rival. Definitions of the
+  first: (i) a thing that is not divided ("thing" excludes the non-existent; one man or one garment can be divided); (ii) what admits no
+  adding or removing (a man without a hand); (iii) what is not a number, a number being half the sum of its two flanks (2 = (1+3)/2), while
+  one has only one flank. On (iii) the atom is a true unit; objection: then "one" suggests the least of the least, a deficiency. Reply: the
+  atom is called small because it can be touched and joined by others …
