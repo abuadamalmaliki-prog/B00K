@@ -861,3 +861,109 @@ wisdom (dāʿī al-ḥikma)**. Two routes to proving He has the latter, philosop
   cause the question drops. Its knowing what proceeds from it does not make the question proper without choice: **a rational man who falls
   from a roof onto another and kills him cannot properly be asked "why did you kill him?"**. Since **the philosophers' First is a mūjib
   bi-l-dhāt, this whole inquiry does not fit their system; it fits only those who hold God a free agent** …
+  … (cont. L11978) the philosophers may reply that their aim is to show that the First's creatures are pure or preponderant goods, inferring
+  His perfection from His effects, "and doubtless this is useful".
+  ★ **Second point: the theodicy rests on three premises, all rejected.** (1) *"These goods cannot be had without these evils"*: denied.
+  **Bodies are alike in corporeality, so each one's special nature comes from the free agent**, who can give fire its nature when it cooks and
+  remove it when it would burn a man (as with Abraham). Further: a mild purgative from a "lowly physician" cures a brain-membrane swelling, so is
+  God less able? A conquering king spares a people when a motive of beneficence occurs in his heart; if God cannot create that motive, how
+  great a weakness; if He can and does not, how great an evil. If they say this assumes a free agent → **dilemma: if God is a mūjib
+  bi-l-dhāt the inquiry is unnecessary; if He is a free agent the theodicy is false — "false on every supposition".**
+  (2) *"Evils are outweighed by goods"*: "pure sophistry". Remaining free of harm differs from enjoying pleasure; **creation cannot aim at
+  mere safety, since that already held in original non-existence, so it aims at pleasure, delight and joy**. Safety may be more common than
+  harm, but the claim that pleasures outweigh pains is false: moments of pleasure are few; grief, worry and sorrow from greed, envy and craving
+  for the world dominate. **The cycle of desire**: love of wealth and rank is strong; failure is torment; success brings pleasure, which
+  breeds a stronger craving and more toil, so man never escapes this one affliction, not to mention enemies, diseases, fear of poverty and
+  old age — "a sea without shore". **Claiming these evils are fewer than the pleasures is stubbornness unworthy of a rational person.**
+  (3) *"Leaving much good for a little evil is much evil"*: if "evil" means leaving good, the proposition is a tautology (subject =
+  predicate); if it means pain and harm, false: leaving it leaves the thing in original non-existence, where there is neither pleasure nor
+  pain.
+  [Note: the pessimistic anthropology here (pains outweigh pleasures) is a major theme, compare Razi's *Dhamm ladhdhāt al-dunyā*.]
+- *Muʿtazilī route* (L12020; orig. "F19, God's wisdom on the Muʿtazilī view"): good is good and evil evil "for aspects in themselves"; God
+  needs nothing and knows everything → He knows evil's ugliness and that He needs it not → **whoever is so does not do evil**. Proofs: (1)
+  offered a dinar whether he tells the truth or lies, with everything else equal, a man tells the truth; the deterrent is just knowing it is
+  a lie; (2) necessary knowledge: knowing an act's ugliness deters unless opposed by appetite or need, both impossible in God. ★ **Razi's
+  objection**: is the act *impossible* given the deterrent? If yes, God is a mūjib bi-l-dhāt (essence → knowledge → deterrent → abstention;
+  "the necessitator of the necessitator is a necessitator"); if not, the act remains possible, so how can you be sure it will not happen?
+  Likewise, if withholding reward or compensation (ʿiwaḍ) is ugly, giving them is rationally necessary → mūjib again, and with a mūjib the whole
+  inquiry drops. And the proofs that **all acts of servants occur by God's decree and destiny** show that He *does* make and will evil (to be
+  set out in full later).
+
+### L12052–12296 Bāb 9 F7 Is rational good/evil (taḥsīn wa-taqbīḥ ʿaqlī) valid?
+(Orig. F20.) Muʿtazila and Karrāmiyya affirm it; philosophers and Jabriyya deny it. ★ **"Our chosen view (al-mukhtār ʿindanā): rational
+good and evil are valid with respect to servants, and void with respect to God."**
+- *Valid for servants*: (1) **before knowing any religious law, rational people agree it is good to praise a benefactor and blame a
+  wrongdoer**, believer or not; (2) a legal "evil" means "if you do it you will be punished"; does reason judge that punishment must be
+  avoided? if yes, rational evaluation is established; if not, the Law must oblige avoidance, and so on → regress; (3) there must be things
+  sought for themselves and things shunned for themselves (else regress or circle): **pleasure and joy are sought for themselves, pain and
+  grief shunned for themselves, with or without revelation.**
+- *Void for God* — **Argument 1**: all we understand by good is benefit (or what leads to it), by evil harm (or what leads to it), and
+  desire and dread are intelligible only in one capable of benefit and harm, so not in God. Muʿtazila: good differs from beneficial (injustice
+  benefits the unjust yet is evil; fornication pleases now; exhausting worship harms now yet is good). Answer (as in the Qādir bāb):
+  injustice is greatly harmful to the world's order (if it were judged good there would be chaos, no one secure in marriage); worship is good
+  for its great benefit in the hereafter, like the farmer sowing (wasting) seed for a large harvest → "we understand by good and evil
+  nothing but benefit and harm". ★ **"This is the difficult station: if they define good and evil by benefit and harm, they cannot apply
+  them to God; if they try something else, they find no trace of it. This is the noble, complete point where a rational person must stand
+  firm."**
+- **Argument 2: if rational evil applied, God would be no benefactor (munʿim) to anyone.** A benefit is a benefit only to one who needs and
+  desires it; need and desire are harms; so every benefit is preceded by an equal harm and merely cancels it: like wounding a man and then
+  treating him, or seizing a dinar and giving another, i.e. pure futility (ʿabath). All religions agree He is wise and beneficent → rational
+  evaluation of God is void. *Objections*: why is need a harm? why is it God's creation (need may be a concomitant of the creature's
+  quiddity, like four being even)? and He gives far beyond need (take one dinar, give a thousand). *Answers*: need is a harm by necessity
+  (everyone hates needing; verse "I became rich without wealth… the highest wealth is to need nothing, not to have it"; proverb "your
+  independence of a thing is greater than your independence by it"; editor adds a maxim of his own); God is agreed to be free of appetite and
+  need because they are deficiencies; need makes one's perfection depend on another, which is possibility and origination. **Differences of
+  desire are God's doing**: one man craves amusements, another loathes them by nature; a free agent must be the cause (if God were a mūjib
+  the inquiry would drop anyway); same for food preferences. **Benefit = pleasure = prior need and desire** ("equal to the equal is equal") →
+  present benefit = past harm. Even if needs are concomitants of animals, before existence the animal was nothing; bringing it to be brings
+  the needs, so creation is a harm in that respect. On "more than needed": either the surplus is desired (then it is needed too) or not (then
+  getting it gives no pleasure): **throw a pearl necklace to a dog and a bone to a man, and neither is benefited; reverse them and both are**.
+  So benefit always balances prior harm, and such an agent would be "futile and no benefactor" by rational standards, which is agreed false.
+- **Argument 3: creation (and legal obligation) do not track servants' welfare.** If the world is originated, why this time? Not by the
+  time's essence: times before the world were pure nothing and cannot differ; they are either necessary (then the earlier time would be the
+  later) or originated (then the question recurs); and if a time could produce a welfare by its essence, why not the world itself, so we could
+  not be sure the time is not the world's cause. Not by a concomitant of the time (same arguments). So the free agent specified the time
+  **with no regard for wisdom or welfare, which is pure futility, ugly by reason**. If rational evaluation held → eternal world and a mūjib God,
+  but rational evaluation is a branch of the free agent, and a branch that destroys its root is void. **The same argument applies to every
+  event's time, every essence's attribute, size and place: "not one proof but infinitely many, one for each event until endless eternity."**
+- **Argument 4: if rational evaluation held, God could not oblige servants to know Him, praise and thank Him.** (A) Knowing God is hard
+  (requires proof; most of the world went astray; "whoever has plunged into the divine sciences knows their difficulty") and dangerous
+  (error earns eternal punishment, and most err); the One thanked gains nothing (unlike a human benefactor pleased by thanks and grieved by
+  ingratitude); the thanker gains nothing, since an all-powerful agent can give pleasure without the obligations ("easier through
+  obligations" is meaningless for His power). Hard, useless acts commanded = ugly. (B) Among humans, **a benefactor who demands burdensome
+  service in return is called base and mean-spirited**; if unpaid he fumes and seeks revenge to relieve his own inner pain; the noble one gives
+  and demands no thanks. How then the God above joy and grief? *Muʿtazilī replies*: (1) honouring the undeserving is ugly, so He obliges them
+  in order to make them deserve honour; (2) deserved benefit is more delightful than pure grace (tafaḍḍul); (3) **the philosophers' view**:
+  addiction to bodily pleasures strengthens the craving, which outlives the body at death, unable to be satisfied → spiritual pains; turning
+  to remembrance of God, the angels and the hereafter weakens bodily desire, so death is release "from prison to garden". This is why there are
+  obligations. ★ **Answers**: to (1), the Muʿtazila's mainstay, "weak": deserving honour need not require hardship (**the prophets' reward
+  exceeds individual believers' though some believers suffered more than the protected Messenger**), so He could have given easy duties and
+  stronger bodies; honour aims at joy, which God can create directly; obligation risks great punishment for a surplus good (honour), and
+  avoiding great punishment takes precedence over a surplus gain, so reason would counsel *not* imposing obligations; and **it all assumes the
+  servant is independent in acting or refraining, whereas given power plus motive the act is necessary**. To (2): being provided for by
+  one's master is valuable: everyone prefers a robe of honour from the great sultan worth 100 dinars to 100 dinars earned; creation began as
+  pure grace, so if grace involved harm, creation itself would be ugly; and the risk argument again. To (3): pleasure is possible in itself,
+  so God can give it without obligations. **The philosophers' view does not touch this, because for them reward and punishment are not
+  intended by a free agent but are concomitants of human acts, "a correct and known view, though built on the mūjib God"**; on the free-agent
+  view, mixing in what holds only for a mūjib is "joining contradictories". (He cross-refers to taʿdīl wa-tajwīr, justice and injustice, as a
+  branch of the free agent.)
+
+### L12302– Bāb 9 F8 Obligation beyond capacity (taklīf mā lā yuṭāq) occurs, so God does not observe servants' welfare
+- *Proof 1*: God reported of specific people that they would never believe (Q2:6; Q36:7; **Abū Lahab**, Q111:1; al-Walīd b. al-Mughīra,
+  Q74:11–17); their belief would turn God's true report into a lie, which is impossible, so their belief is impossible and obliging them to
+  believe is obliging the impossible. **Same in five forms**: (ii) God's *knowledge* that they won't believe would become ignorance; (iii)
+  belief with knowledge of non-belief is a contradiction; (iv) **belief includes affirming all God reported, including that they will never
+  believe → they are obliged to believe that they will not believe**; (v) God blamed those who "want to change God's word" (Q48:15), so
+  striving to bring about what God said will not be is forbidden, yet they are commanded to believe → commanded and forbidden the same act.
+  ★ **"This is the argument that demolishes the foundations of iʿtizāl. I have taken pains to formulate many replies on their behalf and will
+  give them here exhaustively."**
+- *Muʿtazilī station 1*: scripture and reason agree that knowledge or report of non-belief does not make belief impossible. **Scriptural**:
+  (1) the Qurʾān is full of "what prevented people from believing?" (Q17:94), "what harm if they believed?" (Q4:39), to Iblīs "what prevented
+  you from prostrating?" (Q38:75), Moses to Aaron (Q20:92), "what ails them that they don't believe?" (Q84:20), Q74:49, Q9:43, Q66:1; a man who
+  imprisons another and asks "what keeps you from doing my errands?" acts foolishly. **al-Ṣāḥib b. ʿAbbād**'s passage: how does He command
+  belief having prevented it, forbid unbelief having made them for it, turn them away then say "how are they turned away?" (Q40:69; editor:
+  this is treated in vol. 9), create lying in them then say "how are you deluded?" (Q10:34), "why do you disbelieve?" (Q3:98), "why do you mix
+  truth with falsehood?" (Q3:71), "why do you bar from God's path?" (Q3:99), "where are you going?" (Q81:26) … If knowledge or report were a
+  hindrance, all these verses would be false. (2) "Messengers… so that people have no argument against God" (Q4:165; Q20:134): the greatest
+  excuse would be "Your knowledge prevented us". (3) Unbelievers blamed for saying "our hearts are veiled… in our ears is deafness" (Q41:5);
+  if knowledge were a barrier they would be right …
