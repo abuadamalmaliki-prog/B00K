@@ -1079,3 +1079,112 @@ good and evil are valid with respect to servants, and void with respect to God."
 - **Proof 12**: "obligatory" means the omitter deserves blame; blame is a word or act that pains the heart, repels the nature and harms
   interests, impossible for God; "another sense of blame?" Reply: whether God can deserve blame depends on what blame means, and for us
   blame means …
+  … (cont. L12772) "something that produces grief in the heart, and praise something that produces joy; anything beyond that **we cannot
+  conceive, and without conception there is no assent**". Establishing another meaning is "nearly hopeless": we want praise only for the
+  joy it brings and shun blame only for the grief. (2) **Divinity, necessary in itself, is incompatible in itself with whatever entails
+  deficiency or blame, so God's not deserving blame is not grounded in His doing or leaving any act**: whatever He does or leaves, He cannot
+  deserve blame → nothing can be ugly from Him and nothing obligatory on Him. **"A decisive argument, without a speck of dust on it."**
+- **Proof 13**: deserving blame is positive, but "injustice" includes two negative conditions (not preceded by a crime, not followed by a
+  compensating ʿiwaḍ), so a negative condition would be part of the cause of a positive judgement. **Proof 14**: truth and lie are species of
+  "report", a species of speech, which is successive letters; only one letter exists at a time, and one letter is neither report nor
+  truth nor lie; the whole word never exists, and the non-existent cannot cause a real quality → speech cannot be good or bad *as true or
+  false*. To the tu quoque: for us, "ugly" only means that hearing a convention-bound sequence, building beliefs and acts on it, and then
+  finding it false shows our effort wasted; that is the whole of its ugliness. **Proof 15**: "tomorrow I will kill you, plunder your goods,
+  enslave your children" (unjustly): if refraining is good, then the resulting lie is good, so lying is not bad as lying; if doing it is good,
+  then unjust murder is good. **Proof 16: the prophet hidden in a man's house**, asked by a tyrant: lying is obligatory. Objections: (a) use
+  equivocation (**"in equivocations (maʿārīḍ) there is room to avoid lying"**); (b) a cause's effect can fail because of an impediment.
+  Answers: (a) suppose the tyrant knows every equivocation and would see through it; (b) **if an impediment could make any lie not ugly, every
+  lie might have one, and nothing God or His Messenger said would be certain, only probable.**
+- *Ashʿarī argument criticised*: "a great group of al-Ashʿarī's followers" argued: if killing were ugly in itself, retaliation (qiṣāṣ) would
+  be ugly; if benefit were good in itself, fornication and sodomy would be good. Muʿtazila: we never said "in itself", only "for aspects
+  (wujūh) in it". Ashʿarīs: "aspects" are unintelligible. ★ Razi makes the Muʿtazilī view intelligible: vinegar is pleasant only given
+  prior rich food and a strong stomach; a medicine is wanted only given certain humours, illness and no alternative → **"nothing beneath the
+  sphere of the moon necessitates anything by itself; necessitation happens only given a complex of states, aspects and conditions"**. So
+  killing is ugly as pain inflicted for no prior crime and with no later compensation. **"Those who relied on this argument against the
+  Muʿtazila did not know their doctrine."** [Editor cites ʿAbd al-Jabbār, *Sharḥ al-Uṣūl al-Khamsa*, p. 564, to confirm Razi knows the
+  Muʿtazila well.]
+
+### L12872–12930 Bāb 9 F10 Muʿtazilī statements for rational good/evil
+(Orig. F23.) Two approaches: (A) **necessary knowledge here, so also there**; (B) proof.
+- (A1) A sound mind judges that a benefactor must be thanked and an aggressor may be blamed (the man rescued from a tyrant; the brick and the
+  thrower); not from revelation, since **the dahrī and the Brahmin (barhamī) have it too**; and people give "he did me good / harm" as the
+  reason. (A2) **A dahrī alone in a desert finds a blind man near death and pities and helps him**: not for reward (the man is poor), praise
+  (he is blind, no witness) or heavenly reward (he denies the hereafter) → only the rational judgement that beneficence is good. (A3) the dinar
+  case (truth chosen over lies with equal pay). *Transfer to God*: knowing a thing is a truth suffices to know it is good, without knowing
+  any other aspects (and conversely), so "being true" is the cause of good, and where the cause is, the effect is; and lying and injustice are
+  *more* ugly in God, since we lie from ignorance or need, which are partial excuses.
+- (B) (1) Acts divide into good and bad; without a ground that would be preponderance without a preponderant; revelation choosing among
+  equal acts is the same; (2) **if good/evil came only from revelation, nothing would be ugly from God, so no trust in His promise or threat:
+  He might put prophets and angels in hell forever and Pharaohs and devils in paradise, show miracles through liars, send prophets to command
+  insulting God and fornication, send prophets to stones, bind people and throw them from mountains, threatening eternal punishment if they
+  do not leap above the Throne**; (3) revelation would speak in terms we cannot understand; (4) revelation depends on miracles proving
+  truthfulness, which depends on God's not showing miracles through liars; if that rested on revelation → circle.
+
+### L12938–13134 Bāb 9 F11 Replies to these arguments
+(Orig. F24.)
+- *To (A)*: assent requires conception of the terms. If "beneficence is good" means it is loved by nature as a source of benefits, and
+  "injustice is ugly" means it is hated as a source of pain and grief, **granted, and necessary knowledge, but in that sense not applicable to
+  God** (editor's gloss: "this is what the Muʿtazila mean"). If something else is meant, it is not even conceived, let alone self-evident.
+  ★ **"This is the true station where the verifying rational person must reflect."** Full account: there must be things wanted or hated for
+  themselves (else regress); these are **pleasure and joy (or removal of pain) and pain and grief (or removal of pleasure)**; means to them are
+  wanted or hated derivatively; reason weighs the degrees. **Injustice leads to pain closely and strongly, so it is hated more than lying**;
+  lying is hated because one builds acts on a false report and finds the labour wasted; **futility (ʿabath)** is hated because man is born
+  needy and wasting his life on futility forgoes the useful, a more remote harm, so it is less ugly than injustice and lying. *"But the
+  unjust benefits by injustice"*: he knows that pronouncing injustice good would permit others to wrong him and leave his life, property and
+  children insecure. **Killing a great king is ugly to his friends and good to his enemies** (editor: derived from taʿzīr varying by people's
+  rank). *The dahrī in the desert*: (i) beneficence opens the door to goods; (ii) **human nature is built on imitation (muḥākāt): seeing a
+  sufferer, one imagines "what if it were me?" and feels pain ("generic tenderness", al-riqqa al-jinsiyya), and would want rescue for
+  oneself, so judges one must rescue him**. That holds for tender temperaments; others are hard-hearted. ★ **"I saw one of the great kings who
+  was extremely cruel; his only pleasure was watching killing and plunder, and the more torture he watched, the happier and more beaming
+  his face."** → The Muʿtazila are right about what they *imagine*, but it reduces to desire for benefit and aversion to harm, impossible in
+  God.
+- *Second reply: the claim to self-evidence is false*: (1) self-evident truths cannot be disputed by rational people, yet **all the
+  philosophers and all the Ashʿarīs deny these goods and evils**. **Abū l-Ḥusayn al-Baṣrī**: denial of the necessary is impossible for a
+  great multitude but possible for a small group with motives; the Ashʿarī and Sunnī *commoners* do say beneficence is good and injustice ugly
+  if asked before being told of the schools; only the Ashʿarī leaders, a small group defending the school, deny it. ★ Razi: "**strange**";
+  commoners mean only benefit and harm, which we do not dispute; even the Muʿtazilī commoners understand nothing else; **the other sense is
+  understood only by the Muʿtazilī leaders**, a small group, and Abū l-Ḥusayn grants that such a group can agree on a false claim. (2) The
+  distinction between the "other sense" and benefit/harm is not self-evident; it appears only to the elite through subtle considerations.
+  (3) "Injustice is ugly" requires conceiving injustice: **Abū l-Ḥusayn, *Kitāb al-Qadar*, chapter on compensations (aʿwāḍ)**: "our
+  masters" said pains are good if deserved, if they bring a benefit exceeding them, if they ward off a greater harm, if believed to do so, if
+  done in self-defence, or if done in the course of habit or counting as another's act; **injustice = harm undeserved, with no exceeding
+  benefit, no greater harm averted, not believed so, not in defence, not counting as another's act.** Razi glosses the six conditions:
+  retaliation; God permitting animal slaughter for the compensation (aʿwāḍ) in it; defence (Abū Hāshim: rational people approve it once they
+  know it was defence); **a child thrown into snow**: the pain is God's act (direct or generated by the snow's cold) but counts as the
+  thrower's; the compensation is owed by the thrower and does not "exceed" (else the throwing would not be unjust). The mutakallimūn agree that
+  **if knowledge of the root is speculative, knowledge of the branch cannot be necessary**; knowing what injustice is requires this
+  definition, which only the verifiers grasp by careful thought → its ugliness is not self-evident. If he says "whoever conceives it so knows
+  necessarily it is ugly", that is the very point at issue, and he grants one man's claim proves nothing.
+- *Against the transfer to God*: why does knowing "injustice" together with "ugly" make injustice the cause? Knowing "A is B's father"
+  together with "B is A's son" does not make one relation the other's cause (relations are simultaneous; a cause precedes).
+- *To (B)*: (1) the agent able to do either contrary either can produce one without a preponderant (then why not revelation's
+  specification without one?) or needs one, a motive, which to avoid regress is God's act; so **the servant's act is necessitated by power
+  plus motive, both God's acts, and what God's act necessitates is God's act → all servants' acts, good and evil, are God's acts**; and God
+  specified the world's time, each event's time and each essence's attribute without a preponderant, so why not specify goods and evils?
+  (2) Prophecy and promise/threat either rest on rational good/evil (then proving rational good/evil from them is circular) or do not (then
+  denying it does not harm them). Granted only as an *ilzām*, it rebounds: if acts depend on motives, **jabr follows and God does good and
+  evil** (your objection hits you too); if not, God could create a miracle without any motive, so the miracle would not prove truthfulness.
+  And if servants create their acts, their power can bring things to be, so any miracle might be created by someone other than God (that the
+  Muʿtazilī proofs that none but God can create bodies and life are weak will be shown in the bāb of jabr and qadar). (3)–(4): assent on
+  revelation's arrival requires *conceiving* good and evil, and that conception is known by reason before revelation; (4) is (3) in another
+  form.
+- **"The author said: this bāb of this book is complete."** **End of vol. 3** (L13138): "followed by vol. 4, on origination and eternity
+  (al-ḥudūth wa-l-qidam) and the secrets of time and the eternal (asrār al-dahr wa-l-azal)". [No dated colophon here, unlike vols 1 and 2.]
+
+## VOLUME 3: overall picture (my synthesis, from the notes above, L7568–13138)
+Book 3 = **the attributes**. Bāb 1 power; Bāb 2 qādir vs mūjib; Bāb 3 knowledge (incl. particulars and non-existents); Bāb 4 will and
+pleasure; Bāb 5 hearing and seeing; Bāb 6 speech; Bāb 7 eternity and endurance; Bāb 8 life; Bāb 9 "kalimāt fī l-ṣifāt" (number of
+attributes, essence vs maʿnā, takwīn, divine names, wisdom and theodicy, rational good/evil, taklīf mā lā yuṭāq). Razi's stances:
+- **Attributes = relations (nisab, iḍāfāt) additional to the essence and caused by the essence itself**; only two items (essence plus
+  ʿālimiyya), not the Ashʿarī maʿānī; intermediaries deleted by *al-awlā wa-l-akhlaq*.
+- **Knowledge changes with its objects (Abū l-Ḥusayn al-Baṣrī's view, "the correct doctrine")**, yet Hishām's denial of foreknowledge is
+  rejected by consensus, though it is the only escape for the Muʿtazila.
+- **Speech**: the eternity of an inner speech (command, report) is rejected on rational grounds; God "speaks" by creating indicative sounds.
+- **Hearing and seeing**: suspension by demonstration, affirmation by *al-awlā*.
+- **Will**: Razi presses the deniers' objections; the specification argument fails as a demonstration.
+- **Rational good/evil**: valid for servants (reduced to benefit and harm), void for God; God's acts are not explained by purposes or
+  welfare; God is the creator of all acts; man is compelled in the form of a chooser (power plus motive). Strong, sustained anti-Muʿtazilī
+  polemic, with a pessimistic anthropology (pains outweigh pleasures) and **the rejection of the Avicennian optimistic theodicy**.
+- People most cited: Avicenna, Abū l-Ḥusayn al-Baṣrī (*Kitāb al-Qadar*), al-Jubbāʾī father and son, ʿAbd al-Jabbār, al-Kaʿbī, Hishām
+  b. al-Ḥakam, Jahm b. Ṣafwān, Karrāmiyya, al-Ṣāḥib b. ʿAbbād, Muḥammad b. Zakariyyāʾ al-Rāzī (debate with al-Kaʿbī), al-Ghazālī, al-Khaṭṭābī,
+  Abū Yazīd al-Bisṭāmī, Ibn ʿAbbās.

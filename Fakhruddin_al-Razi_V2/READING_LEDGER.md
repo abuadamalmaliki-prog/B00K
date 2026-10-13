@@ -35,3 +35,4 @@ Each row = a line range of `source_al-Matalib_al-Aliya.md` read in full, in orde
 | 29 | 11386–11977 | Vol.3 Bāb 9 F5 divine names (oneness, Ṣamad, Qayyūm, names of power and knowledge; interrupted), F6 wisdom start | notes/vol3.md |
 | 30 | 11978–12397 | Vol.3 Bāb 9 F6 (critique of theodicy; Muʿtazilī wisdom), F7 (rational good/evil: valid for servants, void for God), F8 (taklīf mā lā yuṭāq) start | notes/vol3.md |
 | 31 | 12398–12771 | Vol.3 Bāb 9 F8 (taklīf; Muʿtazilī answers; Hishām), F9 proofs 1–12 vs rational good/evil (Ibn Zakariyyāʾ vs Kaʿbī; Jubbāʾī's three brothers) | notes/vol3.md |
+| 32 | 12772–13237 | Vol.3 Bāb 9 F9 end, F10–F11 (Muʿtazilī case and replies), end of vol. 3; Vol.4 start: Maqāla 1, Muq. 1 (the world; accidents) | notes/vol3.md, notes/vol4.md |
