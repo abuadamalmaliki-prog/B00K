@@ -503,3 +503,306 @@ The proof gives *a* necessary being; one must still show the world is possible.
   specific attributes. *Answers*: (1) body-quiddity and individuation, once joined, each individuates the other — regress
   cut; (2) **individuation may be privative**, needing no cause; (3) philosophers: each state is prepared by a prior state of
   the matter; **mutakallimūn: a free agent may specify some essences with some attributes *without* a preponderator**.
+
+## L2842–2974 Q1 F16: how the possibility of attributes proves a powerful God
+- Bodies are alike in corporeality, differ in qualities, places, magnitudes; specification needs a cause, which is: (1) powers
+  inhering in the bodies (they too differ → regress); (2) their matter/receptacles (body cannot inhere in a receptacle —
+  proven); (3) another body (same question for its attributes); (4) attributes in other bodies (same) → **a distinct existent
+  that is neither body nor bodily**. Mutakallimūn add: it is not a *mūjib bi-l-dhāt* (a non-bodily cause relates equally to all
+  equally-receptive bodies, so a necessitating cause could not yield different effects) → **a free agent (fāʿil mukhtār)**.
+- **Tamāthul al-ajsām is "a noble premise of great use in uṣūl al-dīn"**: from it mutakallimūn derive God, **prophecy**
+  (breaking of custom is possible → miracles) and **the Resurrection** (moving the heavens, folding up sun and moon, all the
+  Qurʾān says of the Hour, are possible).
+- **Razi's own statement of the proof's limits**: it does *not* show (1) that bodies are originated or possible in essence
+  (they could be necessary while God only *composes* them); (2) that the composer is necessary in itself (that needs "the
+  enduring possible needs a cause" + no dawr/tasalsul); (3) that the Necessary is a chooser (the choosing composer could be a
+  possible necessitated by the Necessary).
+- Objections: (1) equal quiddity need not mean equal receptivity — the (extra) individuation may enable or block; (2) counter-
+  cases to "equals have equal concomitants": a thing is necessarily *originated* at its first instant and necessarily
+  *enduring* after; existence is univocal yet the Necessary's existence cannot be in possibles and vice versa; essences are
+  equal qua essences yet each necessarily has its differentia; animality in man = in horse, yet the horse's animality cannot
+  stay while horseness is swapped for humanity; colour in black/white likewise; bodies are within power when originated, not
+  when enduring; (3) a nature in the body, with regress allowed (1 = ½ of 2, ⅓ of 3 …; relational attributes; God's
+  knowing-that-He-knows); (4) matter; (5) the same equal-relation problem hits a *chooser*.
+- Answers: individuation is privative (so not part of a requirement), or if positive the question recurs; origination/
+  endurance are not extra attributes (else regress); necessary vs possible existence differ through the *quiddity* that is
+  "like a locus" for existence (God's quiddity requires its existence) — a difference of receptacle, unavailable for bodies;
+  regress already refuted; mūjib vs mukhtār deferred to vol. 4.
+
+## L2984–3148 Q1 F17: catalogue of arguments from contingent attributes
+- **Celestial**: each sphere's number and thickness (Mars's sphere is thicker than the Sun's whole sphere's diameter; the
+  outermost's thickness unknown); spheres have actual parts (whatever admits imaginary division has its parts before
+  imagining), any inner part could have been outer; motion vs rest; speeds — "if the sphere of fixed stars turns once, the
+  Sun's sphere turns 36,000 times"; the vast outermost sphere turns daily while the fixed stars complete a circuit in 36,000
+  years; direction of motion; order of spheres; celestial vs elemental form; spheres vs stars; each star's point and nature;
+  each zodiac sign's nature; **"it is proved that there is an infinite void outside the world"** (Razi's own view) — the
+  world's place in it; simple spheres yet the star-socket is here; the thin/thick complementary bodies (mutammimāt); upper and
+  lower surfaces of a sphere are of one nature, so Mercury's sphere could touch the Moon's with its convex side → **piercing
+  and tearing of the heavens are possible**; the epicycle set in the eccentric "like a gem in a ring".
+- **Elemental**: earth wrapped in water, air, fire — a contingent arrangement → a chooser.
+- **Objection — the doctrines of the world's origin**: eternal in essence and shape (necessary in itself; or possible,
+  necessitated by an eternal *cause*); originated in essence and attributes (most religions); eternal essences with originated
+  compositions — parts eternally at rest, or **Democritus**: atoms indivisible in fact, divisible in imagination, spherical;
+  in a uniform void they cannot rest (equal places) → chaotic motion → collisions produced the spheres; the spinning sphere
+  heats its neighbour (fire) and leaves the centre cold and dense (earth), air and water between; celestial motions mix
+  elements → minerals, plants, animals.
+- **Answers**: Aristotle refuted it: a body cannot move by itself; no void outside the world; no atoms; and even granting
+  them, uniform parts in a uniform void would *not* move. Mutakallimūn: beginningless motion is impossible. Others: (1) the
+  heavens would be products of chance while plants and animals come from essential natures — making the heavens less noble,
+  against sense; (2) the Moon-sphere's concave and fire's convex are smooth — no dragging; spheres are neither hot nor cold;
+  (3) fire would turn air to fire, etc., until all elements were fire.
+
+## L3154–3262 Q1 F18: proof from the origination of essences (the mutakallimūn's main route)
+Bodies are originated; every originated thing has a maker; the maker is not originated (regress) → eternal → necessary.
+"Every originated has a maker" via: originated → possible (it exists now and did not before → receptive of both) → needs cause.
+- *Objection*: why not necessarily non-existent at t1 and then *necessarily* existent at t2? Analogies: accidents that cannot
+  endure (non-existence after existence is necessary); the instant (necessarily arises, necessarily ceases); the world's
+  *possibility* in non-eternity arose by itself, not by an agent (what is by another lapses with it).
+- *Arguments that possibility itself is incoherent*: (1) if existence = quiddity, nothing can be "possibly non-existent";
+  if not, possibility attaches to quiddity ("black may not be black" — contradiction), to existence ("existence may be
+  non-existence"), or to their conjunction — all fail; (2) possibility is existent (necessary? possible → regress) or
+  non-existent (then absent; besides, impossibility is privative so its removal is positive); (3) "may exist / may not"
+  requires the quiddity to persist through non-existence → **the non-existent is a thing** (shayʾiyyat al-maʿdūm), which you
+  deny — and those who affirm it cannot attach possibility to an immutable quiddity or to a not-yet existence; (4) **future
+  contingents**: "Zayd goes to market tomorrow" / "doesn't": not both true or false; not "one, indeterminately" (truth is a
+  real attribute needing a determinate subject) → one is determinately true → its side necessary, the other impossible →
+  **possibility exists only in minds**, as ignorance.
+- *Answer*: by "possible" we mean the thing is such that **it may continue as it was or not** — as a seated man may stay seated
+  or not, known by necessity. What arose after beginningless non-existence could have stayed so or changed; the two being equal,
+  a preponderator is needed. The doubts collapse.
+
+## L3268–3310 Q1 F19: origination alone, without possibility — is "the originated needs an originator" self-evident?
+- Two kalām camps: **al-Kaʿbī** (Abū l-Qāsim, Muʿtazilī) and many Muslims: self-evident (people instantly seek a cause for any
+  event); **Abū ʿAlī & Abū Hāshim al-Jubbāʾī**: inferential.
+- Against al-Kaʿbī: reason demands a *new* cause for a new event (nobody accepts "the sky is above us" as the cause of a sound
+  just heard; an old hatred acts only when power/opportunity arrive now). So: if an originated thing needs an originated cause,
+  every event rests on a prior event (which al-Kaʿbī rejects); if it can rest on an unchanging prior cause, all reasonable people
+  find that far-fetched. "What sound reason affirms al-Kaʿbī rejects; what al-Kaʿbī wants reason does not affirm." Also reason
+  finds origination without prior matter/time just as strange; the mutakallimūn's differential treatment is "pure arbitrariness"
+  — disputants deny the self-evident when it suits them.
+
+## L3318–3394 Q1 F20: the Jubbāʾīs' / Qāḍī ʿAbd al-Jabbār's analogy (qiyās)
+- The world is originated, so it needs an agent, *by analogy with our acts*: aṣl = our acts originated by us; farʿ = the world;
+  ḥukm = need of an agent; ʿilla = origination. Our acts are ours because they occur *necessarily* given pure motives (dawāʿī)
+  and fail given pure deterrents (ṣawārif) — the thirsty faster in summer, with Law and doctor bidding him drink and no harm
+  foreseen, *must* drink; no one knowingly walks into fire for no gain — if they were not ours they could happen against our
+  will. The ʿilla is origination (prior non-existence has no link to an agent; endurance needs none — building outlasts builder).
+- **Razi's objections**: (1) "acts necessitated by motives" is incompatible with Muʿtazilism: the motives/wills come from man
+  (→ further wills → regress) or from God (→ the act is necessary once God creates the motive → **man is not independent**) —
+  i.e. Razi's own jabr argument; (2) acts might coincide with our will by chance — if chance-origination is self-evidently
+  impossible, al-Kaʿbī is right and the analogy is idle; if not, a chance coincidence could also be regular; (3) ḥudūth is
+  not the ground of need (proved in vol. 4); (4) our acts' origination is *restricted* origination — to generalise one must know
+  that origination qua origination grounds need: if self-evident, the qiyās is wasted; if not, circular.
+
+## L3406–3452 Q1 F21: the route of *originated attributes* (signs in nature)
+Before knowing whether bodies are possible or originated, we see states arise that no human can produce: celestial (motions,
+risings/settings; night/day, light/shade; stars near/far from the zenith; the four seasons) and elemental (the four elements;
+composites: meteorological phenomena, minerals, plants, animals — man's anatomy and the faculties of his soul).
+**Why this route is best for hearts**: sense and imagination support reason against doubt; the signs are many and cumulative;
+they are also *benefits*, and love of benefit stops one denying them; constant contact builds a firm habit. Hence revealed
+books, above all the Qurʾān, are full of them. Razi will give only the heads.
+
+## L3456–3622 Q1 F22: man's formation from the nuṭfa
+- Organs differ in size, shape, arrangement, hardness, yet come from semen. Semen is either homogeneous in reality, or (with many
+  naturalists — "pangenesis") composed of parts from every organ (pleasure felt throughout the body at emission; children
+  resemble parents organ by organ; defects and moles are inherited).
+- If homogeneous: womb-heat, natural power and stars act equally on all parts → a uniform product; and by the philosophers' own
+  rule one power on one matter yields a **sphere**. If heterogeneous: (1) its simple components would each become spheres → a
+  cluster of balls; (2) semen is fluid and keeps no positions — the heart's matter could end above the brain's. → a knowing,
+  wise, powerful Creator. "A strong, complete proof", mentioned in the Qurʾān in **over eighty places** (Q 23:12–14).
+- Objections: (1) each part of the womb has a special property; (2) a *formative power* (quwwa muwallida) in the semen —
+  knowing? (the mature soul cannot do this, still less at the semen stage) or unknowing? (then the sphere problem) — but many
+  physicians and philosophers say **"nature is wise"**, and perfect crafts are praised as "become nature" (the master no longer
+  deliberates each stroke); (3) then God would directly create maggots in filth — unbefitting; (4) a living, rational sphere or
+  star; (5) a celestial spirit, intellect, or angel — **the Indian doctrine**: each region has its celestial spirit, temples and
+  images are its "statue", men are fit only to serve the angels who serve God.
+- Answers: (1) the womb is homogeneous to sense, and most organs form deep inside, touching no womb-part; (2) we know by
+  necessity that natural powers lack wisdom and power, and that the unknowing cannot produce such a structure — arguing it is
+  "explaining the obvious", denying it is denying the self-evident. **Muḥammad b. Zakariyyā al-Rāzī** wrote a treatise proving
+  the wise God from the human body; his *ewer* (ibrīq) analogy — wide mouth for pouring, moderate spout, handle for the hand → a
+  knowing maker — is "a good, complete statement"; the contrived naturalist replies are "like hiding the sun with a handful of
+  dust". Q 77:20–24 "a secure lodging until a known term" = the womb's retentive power for exactly the needed time, then
+  expulsive. Popular speech about "nature" proves nothing. (3) "**And so we say**": God creates all animals; the
+  good/evil issue comes later. (4) the possibility stands, but by tamāthul the specific attributes of each sphere are from God.
+  (5) such an intellect/soul is possible → needs a cause → ends at the Necessary; hence Q 53:42 "to your Lord is the end" — "the
+  fount of all goods".
+
+## L3634–3690+ Q1 F23: the ancient philosophers' route from celestial motion
+Beginningless and endless revolutions need an agent of *infinite* power; no body or bodily power has infinite power → a mover
+neither body nor bodily = God. Premises:
+1. Beginningless motion — usually via "time is the measure of motion" and time has no beginning/end. **Razi's own reconstruction
+   on their principles**: events need causes; an unconditioned eternal cause leaves timing unpreponderated; so causation is
+   conditioned on an originated condition, which needs another … — not simultaneous (impossible), so successive without first
+   → beginningless events.
+2. Bodies cannot move themselves (natural science).
+3. A bodily power cannot do infinitely many acts: it inheres in a divisible substrate (no atoms) → divisible; a part does
+   nothing (then the whole does nothing), as much as the whole (whole = part), or less (then finite from a given start; the
+   whole is finite multiples of it → finite).
+- Conclusion (L3698–3722): infinitely many motions need a mover not body/bodily, moving spheres and elements → God; this was the
+  route of "the ancient philosophers of Aristotle's school". **Kalām counter-proof that motion has a beginning**: motion =
+  passage from a state, so its very reality requires being preceded by another; azal = not being preceded → a beginningless
+  motion is contradictory. Before the first motion, bodies either did not exist or rested; either way a mover/governor is needed.
+  **Disjunctive closure**: if motions have no beginning → God by the philosophers' route; if they do → God by the kalām route —
+  "on every hypothesis" (Q 7:54).
+
+## L3738–3800 Q1 F24: the design route — and Razi's famous verdict on method
+- The world is built in the most fitting, best-ordered way; reason testifies only a wise knower does that.
+- Lower world: wonders in the human body ("book of anatomy"), soul (*Kitāb al-Nafs*), animals, plants, minerals (properties,
+  mutual influence), meteorological phenomena, the elemental layers, the mutual fittings that preserve species.
+- Upper world: natures and sizes of spheres and stars; **45 kinds of motion** (each of the 7 planets has 6 directions: E→W,
+  W→E, S→N, N→S, down, up = 42; fixed stars 2; outermost sphere 1), each with its own speed, direction and effect on the world;
+  daily motion → night/day; monthly (Moon); yearly (Sun) → the four seasons; **the Sun as "sultan of the bodily world", other
+  stars its subjects**, seas, mountains, habitation and ruin tied to its course; fixed and wandering stars hold wisdoms of which
+  we know "only the little of the little".
+- Q 2:164 contains **eight** kinds of sign (three celestial; five elemental: ships, rain-and-revival = plants, beasts = animals,
+  winds & clouds = upper phenomena).
+- ★ **Razi's verdict**: "The proofs of the philosophers and mutakallimūn, though complete and strong, **the Qurʾānic method is
+  in my view nearer to truth**: those proofs are subtle, and their subtlety opens the doors of doubt and multiplies objections;
+  the Qurʾānic way reduces to one thing — forbidding excessive depth (*al-manʿ min al-taʿammuq*), avoiding the door of
+  'it was said / he said', and directing the mind to multiplying the signs of the upper and lower worlds. **Whoever abandons
+  partisanship and tries what I tried (jarraba mithla tajribatī) will know that the truth is what I have said.**" Hence a whole
+  section (Qism 2) is devoted to it.
+
+## L3806–3818 Qism 2 F1: why multiply persuasive proofs
+Proofs are decisive or persuasive; persuasive proofs *accumulate*: each gives opinion, added together they strengthen it, and
+may end in certainty. Aristotle ("the author of logic") on dialectic: dialectical opinions, strengthened, can reach certainty →
+jadal can stand in for burhān. Knowledge of God is where such caution matters most.
+
+## L3826–3994 Qism 2 F2: twenty sayings of eminent people
+1. The Prophet to ʿImrān b. Ḥuṣayn ["how many gods?" "ten" — "who for your needs and disasters?" "God" — "then you have no god but God"].
+2. Jaʿfar al-Ṣādiq and the zindīq merchant: shipwrecked, clinging to a plank, then losing it — whom did he still hope in? (Q 29:65).
+3. Abū Ḥanīfa vs. armed Dahriyya: a laden ship sailing straight through a storm with no sailor? — they wept (Q 30:25; 13:2).
+4. al-Shāfiʿī: the mulberry leaf — one in taste/colour/smell — becomes silk in the silkworm, honey in the bee, musk in the
+   gazelle, dung in other animals.
+5. Jaʿfar: a smooth fortress, silver outside, molten gold and silver inside; its walls split and out comes a hearing, seeing
+   animal (egg and chick).
+6. Mālik to Hārūn al-Rashīd: the diversity of voices, tones and languages (Q 30:22).
+7. Abū Nuwās' verses: emerald stems of plants testify God has no partner.
+8. A Bedouin: "dung points to the camel, footprints to the walker; a sky with constellations and an earth with paths — do they not
+   point to the Knowing, Powerful?"
+9. A physician: dry myrobalan that loosens, slimy mucilage that binds; another: the bee, poison at one end, cure at the other.
+10. Abū Ḥanīfa: a boat that crosses the Tigris, loads and unloads itself — "only an idiot says that" — "then you have affirmed
+    God". Razi: Abū Ḥanīfa's point is that the originated's need of an originator is **self-evident**.
+11. Jaʿfar: "the strongest proof is my existence": originated; not made by me (when existing I need no maker, when non-existent I
+    cannot make).
+12. ʿAlī: "the breaking of resolves and dissolving of intentions" — we strive and fail, don't strive and get.
+13. ʿUmar: chess yields endless games on a small board; the face is a smaller board whose pieces never move, yet no two faces east
+    or west are alike. Razi adds: no two people share nature, character, gait, turban-wrap, handwriting or fortune.
+14. ʿAlī: "I would not worship a Lord I have not seen … not seen by eyes but by hearts with the realities of gnosis … He made
+    'where' where, so no 'where' is said of Him; He made 'how' how, so no 'how' is said of Him."
+15. Dhū l-Nūn: "I knew my Lord by my Lord; but for my Lord I would not have known my Lord." Razi: God plants the tree of gnosis
+    in spirits — soil obedience, water servitude, branches dhikr, fruit reflection.
+16. A leaf falls on a sleeper's face — "who grew the leaf?" — in a dream: "He who split sight in the face". The Prophet's
+    prostration-prayer; ʿAlī: "glory to Him who made me see with fat, hear with bone, speak with flesh."
+17. A doubting king; his vizier plants gardens in the desert and claims they grew by themselves.
+18. Jaʿfar: if the world had a governor, could its state be better than it is?
+19. "Who knows himself knows his Lord" (and Torah: "O man, know yourself, know your Lord") — *by contrast*: originated/eternal,
+    possible/necessary, composite/one, ignorant-weak-needy / knowing-powerful-self-sufficient.
+20. al-Muwaffaq's ḥajj with the astrologers Abū Maʿshar al-Balkhī and Māshāʾallāh: Abū Maʿshar guessed the caliph's hidden thought
+    ("God") because the lunar node (raʾs) — invisible, known by its effects — stood at midheaven, the highest point.
+
+## L4000–4110+ Qism 2 F3: proofs according to each class of scholars
+**Class 1 — historians**:
+(1) *Universal consent*: no considerable people ever denied God; disputes concern attributes. Prophetic religions: Muslims;
+Jews ("Elohim, Adonai, Ehyeh asher ehyeh"); Christians (Syriac "Abbā, Alāhā, Rabbā, Qaddīshā"); Magians (fire as qibla because
+fire is noble, high, overpowering — akin to divine attributes; Zand-Avesta); Persians' **"Khudāy" = "came by itself" = necessary
+by itself**. Others: pre-Islamic Arabs (Q 39:38; 14:10 — "ilāh" for idols, "Allāh" only for God); Indians (who burn themselves for
+love of God); Zanj; Turks ("Bir Tengri" = the Lord is one; "Ulugh Bayat"); Chinese; Byzantines, Berbers, Copts, Abyssinians;
+Greeks (who pursued every science only to reach God). → the reason of all East and West over ~7,000 years exceeds one man's;
+a lone doubter should blame his own mind — "strong and clear, *on condition* one admits one's reason is less than everyone's".
+(2) *Historical providence*: peoples more devoted to God had better repute, longer lives, more good; the God-forgetting
+perished sooner …
+  supports: tyrants and worldlings fall to killing and plunder more than scholars; a humble madrasa or ribāṭ lasts 200–300 years
+  while royal palaces soon fall; the more pious the founder the longer the building lasts; the memory of scholars outlives that
+  of tyrants; hearts incline to the pious → acknowledging God is "the perfection of felicity even in this world" (Q 12:111;
+  44:25–29).
+
+**Class 2 — ascetics and mystics (aṣḥāb al-riyāḍāt, arbāb al-mukāshafāt)** — four kinds of argument (L4132–4478):
+1. *The ladder of spirituality*: existents are bodies, bodily attributes, and what is neither (*rūḥāniyyāt*). Universal instinct
+   holds the spiritual nobler: people despise the man devoted to food, dress and sex and revere the abstinent (even "uncouth"
+   Turks, Indians, Zanj revere elders for presumed knowledge — and despise unworthy elders more than children); children fear
+   great men; lions fear man though he is weaker; a child listening to an old woman's fables ignores food; chess/backgammon
+   players forget hunger for the pleasure of winning; real perfections are displayed, yet sex — the strongest bodily pleasure —
+   is hidden and its words are insults, while spiritual states are boasted of and even faked; worldliness darkens and constricts,
+   turning to God gladdens (Q 13:28); ʿAlī: "I did not pull out Khaybar's gate by bodily strength but by divine strength".
+   Mystics see **the bodily world as an image/shadow/trace of the spiritual world**. In bodies: earth (pure receptivity) <
+   water (like spirit to earth) < air < fire; minerals < plants < animals < man, "sultan of the animals". Perfection = self-
+   sufficiency, knowledge, power; one class excels, one person in each age excels all — **the Sufis' "Pole of the world" (quṭb),
+   the Shīʿa's "infallible Imam"** — and every thousand years or so one surpasses those: **the perfect prophet of revelation**.
+   Likewise spirits: all exceed humans (a drop to the sea, a flame to the sun), and one is supreme in self-sufficiency, knowledge,
+   power, needing none and needed by all → God. Human spirits to the Pole's = drop/sea; poles, saints and prophets to angelic
+   spirits = motes; angels rise to higher holy spirits; all of them before God's majesty "as nothing" (Q 78:38) → no human
+   knowledge, thanks or obedience can befit Him; only abasement (Q 31:27).
+   *[Editor's footnote at L4258 attacking Sufism (Junayd, Basṭāmī, Ḥallāj, Sarī) and his long excursus L4292–4434 on tawḥīd/tanzīh in
+   Torah, Gospel and Qurʾān, taʾwīl of anthropomorphic verses, Orthodox vs Catholic Trinity, Nicaea/Constantinople/Chalcedon — these
+   are al-Saqqā's, not Razi's.]*
+2. *Luminaries*: in bodies, sun, moon, stars, fire; the sun's rising extinguishes all others; the moon its vizier ("sultan of the
+   night"); stars in seven magnitudes; fire weakest (easily quenched, burns, smoky). A fortiori the spiritual world has luminaries
+   and **one supreme light in whose light every light vanishes and in whose existence every existent is nullified: by His grace
+   every non-existent becomes as existent, by His majesty every existent as non-existent** — seen by luminous souls in discipline.
+3. *Calamity*: doubters, when disaster strikes, find themselves imploring the God of the world (Q 29:65).
+4. *Answered prayer*: help for the distressed and wronged, especially for purer souls → a God who hears (Q 40:65).
+
+**Class 3 — sound minds without technical learning** ("I have heard from such people sound sayings"):
+1. **The argument from precaution (iḥtiyāṭ)** — a wager: if there is no God, affirming one does no harm; if there is, denying is
+   harmful → affirm. Then: if He is not a chooser, affirming a chooser is harmless; if He is, denying is harmful. Then: if He
+   commands nothing, affirming commands is harmless; if He does, denying is "the greatest harm". Under great fear, the safer side
+   is obligatory.
+2. **The slap on a child's face** proves the four great principles: (i) God — the child cries "who hit me?" and no one could
+   persuade him it happened by itself; so a fortiori the world's events; (ii) command and prohibition — "why did you hit me?" →
+   reason holds creatures are not left unbound …
+   (iii) reward and punishment — he demands retaliation and, if unable, calls for help → good must be rewarded, evil punished;
+   (iv) prophecy — he wants someone to fix the retaliation without excess or shortfall → mankind needs someone to set the
+   measures of incentives and deterrents: a messenger. "One slap suffices for the four noble principles."
+3. **From time**: every originated thing is self-evidently *after* something; the "prior" is not mere non-existence (prior and
+   posterior non-existence share non-existence but differ in priority → priority is positive and cannot qualify pure nothing) →
+   something existent precedes (and follows) whatever comes and goes; regress → a being that cannot not-exist.
+4. **From astronomy**: the sphere moves circularly → its motion is psychic and voluntary → an immaterial mover; if eternal and
+   necessary, done; if originated, regress → a necessary being.
+*[L4550–4600: editor's notes — proofs from fiṭra, causality, "scientific miracles" of the Qurʾān, guidance; al-ʿAqqād's four
+proofs (cosmological, teleological, "perfection"/ontological, moral) and the tamānuʿ proof from Q 21:22. Not Razi.]*
+
+## L4604–4644 Qism 3 Q1: what "necessary by itself" means
+Three senses: (a) **deserves existence from itself** (positive — its essence is the cause of its existence); (b) **does not
+accept non-existence** (negative); (c) **its existence does not depend on a separate cause** (negative). Problems: (b) existence
+qua existence does not accept non-existence, yet "existence" as such is not the Necessary; (c) the a-priori division of
+existents is: by itself / by another / *by neither* (pure chance: existing, and capable of ceasing, without any cause). The third
+is false but is a member of the division; until refuted, "needs no cause" does not imply "necessary". Those who argue "it either
+needs a cause or not" overlook this.
+
+## L4648–4814 Qism 3 Q2: is necessity a positive (thubūtī) notion?
+- *Pro*: (1) necessity = the quiddity's requiring its existence, a real relation independent of the mind (if not, a body's
+  relation to its place wouldn't be real either) — the confusion comes from sliding between "not depending on another"
+  (negative) and "deserving existence" (positive); (2) necessity = "not impossible to exist" (impossibility is privative, its
+  negation positive) + "impossible not to exist"; (3) necessity *strengthens* existence — a privative could not strengthen its
+  contradictory; (4) "not deserving existence" is true of the impossible and the possible, i.e. of non-existents → privative →
+  its contradictory is positive (objection about the impossible's mental "thing-ness" rebutted: what is judged impossible is
+  its *external* existence, which has no being at all).
+- *Con*: (1) a positive necessity would share existence with others and differ in quiddity → its own necessity extra → regress
+  or the Necessary is possible; (2) whole / part / external trilemma (whole: "body is necessary" is informative; quiddity unknown,
+  necessity known; logicians make it a modality of the copula); (3) necessity-by-itself shares "necessity" with
+  necessity-by-another and differs by "by itself" → composite; a negative differentia doesn't help (the shared notion is either
+  necessary — then it cannot be part of necessity-by-another, an accident of possibles — or possible — then the Necessary is
+  constituted by a possible); (4) necessity is predicated of non-existence ("necessarily does not exist") → privative; (5)
+  necessity precedes existence ("what is not necessitated does not exist") → an attribute before its subject exists; (6)
+  necessity is a mode of the subject–predicate relation → attribute of an attribute → dependent → possible.
+- ★ **Razi's answer — mutual cancellation**: something exists; it is necessary or possible. "These doubts against necessity are
+  matched by the doubts against possibility (dhātī); since they cancel each other, the proofs that necessity-by-itself is real
+  remain unimpugned."
+
+## L4818–4900+ Qism 3 Q3: is God's existence His quiddity, or extra to it?
+Exhaustive trilemma: (1) "existent" is **equivocal** (ishtirāk lafẓī) between Necessary and possible — "a great group of
+mutakallimūn such as **al-Ashʿarī** and **Abū l-Ḥusayn al-Baṣrī**"; (2) univocal, and in God's case it is **pure, self-standing
+existence** not inhering in any quiddity — so His existence is His reality — "chosen by **Avicenna** in all his books";
+(3) existence is an **attribute** of His reality, hence other than His quiddity — "a great group of mutakallimūn, **and what we
+have supported in most of our books**".
+**Ten arguments for univocity** (against 1): (1) existence is opposed only by non-existence, which is one; (2) it divides into
+necessary/possible/substance/accident; (3) the belief "it exists" survives changing beliefs about its necessity etc.;
+(4) "being realised in re" doesn't vary with what is realised, as extension doesn't vary with fine or dense; (5) a poet who
+rhymes on *wujūd* each line repeats his rhyme, but one who rhymes on *ʿayn* in different senses does not; (6) existence is
+known by intuition, nothing is better known — if equivocal each sense would need its own definition; (7) black and white are
+told apart by themselves, but the Necessary's existence and a possible's are not distinguished until we add "necessary"/
+"possible"; (8) once we prove the world originated we know it needs an existent maker, before deciding if He is eternal,
+necessary, bodily — that belief stays fixed; (9) "existent" conflicts with none of the contrasting determinations; (10) "existence
+is not common" can cover all existents only if existence is one concept — self-refuting. ("Treated at length at the start of
+*Kitāb al-Wujūd wa-aḥkāmih*; repeated here with additions.")
