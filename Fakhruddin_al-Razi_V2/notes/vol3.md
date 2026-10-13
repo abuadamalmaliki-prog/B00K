@@ -492,3 +492,139 @@ self-delighter is the First". [Razi reports this without objecting in this short
   eye and ear, **we suspend judgment (mutawaqqifūn) at another level**": it may be *conditioned* on the organs' affection (impaired organs
   impair the perceptions, sound organs give sound ones); or, though conditioned on organs *for the human soul*, it may occur to the separate
   beings without organs, as existence is conditioned on an agent for possibles yet belongs to the Necessary by Itself without one …
+  … (cont. L10360) "these two possibilities stand; on the first, affirming the attribute of God is impossible, on the second not → **suspension
+  is obligatory**. **But the premise built on *al-awlā wa-l-akhlaq* (the more fitting and more appropriate) requires affirming it**": He is
+  the most perfect existent, so He must have every perfection; seeing and hearing are perfections (whoever knows a thing and then sees it
+  feels he has passed from deficiency to perfection, from hiddenness to clarity) → by "the first intellect" (primary reason) we believe He has
+  them. [Same method as in vol. 1: demonstrative suspension plus the "more fitting" judgement.] Editor's fn 4 (L10370) refers to *al-Arwāḥ
+  al-ʿāliya wa-l-sāfila* (vol. 7).
+- *Inquiry 3, the deniers (L10374–10390)*: one cannot see or hear a thing before it exists, so (1) the attribute would change (seeing at
+  existence, not before), and change in His attributes is impossible; (2) the perception depends on the perceived existing, so His essence
+  would not suffice for the attribute → essence depends on attribute, attribute on another → the Necessary becomes possible. "This is all the
+  rational investigation we have summarised in this bāb."
+- ★ **Two weak kalām routes, "which we mention and show to be weak"**:
+  (1) *Ashʿarī route*: He is living; whatever is living can hear and see; whatever can have a quality has it or its contrary; the contraries of
+  hearing and sight (deafness, blindness) are deficiencies, impossible in God. **Six objections**: (i) if "living" means "not impossible that
+  He know and have power", why does that entail possible hearing and seeing (the very point at issue)? any other sense needs defining.
+  (ii) granting life: His life differs from ours in quiddity, and things differing in quiddity need not share concomitants (our life makes
+  appetite, pain, pleasure, ignorance and opinion possible, His does not); even with like lives, the *recipient* must be receptive, and His
+  particular essence may not be (existence "validates all attributes" yet most attributes are impossible for Him); or a condition may be
+  missing. (iii) if deafness and blindness mean mere *absence* of hearing and sight, "their absence is a deficiency" restates the claim; if
+  they are positive contraries, prove it. (iv) why must a substrate receptive of two contraries have one of them? Air is receptive of all
+  tastes and colours yet has none; we know the doings of the market crowd without willing or disliking them. (v) what is "deficiency"? if it
+  means what prevents Him being creator, show that lacking these does that. (vi) why is deficiency impossible for Him? if by self-evidence,
+  then a shorter route is available ("the hearing-seeing living one is perfect, the other deficient, and self-evidence judges God must be
+  described with perfection"); if by consensus (ijmāʿ), weak: **"the verses proving consensus is a proof are far weaker in indication than the
+  verses proving He is hearing and seeing"**, so if a scriptural premise is allowed, cite those verses directly.
+  (2) *Muʿtazilī route*: He is living with no defect (āfa); every such living being perceives perceptibles when present (sound eye + present
+  visible → sight; burning coal on a sound body → heat felt). Objections: (i) His being-living differs from ours, and His essence differs in
+  quiddity; (ii) life may require perception only given conditions absent in Him. A later Muʿtazilī reply: conditions impossible for God cease
+  to be conditions. ★ Razi: false; a missing condition removes the conditioned; **if that reasoning held, reductio (qiyās al-khulf) would
+  collapse** ("the concomitant is absent, so it is no longer a concomitant, so the antecedent can exist without it"). (iii) life may produce
+  *sensory* perception generally, but seeing and hearing do not arise from life alone. "God knows best."
+
+## L10490–10630 Bāb 6: God as speaking (mutakallim)
+(Orig. "F10".)
+- *Issue 1, reality of speech*: we know by necessity we have command, prohibition, statement and question. These are not the mere words:
+  (1) the formulae differ across languages while command is one; (2) command's quiddity is unchangeable while conventions change; (3) a
+  form for "statement" could have been assigned to "request", but a statement's quiddity cannot turn into a request. **On "request" (ṭalab)**:
+  either = willing the act from another (prohibition = willing the omission), or something other than will, since one may will an act and
+  not command it, or command without willing (when the command has another purpose). The first party's replies: commanding = acting to make
+  known that one wills; a command one does not will is "not really a command, just a word suggesting will". **Language's origin**: to make
+  another know what is in our hearts we must do some act; people agreed on assigning words to meanings because (1) we must breathe out warmed
+  air anyway, the voice cut at different places of articulation (makhārij) yields letters whose combinations can map infinitely many meanings,
+  unlike other acts; (2) sounds exist when needed and vanish when not; (3) producing them is quasi-natural. → **"the speaker (mutakallim) is
+  the one who *makes* speech (fāʿil al-kalām)"**: speech is a conventional act indicating an inclination or aversion in the heart. "Rational;
+  no room for dispute."
+- *Issue 2, proving He speaks*: it follows from His being a free agent who knows particulars. Those who reduce ṭalab to will: He wills some
+  things and dislikes others, and **creating sounds in a particular body** that by convention indicate His will and dislike "is speech". Those
+  who make ṭalab a distinct meaning need three things: the intelligible difference from will; proof He has it ("they have no good proof, as
+  will be explained"); and ★ **their claim that it is eternal, "which is far-fetched" (baʿīd)**. **Six rational arguments against an eternal
+  command or statement**: (1) command = imposing an obligation (ilzām), and it is necessarily known that one cannot say "O Zayd, I oblige
+  you" when Zayd does not exist ("if this is not necessary knowledge, the intellect has none"); (2) "We sent Noah" (Q71:1), "Adam disobeyed"
+  (Q20:121): what is reported precedes the report, so an eternal report would be preceded by something. To the objection from knowledge:
+  ★ **"we have mentioned that the correct doctrine (al-madhhab al-ṣaḥīḥ) here is Abū l-Ḥusayn al-Baṣrī's: knowledge changes when the known
+  changes"** [an explicit verdict; compare F6's leaning]; (3) once Zayd prays the dawn prayer, either the obligation persists (he can never
+  discharge it, even after a million performances) or it ceases (the eternal cannot cease); (4) abrogation (naskh), lifting or ending a ruling
+  (editor: the Qurʾān abrogating the Torah), means it ceased after existing, and what ceases is not eternal; (5) an eternal attribute's
+  attachments are essential and necessary, so it would attach to everything it can; since they deny rational good and evil, everything can
+  be commanded and forbidden → all things commanded and forbidden at once; (6) as knowledge changes with its objects, so a report with what it
+  reports, and what changes is not eternal. "Evident rational arguments that this ṭalab and khabar cannot be eternal, whether ṭalab is will or
+  not."
+- *Arguments for eternal speech*: (1) the Ashʿarī "living → can speak → speech or its contrary (muteness, silence), a deficiency"; (2) we agree
+  He speaks: not by His essence (agreed), so by speech; an originated speech would be in His essence (events in God), in another (then He
+  could be ignorant by another's ignorance), or in no substrate (agreed impossible; and a thing's attribute is in it) → eternal; (3) speech is
+  a perfection (then always had) or a deficiency (then never); (4) a speaker is more perfect than a non-speaker; we speak; if God did not in
+  eternity, we would at our existence be more perfect than He was in eternity. ★ **Replies**: (1) see hearing and seeing; and **silence is
+  no deficiency; the deficiency is saying "O Zayd, pray! O ʿAmr, fast!" when they do not exist; a man alone in his house calling "rider,
+  mount! standing one, come forward!" would be judged mad**; (2) if "speaking" means He did acts indicating His will and dislike, granted, but
+  that implies no attribute called speech; anything more is denied, and **"the agreement is only verbal"**; (3)–(4) commanding and forbidding
+  with no one commanded is itself the deficiency and folly (safah). "Scriptural and verbal arguments contain many sayings not fitting for
+  this book."
+  [Key result: in *al-Maṭālib* Razi rejects the eternity of the Ashʿarī *kalām nafsī* on rational grounds, at least for command and report,
+  and defines divine speech as created sounds that indicate His will. This departs strongly from standard Ashʿarism.]
+
+## L10640–10680 Bāb 7: God as eternal and enduring (qadīm bāqī)
+(Orig. "F11".) Two views: eternity and endurance are His very essence, or two attributes subsisting in it. *For attributes*: (1) "eternal" (no
+beginning) and "enduring" (stable existence) are understood by us, while His particular essence is not understood (shown earlier) → they
+differ; (2) "the eternal enduring" is divided into body, substance, accident or something else, and what is divided is common to the parts,
+so it differs from each; (3) "God's essence is eternal and enduring" is informative, "God's essence is an essence" is not. *Against*: (1) the
+essence would need the attribute → necessary through another. Reply: the essence, as that very essence, may *necessitate* its own
+permanence; the absurdity follows only if something beyond the essence causes its permanence, and on this account the permanence is still an
+attribute. (2) permanence would need its own permanence → regress; and if self-permanent it is more fit to be the self-standing essence; if
+permanent through the essence → circle, through another → regress. No verdict given ("the rational summary of this bāb").
+
+## L10686–10704 Bāb 8: God as living (ḥayy)
+(Orig. "F12".) "Living" means "it is valid that He know and have power"; since He is knowing and able, and what exists is not impossible,
+this holds. *Objection*: impossibility is a privative notion, so its negation is existent; "living" is a positive attribute and description
+of
+the essence, so not the essence itself → an existent attribute. *Another view*: life is an existent attribute that makes knowing and power
+possible; otherwise this validity would belong to this essence no more than to any other. *Reply*: that holds only if essences were equal in
+quiddity; His differs. And essences also differ in the validity of being alive, so if difference needs an attribute, life needs another →
+regress; if the particular essence explains one difference, why not the other?
+
+## L10710– Bāb 9 "Kalimāt fī l-ṣifāt" (editor's title)
+Editor's fn (L10724, not Razi): the MSS present the remaining faṣls of book 3 as "explanatory faṣls" numbered 13–22; the editor groups them
+under this bāb title.
+### F1 How many attributes? (L10714–10722)
+The mutakallimūn restrict them to eight: living, knowing, able, willing, hearing, seeing, speaking, enduring. Asked "any more?", they say no:
+there is no proof of more, and what has no proof must be denied; or, no number would be more apt than another, so infinitely many unknown
+attributes. ★ **Razi**: "you know from logic that **not knowing a thing does not yield knowing its non-existence**"; "no number is more apt",
+if meant in the mind, yields only suspension; if meant in reality, it cannot be proved. **What reason proves we affirm; where reason proves
+neither existence nor non-existence, suspension is obligatory.**
+### F2 Does He know by His essence or by an entity (maʿnā)? (L10728–)
+(Orig. F14.) "The most important thing is to fix the locus of disagreement." Power is the validity of acting, which is not the essence itself
+(one can know it without knowing the essence); knowing is awareness and disclosure, which comes about only by a **specific relation (nisba)**
+between knower and known. These relations ("attachment", taʿalluq) must be affirmed or His knowing and power denied. Positions: some
+mutakallimūn hold three items (essence, the attribute "knowledge", its attachment); others four or five (essence, knowledge, *ʿālimiyya* (the
+state of being a knower), and attachment for one or both; "I do not know how exactly their views go"). ★ **"As for us, we affirm only two
+things: the essence and the relation called *ʿālimiyya*, and we hold that this relation is not the essence itself but something additional
+to it, existing in it. This is the purely rational question."** Merely *verbal* questions: are the attributes "other than" the essence or
+"neither it nor other"; are they called "eternals" (qudamāʾ); "accidents"; "subsisting in / inhering in / existing in" or only "existing by"
+the essence. "The well-known report is that the philosophers and Muʿtazila deny the attributes and the Ṣifātiyya affirm them." [Editor's
+long fn (L10760–10788, not Razi): the Muʿtazila do not deny the attributes; he cites ʿAbd al-Jabbār's *Sharḥ al-Uṣūl al-Khamsa*, *al-Mughnī*,
+*al-Muḥīṭ bi-l-Taklīf*, *Tanzīh al-Qurʾān ʿan al-Maṭāʿin*, *Tathbīt Dalāʾil al-Nubuwwa*, and al-Zamakhsharī; they deny only bodily members.]
+Two stations: (1) knowledge and power, as these relations, are additional to the essence; (2) are they necessary in themselves, necessitated
+by the essence, or by an entity that necessitates the relations?
+- *Station 1, eight arguments that knowledge and power are not the essence itself*: (1) "knowing" contradicts "not knowing" but not "not
+  existent", and vice versa; (2) after proving a necessary eternal cause, reason still suspends on whether it knows and has power and needs a
+  separate proof; (3) "God's existent essence is existent" is uninformative, "… is knowing and able" informative; (4) the relation between knower
+  and known is an attribute of the essence and depends on it; relations are said relative to another, self-standing essences are not; (5) able
+  ≠ knowing (each can be without the other) → one thing would be two; (6) if knowing = power, whatever He knows He could do, so the necessary
+  and the impossible would be objects of power; (7) once a power's object exists it is no longer an object of power (making the existent is
+  impossible) yet it remains known; (8) knowledge and power have different definitions, rules and properties, so they are not synonyms; the
+  three notions (knowing, able, existent essence) are not three self-standing entities (agreed and evident), so one is the subject and the
+  others attributes.
+- *Deniers*. **Philosophers**: (1) the attributes are necessary by themselves (but there is only one Necessary, and they subsist in another so
+  depend on it) or possible (then caused by the essence, which would be both receiver and agent, impossible; and "need arises only at the
+  time of origination, else making-to-be of what already is", so caused attributes would be originated); (2) the God of the world is simple
+  or composite; a composite needs its parts, which are other than it → possible; subject plus attribute is composite → He is an absolute
+  unity (fard muṭlaq). **Muʿtazila, general arguments**: (1) His being-a-knower is necessary (else a maker would make Him a knower, and God
+  would be a servant), and the necessary has no cause; (2) **many eternals (qudamāʾ)**: eternity is positive and shared, so they differ by
+  constituent parts, which are themselves eternal and so composite without end, or they are alike in their whole quiddity (essence becomes
+  attribute and vice versa → many gods); (3) a multiplicity of eternals is agreed false; (4) inherence means the attribute is in a place
+  following its substrate; without this neither would be more apt to subsist in the other → spatial God; (5) His divinity is complete without
+  the attributes (they are superfluous) or not (He needs another); (6) essence alone sufficient → attributes idle; attributes sufficient →
+  essence idle; neither → whatever arises at their union regresses or adds nothing → divinity is a concomitant of the essence as such.
+  **Against knowledge specifically**: (1) a knowledge would attach to what ours attaches to, in the same respect, so would be like ours →
+  both eternal or both originated …
