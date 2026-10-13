@@ -810,6 +810,142 @@ $ curl -X POST "..." -d "...&username=nonexistent@tps.com&password=test"
 
 ---
 
+## Finding #15: Broken Access Control — Unauthenticated Read Access to Internal Corporate Posts via Supabase PostgREST
+**Severity**: High (Broken Access Control / Unauthorized Data Access)
+**Domain**: scentral.theperfumeshop.com → fsqcbhgehkpoqwrlpdnf.supabase.co
+
+### Description
+The Scentral intranet application (Hublio) uses a second Supabase project (`fsqcbhgehkpoqwrlpdnf`) whose anonymous API key is exposed in the client-side JavaScript bundle (`/assets/index-DestaOsG.js`). The `posts` table has a permissive Row-Level Security (RLS) SELECT policy that allows the `anon` role to read all rows. This exposes **71 internal corporate posts** — including employee names, business strategy, compliance directives, and leadership communications — to any unauthenticated attacker.
+
+Additionally, **open email signup** is enabled on this Supabase project (`disable_signup: false`), allowing anyone to create an account. Thirteen tables are accessible at the API level: `profiles`, `events`, `campaigns`, `notifications`, `announcements`, `posts`, `hubs`, `organisations`, `communities`, `community_members`, `hub_members`, `poll_options`, `poll_votes`.
+
+### Steps to Reproduce
+1. Extract the Supabase anon key from the scentral client-side JavaScript:
+   ```
+   curl -s https://scentral.theperfumeshop.com/assets/index-DestaOsG.js | grep -oP 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\.[A-Za-z0-9_.-]+'
+   ```
+2. Query the posts table using the anon key:
+   ```
+   curl -s "https://fsqcbhgehkpoqwrlpdnf.supabase.co/rest/v1/posts?limit=5" \
+     -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzcWNiaGdlaGtwb3F3cmxwZG5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NDczMTcsImV4cCI6MjA5MTQyMzMxN30.DgpcxObmZZmeNAa4ROC7SPskhLoIHgA5ecMa7fEGqjE" \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZzcWNiaGdlaGtwb3F3cmxwZG5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU4NDczMTcsImV4cCI6MjA5MTQyMzMxN30.DgpcxObmZZmeNAa4ROC7SPskhLoIHgA5ecMa7fEGqjE"
+   ```
+3. Observe 71 internal posts returned including employee names, business strategy, and compliance training content.
+4. Verify open signup:
+   ```
+   curl -s -X POST "https://fsqcbhgehkpoqwrlpdnf.supabase.co/auth/v1/signup" \
+     -H "apikey: <anon_key>" -H "Content-Type: application/json" \
+     -d '{"email":"attacker@example.com","password":"password123"}'
+   ```
+   Returns 200 with user ID and `role: "authenticated"`.
+
+### Evidence
+**Exposed data (sample from 71 posts):**
+
+| Post Type | Title | Sensitive Content |
+|-----------|-------|-------------------|
+| announcement | Mandatory Allergen Labelling Training — Complete by April 30 | EU Cosmetics Regulation compliance details, staff training requirements |
+| leadership | Our Sustainability Pledge: Refillable Packaging by 2027 | Business strategy roadmap with quarterly milestones, cost projections (25% packaging cost reduction), supplier partnerships |
+| shoutout | Customer service save of the month | Employee names (Priya, Stephen Port, Craig Keenan, Meshach Leigertwood) |
+| poll | Which scent family should our Autumn 2026 collection explore? | Unreleased product strategy |
+| announcement | Cyber Security Acceptable Use Policy — Q2 Refresh | Internal security policy information |
+
+**16 unique internal employee/author UUIDs** exposed via the `author_id` field.
+**Organisation ID**: `2ae333e1-2854-48ef-8b10-ffa6da51f45f`
+
+**Auth settings confirm open signup:**
+```json
+{"external":{"email":true},"disable_signup":false,"mailer_autoconfirm":false}
+```
+
+### Impact
+- **High**: Unauthorized access to 71 internal corporate communications including business strategy, financial projections, and compliance directives
+- **High**: Employee PII exposure — real names visible in shoutout posts and content
+- **Medium**: Internal organizational structure and team names revealed
+- **Medium**: Unreleased product strategy (Autumn 2026 collection, sustainability roadmap with specific dates and partners)
+- **Medium**: Open signup allows creation of accounts in the corporate Supabase project, potentially escalating access if RLS policies grant broader permissions to authenticated users
+
+### CVSS 4.0
+**8.2** (High) - CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N
+
+### Recommendation
+1. **Immediate**: Add restrictive RLS SELECT policy on the `posts` table requiring `auth.uid()` check — deny reads for the `anon` role
+2. **Immediate**: Disable open signup on the Supabase project (`disable_signup: true`) or restrict to corporate email domains
+3. **Short-term**: Audit RLS policies on all 13 accessible tables to ensure anon role has no read/write access to internal data
+4. **Short-term**: Review whether the anon key needs to be exposed in client-side code — consider proxying Supabase calls through a backend that validates authentication first
+
+---
+
+## Finding #16: OAuth Redirect URI Takeover via Abandoned Lovable.dev Project and Dangling Domain
+**Severity**: High (OAuth Security / Account Takeover Chain)
+**Domain**: scentral.theperfumeshop.com → Azure AD app registration
+
+### Description
+The Azure AD app registration (client_id: `7053b019-d535-4ade-ad68-a6d266e7ad68`) used by the Scentral intranet has four hardcoded redirect URIs for its admin consent flow, two of which point to abandoned external services:
+
+1. `https://scentral.theperfumeshop.com/adminconsent-callback.html` — **Active** (current deployment)
+2. `https://id-preview--0f95779a-51bc-46c4-85e8-f79290528466.lovable.app/adminconsent-callback.html` — **401** (preview environment)
+3. `https://brilliant-workplace.lovable.app/adminconsent-callback.html` — **404 "Project not found"** (deleted Lovable project)
+4. `https://hubliointranet.site/adminconsent-callback.html` — **No A record** (dangling domain on Azure DNS)
+
+Azure AD accepts all four redirect URIs for authorization code flow, implicit flow, and admin consent flow. The admin consent flow requests extremely dangerous Microsoft Graph permissions: `Sites.Manage.All`, `GroupMember.Read.All`, `User.Read.All`, `Group.ReadWrite.All`.
+
+### Steps to Reproduce
+1. Confirm the deleted Lovable project:
+   ```
+   curl -s https://brilliant-workplace.lovable.app/
+   # Returns 404 "No Lovable project found at this address"
+   ```
+2. Verify Azure AD accepts the abandoned redirect URI:
+   ```
+   curl -sD- "https://login.microsoftonline.com/5c8208f9-b560-4909-903b-5a5cc5b1d45a/oauth2/v2.0/authorize?client_id=7053b019-d535-4ade-ad68-a6d266e7ad68&response_type=code&redirect_uri=https://brilliant-workplace.lovable.app/adminconsent-callback.html&scope=openid+profile"
+   # Returns 200 OK with Azure AD login page — redirect URI accepted
+   ```
+3. Verify the admin consent endpoint also accepts it:
+   ```
+   curl -sD- "https://login.microsoftonline.com/5c8208f9-b560-4909-903b-5a5cc5b1d45a/adminconsent?client_id=7053b019-d535-4ade-ad68-a6d266e7ad68&redirect_uri=https://brilliant-workplace.lovable.app/adminconsent-callback.html"
+   # Returns 200 OK — admin consent redirect URI accepted
+   ```
+
+### Evidence
+**Hardcoded redirect URIs** extracted from scentral JavaScript (`/assets/index-DestaOsG.js`):
+```javascript
+[
+  {label: "Current",       url: window.location.origin + "/adminconsent-callback.html"},
+  {label: "Preview",       url: "https://id-preview--0f95779a-...lovable.app/adminconsent-callback.html"},
+  {label: "Published",     url: "https://brilliant-workplace.lovable.app/adminconsent-callback.html"},
+  {label: "Custom domain", url: "https://hubliointranet.site/adminconsent-callback.html"}
+]
+```
+
+**Admin consent scopes requested:**
+- `Sites.Manage.All` — Create & manage SharePoint sites
+- `GroupMember.Read.All` — Read M365 group memberships
+- `User.Read.All` — Read user directory profiles
+- `Group.ReadWrite.All` — Create & manage M365 groups
+
+**DNS confirmation:**
+- `brilliant-workplace.lovable.app` → A records 185.41.148.1/2 (Lovable/Cloudflare), returns 404
+- `hubliointranet.site` → Azure DNS nameservers configured, NO A record
+
+### Impact
+- **High**: If an attacker claims the `brilliant-workplace` project name on Lovable.dev, they gain control of the redirect URI and can intercept OAuth authorization codes or admin consent tokens
+- **High**: The admin consent flow grants `Sites.Manage.All`, `GroupMember.Read.All`, `User.Read.All`, `Group.ReadWrite.All` — full access to the M365 environment
+- **Medium**: The `hubliointranet.site` domain has Azure DNS nameservers but no A record — if the DNS zone subscription lapses, the domain could be claimed
+- **Medium**: The implicit flow (`response_type=token`) is also accepted with the abandoned redirect URI, enabling direct access token theft in the URL fragment
+
+### CVSS 4.0
+**8.1** (High) - CVSS:4.0/AV:N/AC:L/AT:P/PR:N/UI:A/VC:H/VI:H/VA:N/SC:H/SI:H/SA:N
+
+### Recommendation
+1. **Immediate**: Remove `brilliant-workplace.lovable.app` and `hubliointranet.site` from the Azure AD app registration's redirect URIs
+2. **Immediate**: Remove the Lovable preview redirect URI if no longer in use
+3. **Short-term**: Claim the `brilliant-workplace` project name on Lovable.dev preemptively to prevent attacker takeover
+4. **Short-term**: Reduce the admin consent scopes to the minimum required (principle of least privilege)
+5. **Medium-term**: Implement a redirect URI lifecycle management process — when external services are decommissioned, remove their redirect URIs from app registrations
+
+---
+
 ## Additional Observations
 
 ### Akamai WAF (AkamaiGHost)
@@ -855,21 +991,28 @@ $ curl -X POST "..." -d "...&username=nonexistent@tps.com&password=test"
 ---
 
 ## Recommendations (Priority Order)
-1. **CRITICAL**: Remove the DNS CNAME for `refer.theperfumeshop.com` → `d21ht8kxzkwbio.cloudfront.net` immediately — dangling CloudFront CNAME enables subdomain takeover (Finding #12)
-2. **CRITICAL**: Replace wildcard subdomain CORS pattern (`*.theperfumeshop.com`) on api/media infrastructure with explicit origin allowlist — this eliminates the takeover→credential theft chain (Finding #10 + #12)
-3. **CRITICAL**: Disable GitHub, Google, and Twitter authentication providers on scentral.theperfumeshop.com via `staticwebapp.config.json` route blocks (Finding #7)
-4. **CRITICAL**: Restrict Azure AD authentication on scentral from `/common/` (multi-tenant) to the organization's specific tenant ID (Finding #7)
-5. **HIGH**: Disable Device Code Flow and ROPC grant on the techsale Azure AD app registration (Finding #13)
-6. **HIGH**: Add HttpOnly and Secure flags to PKCE code_verifier cookies and reduce Max-Age to 300 seconds (Finding #14)
-7. **HIGH**: Implement server-side authorization scope validation on techsale OAuth flow; do not pass scope as client-controlled parameter (Finding #8)
-8. **HIGH**: Decommission or secure abandoned subdomains and audit ALL DNS records for dangling CNAMEs (Findings #10, #12)
-9. **Immediate**: Fix the internal origin leak on connect by setting `NEXTAUTH_URL` to the public-facing URL (Finding #1)
-10. **Immediate**: Remove SAP Commerce Cloud backend hostname from client-side JavaScript (Finding #11)
-11. **Short-term**: Restrict CSP `frame-ancestors` to explicit origins instead of `*.theperfumeshop.com` wildcard to prevent clickjacking via subdomain takeover
-12. **Short-term**: Harden campaigns.theperfumeshop.com - disable directory listing, remove default Apache test page, or decommission (Finding #10 chain)
-13. **Short-term**: Strip Supabase project identifiers from cookie names and CSP headers (Finding #2, #9)
-14. **Short-term**: Remove stale Lync/SfB DNS records (Finding #4)
-15. **Short-term**: Enforce Conditional Access policies requiring MFA for all authentication flows including ROPC and device code (Finding #13)
-16. **Medium-term**: Review Supabase RLS policies for the techsale application
-17. **Medium-term**: Configure SAP Commerce Cloud backend to reject requests not from Akamai CDN
-18. **Medium-term**: Implement DNS record lifecycle management — auto-remove CNAMEs when cloud resources are deprovisioned
+1. **CRITICAL**: Fix RLS policy on scentral `posts` table — deny SELECT for `anon` role; 71 internal posts currently readable without authentication (Finding #15)
+2. **CRITICAL**: Disable open signup on the scentral Supabase project or restrict to corporate email domains (Finding #15)
+3. **CRITICAL**: Remove abandoned redirect URIs (`brilliant-workplace.lovable.app`, `hubliointranet.site`) from the Azure AD app registration immediately (Finding #16)
+4. **CRITICAL**: Remove the DNS CNAME for `refer.theperfumeshop.com` → `d21ht8kxzkwbio.cloudfront.net` immediately — dangling CloudFront CNAME enables subdomain takeover (Finding #12)
+5. **CRITICAL**: Replace wildcard subdomain CORS pattern (`*.theperfumeshop.com`) on api/media infrastructure with explicit origin allowlist — this eliminates the takeover→credential theft chain (Finding #10 + #12)
+6. **CRITICAL**: Disable GitHub, Google, and Twitter authentication providers on scentral.theperfumeshop.com via `staticwebapp.config.json` route blocks (Finding #7)
+7. **CRITICAL**: Restrict Azure AD authentication on scentral from `/common/` (multi-tenant) to the organization's specific tenant ID (Finding #7)
+8. **HIGH**: Disable Device Code Flow and ROPC grant on the techsale Azure AD app registration (Finding #13)
+9. **HIGH**: Add HttpOnly and Secure flags to PKCE code_verifier cookies and reduce Max-Age to 300 seconds (Finding #14)
+10. **HIGH**: Implement server-side authorization scope validation on techsale OAuth flow; do not pass scope as client-controlled parameter (Finding #8)
+11. **HIGH**: Reduce admin consent scopes to minimum required — `Sites.Manage.All` and `Group.ReadWrite.All` are excessive (Finding #16)
+12. **HIGH**: Audit RLS policies on ALL 13 accessible scentral Supabase tables to ensure anon role has no read/write access (Finding #15)
+13. **HIGH**: Decommission or secure abandoned subdomains and audit ALL DNS records for dangling CNAMEs (Findings #10, #12)
+14. **Immediate**: Fix the internal origin leak on connect by setting `NEXTAUTH_URL` to the public-facing URL (Finding #1)
+15. **Immediate**: Remove SAP Commerce Cloud backend hostname from client-side JavaScript (Finding #11)
+16. **Short-term**: Restrict CSP `frame-ancestors` to explicit origins instead of `*.theperfumeshop.com` wildcard to prevent clickjacking via subdomain takeover
+17. **Short-term**: Harden campaigns.theperfumeshop.com - disable directory listing, remove default Apache test page, or decommission (Finding #10 chain)
+18. **Short-term**: Strip Supabase project identifiers from cookie names and CSP headers (Finding #2, #9)
+19. **Short-term**: Remove stale Lync/SfB DNS records (Finding #4)
+20. **Short-term**: Enforce Conditional Access policies requiring MFA for all authentication flows including ROPC and device code (Finding #13)
+21. **Short-term**: Claim `brilliant-workplace` project on Lovable.dev preemptively to prevent attacker takeover (Finding #16)
+22. **Medium-term**: Review Supabase RLS policies for the techsale application
+23. **Medium-term**: Configure SAP Commerce Cloud backend to reject requests not from Akamai CDN
+24. **Medium-term**: Implement DNS record lifecycle management — auto-remove CNAMEs when cloud resources are deprovisioned
+25. **Medium-term**: Implement redirect URI lifecycle management — remove URIs from app registrations when external services are decommissioned (Finding #16)
