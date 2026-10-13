@@ -967,3 +967,115 @@ good and evil are valid with respect to servants, and void with respect to God."
   hindrance, all these verses would be false. (2) "Messengers… so that people have no argument against God" (Q4:165; Q20:134): the greatest
   excuse would be "Your knowledge prevented us". (3) Unbelievers blamed for saying "our hearts are veiled… in our ears is deafness" (Q41:5);
   if knowledge were a barrier they would be right …
+  … (cont. L12404) if they were truthful, blaming them would be void. (4) Q2:6 and Q36:7 were revealed as blame and deterrence; if prevented
+  they would be excused like the blind for not seeing or the crippled (zamin) for not walking. (5) The Qurʾān is God's argument against the
+  unbelievers, not theirs against prophecy; if knowledge and report prevented belief, "you yourself report God knew our unbelief; why ask the
+  impossible of us?" would be unanswerable. (6) "An excellent Master, an excellent Helper" (Q8:40) would become "evil master". (7) **"How do
+  you disbelieve in God?" (Q2:28): on the Jabriyya's view they could answer in *sixteen* ways**: He created unbelief in them, willed it, knew
+  it, reported it (4 complete causes); He created the power+motive complex that necessitates it, willed it, knew it, reported it (4); He did not
+  create belief, will it, know it, report it (4); He did not create the motive to belief, will it, know it, report it (4). (8) Praise and
+  deterrence fill all scriptures and prophetic sunnas. (9) "God charges no soul beyond its capacity" (Q2:286), "no hardship in religion"
+  (Q22:78), "relieves them of their burden and fetters" (Q7:157).
+  **Rational**: (1) if knowledge of non-occurrence prevented occurrence, God would have no power over anything (what He knows will happen is
+  necessary, what He knows won't is impossible, and power attaches to neither), and wisdom and folly are a branch of His power; (2) knowledge
+  follows the object as it is: belief is possible in itself, so knowledge cannot make it necessary and change the object's state; (3) servants
+  would have no power and their movements would be like animals' compelled ones, yet **we blame the thrower of a brick, not the face it
+  wounded, and distinguish a brick falling from the roof from one thrown on purpose**; rational people praise, blame, command and reproach;
+  (4) commanding the unbeliever to believe would be commanding him to annihilate God's knowledge, as unfitting as commanding him to annihilate
+  God's essence; (5) belief is possible in itself, so God knows it as possible; if that knowledge made it necessary, it would be both possible
+  and necessary; (6) commanding the impossible is folly; if allowed, then also miracles for liars and breaking His promises and threats →
+  prophecy and obligation collapse; (7) then the blind could be commanded to dot the Qurʾāns, the crippled to fly, a bound man thrown from a
+  peak asked "why didn't you fly to heaven?"; (8) then prophets could be sent to stones; (9) if knowledge necessitated, it would make power
+  and will superfluous.
+- *Station 2, the detailed answers "people have given", three*: (1) **Abū ʿAlī and Abū Hāshim (al-Jubbāʾī), chosen by al-Qāḍī ʿAbd al-Jabbār**:
+  to "would God's knowledge turn into ignorance?" both "it would" and "it would not" are wrong; one must refrain from both. (2) **al-Kaʿbī,
+  chosen by Abū l-Ḥusayn al-Baṣrī**: knowledge follows its object; if the servant believes, what obtains from eternity is knowledge of belief;
+  if he disbelieves instead, knowledge of disbelief; one knowledge *instead of* another, not a change. "These two are the mainstay of most
+  Muʿtazila." (3) **Hishām b. al-Ḥakam**: in eternity God knew quiddities and that He would produce them repeatedly, but knowledge of the
+  details arises only when they occur (the essence necessitates knowledge on condition the object obtains); deny eternal knowledge of
+  particulars and the problem vanishes.
+  ★ **Razi**: (1) "extremely weak": if both negation and affirmation are false in reality, that is a middle between contradictories, which
+  self-evidence rejects; if they merely refrain from saying it, the objection was never about their words. (2) "extremely weak": the
+  conditional is granted, but did God have knowledge of one side or not? if not, that is Hishām's view; if so, a change in the object would
+  change the knowledge (ignorance, and a past knowledge ceasing to have been knowledge, a change in time "which reason cannot accept"), and
+  knowledge of the occurrence presupposes the occurrence, so knowledge of unbelief without unbelief would join contradictories. (3) Hishām's
+  view: **"most Muslims agree not to pay attention to it and that God must be declared free of it — although there is no escape whatever from
+  that [Muʿtazilī] creed except by adopting it."** [Pointed: the only consistent libertarian position requires denying God's foreknowledge.]
+
+### L12522– Bāb 9 F9 Further proofs against rational good/evil in God's acts and judgments
+(Orig. F22.)
+- **Proof 1: obliging one God knows will disbelieve would be ugly** (not because his belief is impossible, but by human standards).
+  Examples: building a caravanserai in a deadly desert knowing for certain that bandits will make it a fortress, then claiming "I meant them to
+  gather, repent and help caravans"; gathering one's male and female slaves, adorning them to one another, supplying food and drink,
+  strengthening their lust and removing hindrances, "so that each strives to restrain himself and earn more reward", knowing for certain only
+  fornication will result; handing a knife to a slave knowing he will kill one's son, "I meant him to kill my enemy"; throwing a rope to a man
+  in a well knowing he will hang himself. ★ **Muḥammad b. Zakariyyāʾ al-Rāzī in his long debate with al-Kaʿbī**: a father teaches his son to
+  swim, then orders him across a river for a cure, knowing the son will stop swimming by choice and drown; such a father is undutiful. Kaʿbī's
+  counter-example: many sons, some of whom will choose to drown; the father need not deprive those who reach it. Ibn Zakariyyāʾ: this fits only
+  under **five conditions**: (i) the father did not himself create the need for what lies beyond the river (God created need and desire,
+  then imposed hard duties and abstinence, knowing they will not comply); (ii) he does not know for certain the son will drown himself (God
+  does); (iii) he cannot single out only those who will succeed (God can create only those He knows will obey); (iv) he knows the benefit to
+  the righteous outweighs the harm to the corrupt (here the benefit is pleasure, whose absence harms nobody, as in non-existence, while the
+  harm is eternal punishment); (v) the righteous outnumber the corrupt (in fact **unbelievers outnumber Muslims, and the sinful among Muslims
+  outnumber the righteous**). All five hold → obliging foreknown unbelievers would be ugly.
+  *Muʿtazilī answers*: (1) the majority: creation and obligation were given equally to believer and unbeliever, so they do not cause unbelief;
+  God enabled belief, removed excuses and exposed him to the greatest benefit; his unbelief is from himself; (2) Hishām: God doesn't know
+  beforehand. ★ **Razi's rebuttal of (1)**: the equality is false: if equal in intelligence, fairness and external helpers, the proof that
+  convinced the believer would convince the unbeliever; so they differ in quickness of mind, desire for knowledge, endurance of its hardships,
+  temperament (**a choleric, sharp-tempered lover of disputes vs a phlegmatic, dull one quick to follow others**), or access to a teacher,
+  book, time and leisure; equal in all these, no difference in knowledge, avowal, fairness or obstinacy could arise (editor: see vol. 9).
+  And means are wanted for their ends, "things are judged by their endings": exposing someone to benefits God knows will never come, only
+  eternal harm (say a blind, poor, afflicted unbeliever who then goes to the lowest pit), is using a means known not to lead to its end →
+  ugly by reason → reason is "dismissed" (maʿzūl) from judging God's acts.
+- **Proof 2: creation itself would be ugly.** Making for a benefit to the Creator (need; and an eternal need would have produced the world
+  earlier, an originated one regresses), to creatures (in non-existence there was nothing needy, and creating-as-beneficence would require
+  the creature to exist first → circle; benefit is preceded by need; this world is "the abode of affliction, misery, grief and harmful
+  dispositions like greed and need", and in the hereafter most are unbelievers in eternal punishment), or for no benefit (futility).
+- **Proof 3: "if you do X I will punish you" would be ugly.** The servant may say: for whose benefit? Yours (then You are needy, and how
+  could my paltry prayers benefit You?); mine (contradictory: "I had no aim in commanding you except your benefit, and since you did not seek
+  your own benefit I will torment you forever", **like a master who says "earn a dinar for yourself, or I will cut your limbs with fiery
+  shears"**; and what depends on obligation is only "deserving honour", a non-essential gain); a third party's (pure injustice); or none
+  (injustice). A human master may punish because he loses a benefit; God cannot.
+- **Proof 4: punishing unbelievers and sinners would be ugly** (it benefits neither God nor the tormented nor others justly). A human master
+  punishes to relieve the grief of his wish for revenge and to train the slave for future service; God is above both.
+- **Proof 5: al-Jubbāʾī and the three brothers** (L12656): a woman has three sons: an ascetic believer who died old, an unbeliever who died
+  old, a child who died young. Jubbāʾī: the first in the heights of the Garden, the second in the Fire, the child "among the people of
+  safety". Can the child rise to his brother's rank? No, he lacks the deeds. "My Lord, it is not my fault: You made me die before puberty."
+  God: "I knew that if you grew up you would disbelieve, so I took care of your welfare." The unbelieving brother: "You knew the same of me;
+  why did You care for his welfare and not mine?" **Jubbāʾī was silenced.** "Five cycles (adwār) later" **Abū l-Ḥusayn al-Baṣrī** recounted
+  this in his *Kitāb al-Qadar* (editor: "Qudar"?) and gave two Muʿtazilī answers: (a) for those who deny that the optimal (aṣlaḥ) is obligatory
+  in this world: obligation is grace (tafaḍḍul), and grace to one entails no grace to all; (b) for those who affirm aṣlaḥ: the child's
+  growing up and being obliged would have been a corruption (mafsada) for some other obligated person. **"Our master, the summoner to God
+  (mawlānā al-dāʿī ilā llāh), may God have mercy on him, said"** [the transmitter's honorific for Razi; the text comes through a
+  student or copyist]: both are "very weak": (a) the motive for grace is equal for both persons, so preferring one is preponderance without
+  a preponderant, impossible per "motives and deterrents" and **"this is Abū l-Ḥusayn's own explicit doctrine"**; human cases differ (a second
+  gift is harder, fear of poverty, or the first poor man was also a relative or friend); and if preponderance without a preponderant were
+  allowed, no act could be explained by welfare, "and that is all we seek here"; (b) puberty and obligation do not corrupt by themselves;
+  at most God knows another would choose badly, but then His knowledge that *this* person would disbelieve should equally stop Him from
+  creating him.
+- **Proof 6**: were God's acts for welfare, He would keep prophets, saints and the righteous alive and make the devils die; He does the
+  reverse, **keeping Iblīs until the end of obligation and giving him power to tempt**. Muʿtazilī replies: **Abū ʿAlī**: those who disbelieve
+  would do so with or without Iblīs, so no added corruption; **Abū Hāshim**: temptation adds desire but does not compel, so it increases the
+  reward of obedience. ★ Razi: both "extremely weak": we know necessarily that one who sits singing and keeps praising something's beauty and
+  delight strongly excites desire for it; and the increments of reward and punishment are not needed, while avoiding severe punishment is,
+  so not creating devils would be better by reason.
+- **Proof 7: the causes inclining to sin outnumber those inclining to obedience.** Five external senses, five internal senses (imagining a
+  fair form or a pleasant state inclines the nature to it), appetite and anger, **seven natural faculties = nineteen bodily powers, each
+  calling to bodily pleasures: "over it are nineteen" (Q74:30)** (editor: Razi returns to this in vol. 7). Each produces endless
+  suggestions; the soul from birth to puberty acts by them, and repetition builds firm habits (malakāt); **the rational faculty that forbids
+  them arises only after puberty**, after the nineteen have seized the body's kingdom; most of the world chase the bodily, and nature grows
+  stronger with many helpers. Commanding the opposite under such causes would be ugly by reason. (Close to proof 6: that one about jinn
+  devils, this one about "devils of blameworthy character".)
+- **Proof 8**: an act for a purpose: the purpose is better for Him (then He is perfected by another) or not (then equality contradicts
+  preponderance); "better for servants" just repeats the dilemma at one remove. **Proof 9**: an eternal purpose → eternal act; an originated
+  one needs a further purpose → regress.
+- **Proof 10: servants' acts are either compelled or random (iḍṭirārī / ittifāqī).** If the power fits only motion, compelled; if both
+  contraries, then the preponderance needs a preponderant (and given it, the act is necessary, since the other side lacks one) or not. The
+  preponderant is from God (then compelled), from the servant (regress) or uncaused (random); a power equal to both sides yielding one side
+  without a specifier is random. **"By this overwhelming demonstration"** every act is compelled or random, and the opponent agrees both
+  exclude rational good/evil.
+- **Proof 11**: the overwhelming proofs in the bāb of jabr and qadar (MS S: "of good and justice") that **God creates all originated things**
+  → nothing is ugly from Him.
+- **Proof 12**: "obligatory" means the omitter deserves blame; blame is a word or act that pains the heart, repels the nature and harms
+  interests, impossible for God; "another sense of blame?" Reply: whether God can deserve blame depends on what blame means, and for us
+  blame means …

@@ -34,3 +34,4 @@ Each row = a line range of `source_al-Matalib_al-Aliya.md` read in full, in orde
 | 28 | 10876–11385 | Vol.3 Bāb 9 F2 end (Razi: attachments explained by essence; delete intermediaries), F3, F4 (takwīn), F5 divine names start | notes/vol3.md |
 | 29 | 11386–11977 | Vol.3 Bāb 9 F5 divine names (oneness, Ṣamad, Qayyūm, names of power and knowledge; interrupted), F6 wisdom start | notes/vol3.md |
 | 30 | 11978–12397 | Vol.3 Bāb 9 F6 (critique of theodicy; Muʿtazilī wisdom), F7 (rational good/evil: valid for servants, void for God), F8 (taklīf mā lā yuṭāq) start | notes/vol3.md |
+| 31 | 12398–12771 | Vol.3 Bāb 9 F8 (taklīf; Muʿtazilī answers; Hishām), F9 proofs 1–12 vs rational good/evil (Ibn Zakariyyāʾ vs Kaʿbī; Jubbāʾī's three brothers) | notes/vol3.md |
